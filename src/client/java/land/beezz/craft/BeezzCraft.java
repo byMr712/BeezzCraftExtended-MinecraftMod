@@ -67,6 +67,7 @@ public final class BeezzCraft implements ClientModInitializer {
             });
             ScreenEvents.remove(screen).register(s -> {
                 if (wheel != null && wheel.screen == s) wheel = null;
+                Panel.close();
             });
         });
         ClientTickEvents.END_CLIENT_TICK.register(Crafter::tick);
@@ -81,7 +82,10 @@ public final class BeezzCraft implements ClientModInitializer {
 
     /** Called by ScreenMixin after the screen and before its tooltips. */
     public static void renderWheel(Screen screen, GuiGraphicsExtractor g, int mx, int my) {
-        if (wheel != null && wheel.screen == screen) wheel.render(g, Screens.getFont(screen), mx, my);
+        if (!(screen instanceof InventoryScreen) && !(screen instanceof CraftingScreen)) return;
+        Font font = Screens.getFont(screen);
+        if (wheel != null && wheel.screen == screen) wheel.render(g, font, mx, my);
+        Panel.render((AbstractContainerScreen<?>) screen, g, font, mx, my);
     }
 
     public static boolean wheelOpenOn(Object screen) {
@@ -90,9 +94,9 @@ public final class BeezzCraft implements ClientModInitializer {
 
     /** @return true to let the screen handle the click as usual */
     private static boolean mouse(AbstractContainerScreen<?> screen, double mx, double my, int button, boolean alt, boolean shift, boolean ctrl) {
-        Font font = Screens.getFont(screen);
+        if (Panel.click(mx, my, button)) return false; // the gear, its settings and the queue (top left)
         if (wheel != null) {
-            if (!wheel.click(font, mx, my, button, shift, ctrl)) wheel = null;
+            if (!wheel.click(mx, my, button, shift, ctrl)) wheel = null;
             return false;
         }
         if (Boolean.getBoolean("beezzcraft.debug")) LOG.info("click button={} alt={} slot={}", button, alt, ((AbstractContainerScreenAccessor) screen).beezzcraft$hoveredSlot());
@@ -117,22 +121,24 @@ public final class BeezzCraft implements ClientModInitializer {
         wheel = new Wheel(screen, stack, options, mx, my);
     }
 
-    /** The craft queue on the HUD: what waits for resources. */
+    /** The craft queue on the HUD while playing: a small card with what waits for resources. */
     private static void hud(GuiGraphicsExtractor g) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || Crafter.jobs().isEmpty()) return;
+        if (mc.player == null || mc.gui.screen() != null) return;
         List<Crafter.Job> queued = Crafter.jobs().stream().filter(j -> j.queued).toList();
         if (queued.isEmpty()) return;
         Font font = mc.font;
-        int x = 4, y = 4;
-        g.text(font, Component.translatable("beezzcraft.hud"), x, y, 0xFF93C5FD, true);
-        y += 11;
-        for (Crafter.Job j : queued.subList(0, Math.min(queued.size(), 8))) {
-            g.item(j.result, x, y);
-            g.text(font, j.all ? "∞" : "×" + j.left, x + 18, y + 4, 0xFFFFFFFF, true);
-            y += 17;
+        int shown = Math.min(queued.size(), 6), w = 22 + shown * 26, x = 4, y = 4;
+        Ui.panel(g, x, y, w, 22);
+        Ui.icon(g, Ui.QUEUE, x + 5, y + 5, 12, Ui.BLUE);
+        for (int i = 0; i < shown; i++) {
+            Crafter.Job j = queued.get(i);
+            int ix = x + 20 + i * 26;
+            g.item(j.result, ix, y + 3);
+            String n = j.all ? "∞" : String.valueOf(j.left);
+            g.text(font, n, ix + 17 - font.width(n), y + 12, 0xFFFFFFFF, true);
         }
-        if (queued.size() > 8) g.text(font, "+" + (queued.size() - 8), x, y, 0xFFAAAAAA, true);
+        if (queued.size() > shown) g.text(font, "+" + (queued.size() - shown), x + w + 3, y + 7, Ui.MUTED, true);
     }
 
     static Screen screen(Minecraft mc) {

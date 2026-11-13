@@ -164,23 +164,12 @@ public class WheelTest implements FabricClientGameTest {
             ctx.waitTicks(3);
             check("Esc closes only the wheel", ctx.computeOnClient(mc -> BeezzCraft.wheel == null && mc.gui.screen() instanceof InventoryScreen));
             wheelOn(Items.STICK);
-            double[] gear = ctx.computeOnClient(mc -> {
-                try {
-                    var m = Wheel.class.getDeclaredMethod("gear");
-                    m.setAccessible(true);
-                    int[] g = (int[]) m.invoke(BeezzCraft.wheel);
-                    return new double[] {g[0] + 7, g[1] + 7};
-                } catch (ReflectiveOperationException e) {
-                    throw new IllegalStateException(e);
-                }
-            });
-            click(gear[0], gear[1], LEFT);
+            // the gear sits in the top left corner of the inventory; its first switch is the craft queue
+            click(16, 16, LEFT);
             shot("craft_04_settings");
-            ctx.runOnClient(mc -> {
-                Config.get().queue = true;
-                BeezzCraft.wheel.refresh();
-            });
-            click(gear[0], gear[1], LEFT); // close the settings
+            click(90, 6 + 20 + 6 + 4 + 9, LEFT);
+            check("the switch turns the craft queue on", Config.get().queue);
+            click(16, 16, LEFT); // close the settings
             ctx.waitTicks(8);
             double[] torch = sectorOf(Items.TORCH);
             cursor(torch[0], torch[1]);

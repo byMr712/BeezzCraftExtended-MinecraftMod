@@ -5,13 +5,16 @@ an octagon wheel of everything you can craft from it.
 
 - **Inner ring**: what you can craft right now. **Grey**: missing resources.
 - Up to 8 recipes per ring, up to 3 rings; more go to pages (mouse wheel).
-- **Hover** a sector: the recipe, how many of each item it needs and how many you have; missing items are red.
+- **Hover** a sector: a card with the result, the ingredients as icons (green tick = enough, red = how many are
+  missing) and the clicks drawn as mouse and key pictures.
 - **Click** crafts once, **Ctrl + click** crafts 10 times, **Shift + click** crafts as many as possible.
 - The inventory shows 2×2 recipes, a crafting table shows 3×3.
-- **⚙ gear**: the craft queue (off by default), showing grey recipes, the crafting sound, clearing the queue.
+- **⚙ gear** in the top left corner of the inventory: switches for the craft queue (off by default), grey recipes and
+  the crafting sound. Under it the craft queue is listed: each item, how many, whether it waits for resources, and ✕
+  to remove it.
 - **Craft queue**: with the queue switched on, clicking a grey recipe queues it. It is crafted by itself as soon as the
   items are in your inventory, but only while nothing or your own inventory is open (never with a chest open).
-  3×3 recipes wait for a crafting table. What waits is shown in the top left corner. Some servers forbid automatic
+  3×3 recipes wait for a crafting table. While playing, a small card in the top left corner shows what waits. Some servers forbid automatic
   crafting, which is why it is off by default.
 
 Crafting goes through the vanilla recipe book: the server lays the recipe out from your inventory, like clicking a
