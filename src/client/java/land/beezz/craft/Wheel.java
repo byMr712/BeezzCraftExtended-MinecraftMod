@@ -251,9 +251,51 @@ final class Wheel {
             g.centeredText(font, Component.translatable("beezzcraft.none"), Math.round(cx), Math.round(cy + 30), Ui.MUTED);
         }
         hints(g, font);
+        if (pages() > 1) pager(g, font, mx, my);
 
         if (hover >= 0) Card.recipe(g, font, shown.get(hover), mx, my, screen.width, screen.height);
         else if (hover == -2) Card.text(g, font, Component.translatable("beezzcraft.center"), mx, my, screen.width, screen.height);
+    }
+
+    // ------------------------------------------------------------------ pages
+
+    /** The page switcher «◀ 1/3 ▶» right above the wheel: [x, y, w, h] of the whole pill. */
+    private int[] pagerBox(Font font) {
+        String label = (page + 1) + " / " + pages();
+        int w = 14 + 6 + font.width(label) + 6 + 14, h = 14;
+        float rOut = RINGS[ringsUsed() - 1][1] / (float) Math.cos(HALF) * zoom();
+        int x = Math.round(cx) - w / 2, y = Math.max(2, Math.round(cy - rOut) - h - 4);
+        return new int[] {x, y, w, h};
+    }
+
+    private void pager(GuiGraphicsExtractor g, Font font, int mx, int my) {
+        int[] b = pagerBox(font);
+        String label = (page + 1) + " / " + pages();
+        g.nextStratum();
+        Ui.panel(g, b[0], b[1], b[2], b[3]);
+        boolean lh = mx >= b[0] && mx < b[0] + 14 && my >= b[1] && my < b[1] + b[3];
+        boolean rh = mx >= b[0] + b[2] - 14 && mx < b[0] + b[2] && my >= b[1] && my < b[1] + b[3];
+        if (lh) Ui.round(g, b[0], b[1], 14, b[3], 0xFF3A3214);
+        if (rh) Ui.round(g, b[0] + b[2] - 14, b[1], 14, b[3], 0xFF3A3214);
+        g.text(font, "◀", b[0] + 4, b[1] + 3, lh ? Ui.HONEY_SOFT : Ui.HONEY, false);
+        g.text(font, label, b[0] + 20, b[1] + 3, Ui.TEXT, false);
+        g.text(font, "▶", b[0] + b[2] - 10, b[1] + 3, rh ? Ui.HONEY_SOFT : Ui.HONEY, false);
+    }
+
+    /** @return true when the click turned a page */
+    private boolean clickPager(double mx, double my) {
+        if (pages() <= 1) return false;
+        int[] b = pagerBox(Minecraft.getInstance().font);
+        if (my < b[1] || my >= b[1] + b[3]) return false;
+        if (mx >= b[0] && mx < b[0] + 14) {
+            page = Math.floorMod(page - 1, pages());
+            return true;
+        }
+        if (mx >= b[0] + b[2] - 14 && mx < b[0] + b[2]) {
+            page = Math.floorMod(page + 1, pages());
+            return true;
+        }
+        return mx >= b[0] && mx < b[0] + b[2]; // the middle of the pill: nothing, but don't close
     }
 
     /** The line of hints under the wheel, with mouse pictures instead of words. */
@@ -302,6 +344,7 @@ final class Wheel {
     /** @return false when the wheel should close */
     boolean click(double mx, double my, int button, boolean shift, boolean ctrl) {
         boolean left = button == InputConstants.MOUSE_BUTTON_LEFT, right = button == InputConstants.MOUSE_BUTTON_RIGHT;
+        if (left && clickPager(mx, my)) return true;
         int h = hit(mx, my);
         if (h == -2 || h == -1) return false; // the centre or outside: close
         Recipes.Option o = shown.get(h);

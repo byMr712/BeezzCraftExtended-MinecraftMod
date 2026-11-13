@@ -155,6 +155,19 @@ public class WheelTest implements FabricClientGameTest {
             click(table[0], table[1], LEFT);
             waitCount(Items.CRAFTING_TABLE, 1);
             check("crafting table crafted in the inventory", count(Items.CRAFTING_TABLE) == 1);
+            // Ctrl: ten at once (here the planks allow three), all in one go, not one by one
+            server.runCommand("give @a oak_planks 6");
+            ctx.waitTicks(5);
+            int before10 = count(Items.STICK), planks6 = count(Items.OAK_PLANKS);
+            stick = sectorOf(Items.STICK);
+            cursor(stick[0], stick[1]);
+            ctx.getInput().holdControl();
+            ctx.getInput().pressMouse(LEFT);
+            ctx.getInput().releaseControl();
+            int ticks = ctx.waitFor(mc -> mc.player.getInventory().countItem(Items.STICK) >= before10 + planks6 / 2 * 4, 40);
+            check("Ctrl + click crafts all it can at once (" + planks6 / 2 + " crafts in " + ticks + " ticks)", ticks <= 4);
+            server.runCommand("give @a oak_planks 8");
+            ctx.waitTicks(5);
             int planks = count(Items.OAK_PLANKS);
             ctx.waitTicks(8);
             stick = sectorOf(Items.STICK);
@@ -221,6 +234,23 @@ public class WheelTest implements FabricClientGameTest {
             waitCount(Items.IRON_PICKAXE, 1);
             check("iron pickaxe crafted at the table", count(Items.IRON_PICKAXE) == 1);
             shot("craft_09_table_after");
+
+            // sticks at the table: more recipes than one page holds
+            ctx.getInput().pressKey(InputConstants.KEY_ESCAPE);
+            ctx.waitTicks(3);
+            wheelOn(Items.STICK);
+            int[] info = ctx.computeOnClient(mc -> new int[] {BeezzCraft.wheel.shown.size(), BeezzCraft.wheel.pages(),
+                    (int) BeezzCraft.wheel.shown.stream().filter(o -> o.result.is(Items.TORCH)).count()});
+            int torchAt = ctx.computeOnClient(mc -> {
+                for (int i = 0; i < BeezzCraft.wheel.shown.size(); i++) if (BeezzCraft.wheel.shown.get(i).result.is(Items.TORCH)) return i;
+                return -1;
+            });
+            BeezzCraft.LOG.info("BeezzCraft test: stick at the table: {} recipes, {} pages, torch at {}", info[0], info[1], torchAt);
+            check("a torch short of only coal is on the first page, not lost among wood variants", torchAt >= 0 && torchAt < Wheel.PER_PAGE);
+            shot("craft_10_table_sticks_page1");
+            ctx.getInput().scroll(-1);
+            ctx.waitTicks(5);
+            shot("craft_11_table_sticks_page2");
             ctx.setScreen(() -> null);
         }
         Config.get().queue = false;

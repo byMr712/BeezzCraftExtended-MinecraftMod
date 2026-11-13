@@ -51,8 +51,7 @@ final class Crafter {
 
     private static final List<Job> jobs = new ArrayList<>();
     private static Job current;
-    private static boolean placed;
-    private static int wait;
+    private static int cooldown;
 
     private Crafter() {}
 
@@ -89,7 +88,7 @@ final class Crafter {
     static void clear() {
         jobs.clear();
         current = null;
-        placed = false;
+        cooldown = 0;
     }
 
     /** The menu crafting may use right now: the open crafting table, or the inventory (open or closed). */
@@ -111,51 +110,39 @@ final class Crafter {
         if (!(menu instanceof AbstractCraftingMenu crafting) || !player.containerMenu.equals(menu)) return;
         if (!player.containerMenu.getCarried().isEmpty()) return; // something on the cursor: wait
 
-        if (current == null) {
-            current = pick(player, crafting);
-            placed = false;
-            wait = 0;
-            if (current == null) return;
-        }
-        if (!jobs.contains(current) || (current.needsTable && !(menu instanceof CraftingMenu))) {
-            current = null;
+        if (cooldown > 0) {
+            cooldown--; // let the server's answer to the last batch arrive before counting the inventory again
             return;
         }
+        current = pick(player, crafting);
+        if (current == null) return;
+        if (!canCraft(player, crafting, current.entry)) {
+            finish(player, current.queued ? null : Component.translatable("beezzcraft.missing", current.result.getHoverName()));
+            return;
+        }
+        if (player.getInventory().getFreeSlot() < 0 && !hasRoomFor(player, current.result)) {
+            finish(player, Component.translatable("beezzcraft.full"));
+            return;
+        }
+        // the whole batch in one tick: the server handles the packets in order (lay out, take, lay out, take...),
+        // so ten crafts land at once instead of the grid filling up ten times in front of the player
+        int times = current.all ? 1 : Math.max(1, Math.min(current.left, Recipes.timesPossible(player, crafting, current.entry)));
         Slot result = crafting.getResultSlot();
-        if (!placed) {
-            if (!canCraft(player, crafting, current.entry)) {
-                finish(player, current.queued ? null : Component.translatable("beezzcraft.missing", current.result.getHoverName()));
-                return;
-            }
-            if (player.getInventory().getFreeSlot() < 0 && !hasRoomFor(player, current.result)) {
-                finish(player, Component.translatable("beezzcraft.full"));
-                return;
-            }
+        for (int i = 0; i < times; i++) {
             mc.gameMode.handlePlaceRecipe(menu.containerId, current.entry.id(), current.all);
-            placed = true;
-            wait = 0;
-            return;
-        }
-        if (result.hasItem()) {
             mc.gameMode.handleContainerInput(menu.containerId, result.index, 0, ContainerInput.QUICK_MOVE, player);
-            Config.get().crafted(new Recipes.Option(current.entry, current.result, current.needsTable).itemId());
-            if (Config.get().sound) mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.4f));
-            placed = false;
-            if (current.all || --current.left <= 0) {
-                jobs.remove(current);
-                current = null;
-            }
-        } else if (++wait > 20) {
-            placed = false; // the server did not place it (missing items after all, lag): try again later
-            if (!current.queued) finish(player, Component.translatable("beezzcraft.missing", current.result.getHoverName()));
-            else current = null;
         }
+        Config.get().crafted(new Recipes.Option(current.entry, current.result, current.needsTable).itemId());
+        if (Config.get().sound) mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.4f));
+        current.left -= times;
+        if (current.all || current.left <= 0 || !current.queued) jobs.remove(current); // a click does what it can, once
+        current = null;
+        cooldown = 2;
     }
 
     private static void finish(LocalPlayer player, Component message) {
         if (current != null && !current.queued) jobs.remove(current);
         current = null;
-        placed = false;
         if (message != null) player.sendOverlayMessage(message.copy().withStyle(ChatFormatting.RED));
     }
 

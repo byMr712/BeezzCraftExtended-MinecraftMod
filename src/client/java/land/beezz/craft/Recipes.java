@@ -110,15 +110,35 @@ final class Recipes {
         }
     }
 
-    /** Sort: craftable first, then the recently crafted, then by name. */
+    /**
+     * Sort: craftable first; then the grey ones that lack the fewest items (a torch short of one coal comes before a
+     * fence of a wood you never had); within each, the recently crafted, then by name.
+     */
     static void sort(List<Option> options) {
         List<String> recent = Config.get().recent;
         options.sort(Comparator.<Option>comparingInt(o -> o.craftable ? 0 : 1)
+                .thenComparingInt(Recipes::missing)
                 .thenComparingInt(o -> {
                     int i = recent.indexOf(o.itemId());
                     return i < 0 ? Integer.MAX_VALUE : i;
                 })
                 .thenComparing(o -> o.result.getHoverName().getString()));
+    }
+
+    /** How many times the recipe can be crafted from the inventory and the grid right now (by the scarcest ingredient). */
+    static int timesPossible(Player player, AbstractContainerMenu menu, RecipeDisplayEntry entry) {
+        int times = Integer.MAX_VALUE;
+        for (Need n : needs(entry, pool(player, menu))) times = Math.min(times, n.have() / n.need());
+        return times == Integer.MAX_VALUE ? 0 : times;
+    }
+
+    /** How many items short this recipe is; ingredients the player has none of at all count double. */
+    static int missing(Option o) {
+        int n = 0;
+        for (Need need : o.needs) {
+            if (need.missing()) n += (need.need() - need.have()) * (need.have() == 0 ? 2 : 1);
+        }
+        return n;
     }
 
     /** Copies of the stacks the player can craft with: the main inventory and the crafting grid. */
