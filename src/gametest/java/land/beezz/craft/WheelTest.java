@@ -185,13 +185,21 @@ public class WheelTest implements FabricClientGameTest {
             ctx.getInput().pressMouse(LEFT);
             ctx.getInput().releaseControl();
             ctx.waitTicks(5);
-            check("Ctrl + click on a grey recipe queues 10", ctx.computeOnClient(mc -> Crafter.jobs().stream().anyMatch(j -> j.queued && j.left == 10)));
+            ctx.getInput().pressMouse(LEFT);
+            ctx.waitTicks(3);
+            ctx.getInput().pressMouse(LEFT);
+            ctx.waitTicks(5);
+            check("the same recipe queued again adds up on one line: Ctrl + 2 clicks = ×12",
+                    ctx.computeOnClient(mc -> Crafter.jobs().stream().filter(j -> j.queued).count() == 1
+                            && Crafter.jobs().stream().anyMatch(j -> j.queued && j.left == 12)));
             shot("craft_06_queued");
             ctx.setScreen(() -> null);
             ctx.waitTicks(10);
             server.runCommand("give @a coal 2");
             waitCount(Items.TORCH, 8);
             check("queued torches crafted by themselves once coal came: " + count(Items.TORCH), count(Items.TORCH) == 8);
+            check("what the coal could not cover stays queued: ×10 left",
+                    ctx.computeOnClient(mc -> Crafter.jobs().stream().anyMatch(j -> j.queued && j.left == 10)));
             ctx.waitTicks(10);
             shot("craft_07_queue_hud");
             ctx.runOnClient(mc -> Crafter.clear());

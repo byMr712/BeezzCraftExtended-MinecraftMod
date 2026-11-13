@@ -35,7 +35,7 @@ final class Crafter {
         final boolean needsTable;
         /** Crafts left; ALL = as many as the resources allow. */
         int left;
-        final boolean all;
+        boolean all;
         /** Waits for resources instead of giving up. */
         final boolean queued;
 
@@ -70,7 +70,15 @@ final class Crafter {
         jobs.add(new Job(o, count, all, false));
     }
 
+    /** Queues a recipe; the same recipe already waiting just gets more (one line «×3», not three «×1»). */
     static void enqueue(Recipes.Option o, int count, boolean all) {
+        for (Job j : jobs) {
+            if (j.queued && j != current && j.entry.id().equals(o.entry.id())) {
+                j.left += count;
+                j.all |= all;
+                return;
+            }
+        }
         jobs.add(new Job(o, count, all, true));
     }
 
