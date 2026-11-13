@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "beezzcraft-test",
+  "version": "1.0.0",
+  "name": "BeezzCraft wheel test",
+  "environment": "client",
+  "entrypoints": { "fabric-client-gametest": ["land.beezz.craft.WheelTest"] }
+}
