@@ -16,7 +16,10 @@ final class Card {
 
     private Card() {}
 
-    static void recipe(GuiGraphicsExtractor g, Font font, Recipes.Option o, int mx, int my, int sw, int sh) {
+    static void recipe(GuiGraphicsExtractor g, Font font, Groups.Group group, int mx, int my, int sw, int sh) {
+        Recipes.Option o = group.current();
+        int variants = group.members.size();
+        Component other = Component.translatable("beezzcraft.card.variant", group.sel + 1, variants);
         Component name = o.result.getHoverName();
         String count = o.result.getCount() > 1 ? " ×" + o.result.getCount() : "";
         List<Recipes.Need> needs = o.needs;
@@ -31,8 +34,9 @@ final class Card {
                 : (queueOn ? 12 : 0) + font.width(lmb) + (queueOn ? 8 + keyW(font, "Ctrl") + 2 + font.width(ten) : 0);
         Component queuedText = Component.translatable("beezzcraft.card.queued", queued), remove = Component.translatable("beezzcraft.card.remove");
         int queuedW = queued > 0 ? 11 + font.width(queuedText) + 8 + 12 + font.width(remove) : 0;
-        int w = Math.max(Math.max(20 + font.width(name) + font.width(count), needs.size() * CELL), Math.max(hintsW, queuedW)) + PAD * 2;
-        int h = PAD + 18 + 4 + 16 + 11 + 6 + 12 + (queued > 0 ? 13 : 0) + PAD - 4;
+        int stripW = variants > 1 ? Math.min(variants, 12) * 13 + 4 + 12 + font.width(other) : 0;
+        int w = Math.max(Math.max(Math.max(20 + font.width(name) + font.width(count), needs.size() * CELL), Math.max(hintsW, queuedW)), stripW) + PAD * 2;
+        int h = PAD + 18 + 4 + 16 + 11 + 6 + 12 + (queued > 0 ? 13 : 0) + (variants > 1 ? 16 : 0) + PAD - 4;
 
         int x = mx + 14, y = my - 8;
         if (x + w > sw - 4) x = mx - 14 - w;
@@ -47,6 +51,26 @@ final class Card {
         g.text(font, name, cx + 20, cy + 4, o.craftable ? Ui.HONEY_SOFT : Ui.TEXT, false);
         if (!count.isEmpty()) g.text(font, count, cx + 20 + font.width(name), cy + 4, Ui.MUTED, false);
         cy += 18 + 4;
+
+        // the variants inside this button (woods, colours): the shown one underlined, the craftable ones bright
+        if (variants > 1) {
+            int vx = cx;
+            for (int i = 0; i < Math.min(variants, 12); i++) {
+                Recipes.Option v = group.members.get(i);
+                g.pose().pushMatrix();
+                g.pose().translate(vx, cy - 2);
+                g.pose().scale(0.75f, 0.75f);
+                g.item(v.result, 0, 0);
+                g.pose().popMatrix();
+                if (i == group.sel) Ui.rect(g, vx, cy + 11, 12, 1, Ui.HONEY);
+                else if (!v.craftable) Ui.rect(g, vx, cy - 2, 12, 12, 0x8014161C);
+                vx += 13;
+            }
+            vx += 4;
+            Ui.icon(g, Ui.MOUSE_WHEEL, vx, cy - 1, 12, 0xFFFFFFFF);
+            g.text(font, other, vx + 12, cy + 1, Ui.MUTED, false);
+            cy += 16;
+        }
 
         // ingredients: icon, how many are needed, and a tick or what is missing
         Ui.rect(g, x + PAD, cy - 3, w - PAD * 2, 1, 0x40FFFFFF);

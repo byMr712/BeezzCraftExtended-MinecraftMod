@@ -21,19 +21,19 @@ import java.util.List;
 final class Wheel {
     // geometry in GUI pixels, must match tools/make_textures.py
     static final int CENTER = 20, GLOW = 5;
-    static final int[][] RINGS = {{23, 51}, {54, 82}, {85, 113}};
+    static final int[][] RINGS = {{23, 51}, {54, 82}, {85, 113}, {116, 144}};
     /** Pieces per octagon side: the outer rings are longer, so they hold 16 and 24 buttons instead of 8. */
-    static final int[] SPLIT = {1, 2, 3};
-    static final int PER_PAGE = 8 * (1 + 2 + 3);
+    static final int[] SPLIT = {1, 2, 3, 4};
+    static final int PER_PAGE = 8 * (1 + 2 + 3 + 4);
     private static final double HALF = Math.toRadians(22.5);
     private static final long OPEN_MS = 160;
 
-    private static final Identifier[][] FILL = new Identifier[3][], EDGE = new Identifier[3][], HALO = new Identifier[3][];
+    private static final Identifier[][] FILL = new Identifier[4][], EDGE = new Identifier[4][], HALO = new Identifier[4][];
     private static final Identifier CENTER_FILL = Ui.tex("center_fill"), CENTER_EDGE = Ui.tex("center_edge"),
             CENTER_GLOW = Ui.tex("center_glow"), SHADOW = Ui.tex("shadow");
 
     static {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < RINGS.length; i++) {
             FILL[i] = new Identifier[SPLIT[i]];
             EDGE[i] = new Identifier[SPLIT[i]];
             HALO[i] = new Identifier[SPLIT[i]];
@@ -56,7 +56,8 @@ final class Wheel {
     final AbstractContainerScreen<?> screen;
     final ItemStack source;
     final List<Recipes.Option> all;
-    List<Recipes.Option> shown = new ArrayList<>();
+    /** The buttons: one per thing, its variants (woods, colours) inside. */
+    List<Groups.Group> shown = new ArrayList<>();
     int page;
     private float cx, cy, scale = 1;
     private int hover = -1;
@@ -81,9 +82,8 @@ final class Wheel {
     void refresh() {
         Minecraft mc = Minecraft.getInstance();
         Recipes.refresh(mc.player, screen.getMenu(), all);
-        Recipes.sort(all);
         shown = new ArrayList<>();
-        for (Recipes.Option o : all) if (o.craftable || Config.get().showMissing) shown.add(o);
+        for (Groups.Group g : Groups.build(all)) if (g.craftable() || Config.get().showMissing) shown.add(g);
         page = Math.min(page, Math.max(0, pages() - 1));
         refreshIn = 5;
     }
@@ -202,7 +202,7 @@ final class Wheel {
         // shadow, glows, then the sectors
         layer(g, SHADOW, RINGS[ringsUsed() - 1][1], 0, 0, 0, Ui.fade(0xB0000000, a));
         for (int i = start; i < end; i++) {
-            Recipes.Option o = shown.get(i);
+            Recipes.Option o = shown.get(i).current();
             int slot = i - start;
             Pos p = pos(slot);
             boolean queued = Crafter.queued(o.entry) > 0;
@@ -210,7 +210,7 @@ final class Wheel {
             if (glow != 0) piece(g, HALO, p, lift[slot] * 2, Ui.fade(glow, a));
         }
         for (int i = start; i < end; i++) {
-            Recipes.Option o = shown.get(i);
+            Recipes.Option o = shown.get(i).current();
             int slot = i - start;
             Pos p = pos(slot);
             boolean h = lift[slot] > 0.5f;
@@ -228,7 +228,7 @@ final class Wheel {
         g.nextStratum();
         for (int i = start; i < end; i++) {
             int slot = i - start;
-            Recipes.Option o = shown.get(i);
+            Recipes.Option o = shown.get(i).current();
             float[] p = point(slot, lift[slot] * 2);
             Ui.item(g, font, o.result, p[0], p[1], zoom() * (1 + 0.25f * lift[slot]), true);
         }
@@ -238,13 +238,18 @@ final class Wheel {
         g.nextStratum();
         for (int i = start; i < end; i++) {
             int slot = i - start;
-            Recipes.Option o = shown.get(i);
+            Recipes.Option o = shown.get(i).current();
             float[] p = point(slot, lift[slot] * 2);
             if (!o.craftable) {
                 int half = Math.round(8 * zoom() * (1 + 0.25f * lift[slot]));
                 Ui.rect(g, Math.round(p[0]) - half, Math.round(p[1]) - half, half * 2, half * 2, 0x8C14161C);
             }
             if (Crafter.queued(o.entry) > 0) Ui.icon(g, Ui.QUEUE, Math.round(p[0]) + 4, Math.round(p[1]) - 12, 9, Ui.BLUE);
+            if (shown.get(i).members.size() > 1) {
+                // three little dots: there are more variants inside (mouse wheel)
+                int dy = Math.round(p[1] + 10 * zoom() * (1 + 0.25f * lift[slot]));
+                for (int d = -1; d <= 1; d++) Ui.rect(g, Math.round(p[0]) + d * 3 - 1, dy, 2, 2, o.craftable ? Ui.HONEY_SOFT : Ui.MUTED);
+            }
         }
 
         if (shown.isEmpty()) {
@@ -347,7 +352,7 @@ final class Wheel {
         if (left && clickPager(mx, my)) return true;
         int h = hit(mx, my);
         if (h == -2 || h == -1) return false; // the centre or outside: close
-        Recipes.Option o = shown.get(h);
+        Recipes.Option o = shown.get(h).current();
         if (right) return Crafter.unqueue(o.entry);
         if (!left) return true;
         int count = ctrl ? Config.get().ctrlCount : 1;
@@ -364,7 +369,12 @@ final class Wheel {
         return true;
     }
 
+    /** The mouse wheel: over a button with variants it shows the next variant, elsewhere it turns pages. */
     void scroll(double amount) {
+        if (hover >= 0 && shown.get(hover).members.size() > 1) {
+            shown.get(hover).cycle(amount < 0 ? 1 : -1);
+            return;
+        }
         if (pages() <= 1) return;
         page = Math.floorMod(page + (amount < 0 ? 1 : -1), pages());
     }

@@ -29,6 +29,8 @@ final class Config {
     int ctrlCount = 10;
     /** Result item ids, the latest first. */
     List<String> recent = new ArrayList<>();
+    /** How many times each family (pickaxe, torch, fence...) was crafted: the often made ones come first. */
+    java.util.Map<String, Integer> counts = new java.util.HashMap<>();
 
     static Config get() {
         if (instance == null) instance = load();
@@ -45,6 +47,7 @@ final class Config {
                 Config c = GSON.fromJson(Files.readString(file(), StandardCharsets.UTF_8), Config.class);
                 if (c != null) {
                     if (c.recent == null) c.recent = new ArrayList<>();
+                    if (c.counts == null) c.counts = new java.util.HashMap<>();
                     if (c.ctrlCount < 2) c.ctrlCount = 10;
                     return c;
                 }
@@ -67,6 +70,7 @@ final class Config {
         recent.remove(itemId);
         recent.addFirst(itemId);
         while (recent.size() > 24) recent.removeLast();
+        counts.merge(Groups.family(itemId.substring(itemId.indexOf(':') + 1)), 1, Integer::sum);
         save();
     }
 }

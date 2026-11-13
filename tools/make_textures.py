@@ -9,8 +9,8 @@ from PIL import Image, ImageDraw, ImageFilter
 
 # must match Wheel.java
 CENTER = 20                                  # apothem of the centre plate
-RINGS = [(23, 51), (54, 82), (85, 113)]      # inner and outer apothem of each ring
-SPLIT = [1, 2, 3]                            # pieces per octagon side: 8, 16 and 24 buttons per ring
+RINGS = [(23, 51), (54, 82), (85, 113), (116, 144)]  # inner and outer apothem of each ring
+SPLIT = [1, 2, 3, 4]                         # pieces per octagon side: 8, 16, 24 and 32 buttons per ring
 GAP = 2.2                                    # gap between neighbouring sectors (GUI px)
 ROUND = 4.5                                  # corner radius (GUI px)
 EDGE = 1.0                                   # border thickness (GUI px)

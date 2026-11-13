@@ -26,5 +26,6 @@
   "beezzcraft.queue.empty": "Empty. Click a grey recipe in the wheel: it is crafted once you have the resources.",
   "beezzcraft.queue.table": "needs a crafting table",
   "beezzcraft.queue.ready": "can be crafted",
-  "beezzcraft.queue.wait": "waiting for resources"
+  "beezzcraft.queue.wait": "waiting for resources",
+  "beezzcraft.card.variant": "variant %s/%s"
 }

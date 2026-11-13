@@ -81,7 +81,11 @@ public class WheelTest implements FabricClientGameTest {
         return ctx.computeOnClient(mc -> {
             Wheel w = BeezzCraft.wheel;
             for (int i = 0; i < w.shown.size(); i++) {
-                if (!w.shown.get(i).result.is(result)) continue;
+                var group = w.shown.get(i);
+                int m = -1;
+                for (int k = 0; k < group.members.size(); k++) if (group.members.get(k).result.is(result)) m = k;
+                if (m < 0) continue;
+                group.sel = m;
                 w.page = i / Wheel.PER_PAGE;
                 float[] p = w.centre(i);
                 return new double[] {p[0], p[1]};
@@ -92,7 +96,7 @@ public class WheelTest implements FabricClientGameTest {
 
     /** The recipes of the open wheel in their order. */
     private String order() {
-        return ctx.computeOnClient(mc -> BeezzCraft.wheel.shown.stream().map(o -> o.itemId()).toList().toString());
+        return ctx.computeOnClient(mc -> BeezzCraft.wheel.shown.stream().map(g -> g.current().itemId()).toList().toString());
     }
 
     private int count(Item item) {
@@ -240,13 +244,33 @@ public class WheelTest implements FabricClientGameTest {
             ctx.waitTicks(3);
             wheelOn(Items.STICK);
             int[] info = ctx.computeOnClient(mc -> new int[] {BeezzCraft.wheel.shown.size(), BeezzCraft.wheel.pages(),
-                    (int) BeezzCraft.wheel.shown.stream().filter(o -> o.result.is(Items.TORCH)).count()});
+                    (int) BeezzCraft.wheel.shown.stream().filter(g -> g.current().result.is(Items.TORCH)).count()});
             int torchAt = ctx.computeOnClient(mc -> {
-                for (int i = 0; i < BeezzCraft.wheel.shown.size(); i++) if (BeezzCraft.wheel.shown.get(i).result.is(Items.TORCH)) return i;
+                for (int i = 0; i < BeezzCraft.wheel.shown.size(); i++) if (BeezzCraft.wheel.shown.get(i).current().result.is(Items.TORCH)) return i;
                 return -1;
             });
             BeezzCraft.LOG.info("BeezzCraft test: stick at the table: {} recipes, {} pages, torch at {}", info[0], info[1], torchAt);
             check("a torch short of only coal is on the first page, not lost among wood variants", torchAt >= 0 && torchAt < Wheel.PER_PAGE);
+            check("sticks at the table fit on one page (" + info[0] + " buttons)", info[1] == 1);
+            String pickaxes = ctx.computeOnClient(mc -> {
+                StringBuilder sb = new StringBuilder();
+                int last = -2;
+                boolean together = true;
+                for (int i = 0; i < BeezzCraft.wheel.shown.size(); i++) {
+                    var grp = BeezzCraft.wheel.shown.get(i);
+                    if (!grp.family.equals("pickaxe")) continue;
+                    if (last >= 0 && i != last + 1) together = false;
+                    last = i;
+                    sb.append(grp.key).append(' ');
+                }
+                return (together ? "together: " : "SPLIT: ") + sb.toString().trim();
+            });
+            BeezzCraft.LOG.info("BeezzCraft test: pickaxes {}", pickaxes);
+            check("pickaxes stand in a row from wooden to diamond", pickaxes.startsWith("together: wooden_pickaxe stone_pickaxe")
+                    && pickaxes.indexOf("iron_pickaxe") < pickaxes.indexOf("golden_pickaxe") && pickaxes.indexOf("golden_pickaxe") < pickaxes.indexOf("diamond_pickaxe"));
+            int fences = ctx.computeOnClient(mc -> BeezzCraft.wheel.shown.stream().filter(g -> g.family.equals("fence")).mapToInt(g -> g.members.size()).sum());
+            int fenceButtons = ctx.computeOnClient(mc -> (int) BeezzCraft.wheel.shown.stream().filter(g -> g.family.equals("fence")).count());
+            check("all " + fences + " wooden fences are one button", fences > 5 && fenceButtons == 1);
             shot("craft_10_table_sticks_page1");
             ctx.getInput().scroll(-1);
             ctx.waitTicks(5);

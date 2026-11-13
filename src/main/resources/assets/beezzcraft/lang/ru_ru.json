@@ -26,5 +26,6 @@
   "beezzcraft.queue.empty": "Пусто. Нажми ЛКМ по серому рецепту в колесе — он скрафтится, когда появятся ресурсы.",
   "beezzcraft.queue.table": "нужен верстак",
   "beezzcraft.queue.ready": "можно скрафтить",
-  "beezzcraft.queue.wait": "ждёт ресурсы"
+  "beezzcraft.queue.wait": "ждёт ресурсы",
+  "beezzcraft.card.variant": "вариант %s/%s"
 }
