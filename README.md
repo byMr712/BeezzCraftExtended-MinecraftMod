@@ -4,7 +4,8 @@ Fabric client mod for Minecraft **26.3**: **Alt + right click** on an item in th
 an octagon wheel of everything you can craft from it.
 
 - **Inner ring**: what you can craft right now. **Grey**: missing resources.
-- Up to 8 recipes per ring, up to 3 rings; more go to pages (mouse wheel).
+- Rings of 8, 16 and 24 buttons (the outer rings split each octagon side in 2 and 3), 48 recipes per page; more go to
+  pages (mouse wheel).
 - **Hover** a sector: a card with the result, the ingredients as icons (green tick = enough, red = how many are
   missing) and the clicks drawn as mouse and key pictures.
 - **Click** crafts once, **Ctrl + click** crafts 10 times, **Shift + click** crafts as many as possible.

@@ -22,19 +22,27 @@ final class Wheel {
     // geometry in GUI pixels, must match tools/make_textures.py
     static final int CENTER = 20, GLOW = 5;
     static final int[][] RINGS = {{23, 51}, {54, 82}, {85, 113}};
-    static final int PER_RING = 8, PER_PAGE = PER_RING * RINGS.length;
+    /** Pieces per octagon side: the outer rings are longer, so they hold 16 and 24 buttons instead of 8. */
+    static final int[] SPLIT = {1, 2, 3};
+    static final int PER_PAGE = 8 * (1 + 2 + 3);
     private static final double HALF = Math.toRadians(22.5);
     private static final long OPEN_MS = 160;
 
-    private static final Identifier[] FILL = new Identifier[3], EDGE = new Identifier[3], HALO = new Identifier[3];
+    private static final Identifier[][] FILL = new Identifier[3][], EDGE = new Identifier[3][], HALO = new Identifier[3][];
     private static final Identifier CENTER_FILL = Ui.tex("center_fill"), CENTER_EDGE = Ui.tex("center_edge"),
             CENTER_GLOW = Ui.tex("center_glow"), SHADOW = Ui.tex("shadow");
 
     static {
         for (int i = 0; i < 3; i++) {
-            FILL[i] = Ui.tex("ring" + (i + 1) + "_fill");
-            EDGE[i] = Ui.tex("ring" + (i + 1) + "_edge");
-            HALO[i] = Ui.tex("ring" + (i + 1) + "_glow");
+            FILL[i] = new Identifier[SPLIT[i]];
+            EDGE[i] = new Identifier[SPLIT[i]];
+            HALO[i] = new Identifier[SPLIT[i]];
+            for (int t = 0; t < SPLIT[i]; t++) {
+                String name = "ring" + (i + 1) + "_" + t;
+                FILL[i][t] = Ui.tex(name + "_fill");
+                EDGE[i][t] = Ui.tex(name + "_edge");
+                HALO[i][t] = Ui.tex(name + "_glow");
+            }
         }
     }
 
@@ -84,8 +92,18 @@ final class Wheel {
     }
 
     private int ringsUsed() {
-        int onPage = Math.min(PER_PAGE, shown.size() - page * PER_PAGE);
-        return Math.max(1, (onPage + PER_RING - 1) / PER_RING);
+        int onPage = Math.min(PER_PAGE, shown.size() - page * PER_PAGE), rings = 0, cap = 0;
+        while (rings < RINGS.length && cap < onPage) cap += 8 * SPLIT[rings++];
+        return Math.max(1, rings);
+    }
+
+    /** Where slot s of a page sits: ring, octagon side (0 = up, clockwise), piece of that side, pieces per side. */
+    record Pos(int ring, int side, int piece, int split) {}
+
+    static Pos pos(int slot) {
+        int ring = 0;
+        while (slot >= 8 * SPLIT[ring]) slot -= 8 * SPLIT[ring++];
+        return new Pos(ring, slot / SPLIT[ring], slot % SPLIT[ring], SPLIT[ring]);
     }
 
     /** Centre on the mouse but keep the whole wheel on screen; shrink it on very small windows. */
@@ -121,24 +139,43 @@ final class Wheel {
     /** Index into shown of the sector under the mouse, -1 for none; -2 = the centre. */
     private int hit(double mx, double my) {
         double dx = (mx - cx) / scale, dy = (my - cy) / scale;
-        int k = Math.floorMod((int) Math.round((Math.toDegrees(Math.atan2(dy, dx)) + 90) / 45), 8);
-        double a = angle(k), proj = dx * Math.cos(a) + dy * Math.sin(a);
+        int side = Math.floorMod((int) Math.round((Math.toDegrees(Math.atan2(dy, dx)) + 90) / 45), 8);
+        double a = angle(side), proj = dx * Math.cos(a) + dy * Math.sin(a);
         if (proj < CENTER) return Math.hypot(dx, dy) < CENTER + 2 ? -2 : -1;
+        // the lines between pieces go through the centre: the piece follows from the sideways share of the side
+        double lat = dx * Math.cos(a + Math.PI / 2) + dy * Math.sin(a + Math.PI / 2), u = lat / (proj * Math.tan(HALF));
+        int offset = 0;
         for (int ring = 0; ring < ringsUsed(); ring++) {
+            int m = SPLIT[ring];
             if (proj >= RINGS[ring][0] - 1 && proj <= RINGS[ring][1] + 1) {
-                int index = page * PER_PAGE + ring * PER_RING + k;
+                int piece = Math.max(0, Math.min(m - 1, (int) Math.floor((u + 1) / 2 * m)));
+                int index = page * PER_PAGE + offset + side * m + piece;
                 return index < shown.size() ? index : -1;
             }
+            offset += 8 * m;
         }
         return -1;
     }
 
-    /** Screen point of the middle of sector slot (0..23 on the page), with its lift. */
-    private float[] point(int slot, float extra) {
-        int ring = slot / PER_RING, k = slot % PER_RING;
-        double mid = (RINGS[ring][0] + RINGS[ring][1]) / 2.0 + extra, a = angle(k);
-        float z = zoom();
-        return new float[] {cx + (float) (Math.cos(a) * mid) * z, cy + (float) (Math.sin(a) * mid) * z};
+    /** Unit vector from the centre through the middle of a piece. */
+    private static double[] dir(Pos p) {
+        double a = angle(p.side()), mid = (RINGS[p.ring()][0] + RINGS[p.ring()][1]) / 2.0;
+        double u = -1 + (2 * p.piece() + 1.0) / p.split(), lat = u * mid * Math.tan(HALF);
+        double x = Math.cos(a) * mid + Math.cos(a + Math.PI / 2) * lat, y = Math.sin(a) * mid + Math.sin(a + Math.PI / 2) * lat;
+        double len = Math.hypot(x, y);
+        return new double[] {x, y, len};
+    }
+
+    /** Screen point of the middle of a slot on the page, pushed outwards by extra GUI px. */
+    float[] point(int slot, float extra) {
+        double[] d = dir(pos(slot));
+        float z = zoom(), k = (float) ((d[2] + extra) / d[2]);
+        return new float[] {cx + (float) d[0] * k * z, cy + (float) d[1] * k * z};
+    }
+
+    /** Screen point of the sector of shown.get(index) (on the current page). */
+    float[] centre(int index) {
+        return point(index - page * PER_PAGE, 0);
     }
 
     // ------------------------------------------------------------------ drawing
@@ -156,27 +193,29 @@ final class Wheel {
         }
 
         // shadow, glows, then the sectors
-        layer(g, SHADOW, RINGS[ringsUsed() - 1][1], 0, 0, Ui.fade(0xB0000000, a));
+        layer(g, SHADOW, RINGS[ringsUsed() - 1][1], 0, 0, 0, Ui.fade(0xB0000000, a));
         for (int i = start; i < end; i++) {
             Recipes.Option o = shown.get(i);
-            int slot = i - start, ring = slot / PER_RING, k = slot % PER_RING;
+            int slot = i - start;
+            Pos p = pos(slot);
             boolean queued = Crafter.queued(o.entry) > 0;
             int glow = queued ? GLOW_QUEUED : o.craftable ? (lift[slot] > 0.5f ? GLOW_OK_HOVER : GLOW_OK) : 0;
-            if (glow != 0) layer(g, HALO[ring], RINGS[ring][1], k, lift[slot] * 2, Ui.fade(glow, a));
+            if (glow != 0) piece(g, HALO, p, lift[slot] * 2, Ui.fade(glow, a));
         }
         for (int i = start; i < end; i++) {
             Recipes.Option o = shown.get(i);
-            int slot = i - start, ring = slot / PER_RING, k = slot % PER_RING;
+            int slot = i - start;
+            Pos p = pos(slot);
             boolean h = lift[slot] > 0.5f;
             int fill = o.craftable ? (h ? FILL_OK_HOVER : FILL_OK) : (h ? FILL_NO_HOVER : FILL_NO);
             int edge = Crafter.queued(o.entry) > 0 ? EDGE_QUEUED : o.craftable ? (h ? EDGE_OK_HOVER : EDGE_OK) : (h ? EDGE_NO_HOVER : EDGE_NO);
             float push = lift[slot] * 2;
-            layer(g, FILL[ring], RINGS[ring][1], k, push, Ui.fade(fill, a));
-            layer(g, EDGE[ring], RINGS[ring][1], k, push, Ui.fade(edge, a));
+            piece(g, FILL, p, push, Ui.fade(fill, a));
+            piece(g, EDGE, p, push, Ui.fade(edge, a));
         }
-        layer(g, CENTER_GLOW, CENTER, 0, 0, Ui.fade(hover == -2 ? 0x80FACC15 : 0x30FACC15, a));
-        layer(g, CENTER_FILL, CENTER, 0, 0, Ui.fade(CENTER_FILL_C, a));
-        layer(g, CENTER_EDGE, CENTER, 0, 0, Ui.fade(hover == -2 ? EDGE_OK_HOVER : EDGE_OK, a));
+        layer(g, CENTER_GLOW, CENTER, 0, 0, 0, Ui.fade(hover == -2 ? 0x80FACC15 : 0x30FACC15, a));
+        layer(g, CENTER_FILL, CENTER, 0, 0, 0, Ui.fade(CENTER_FILL_C, a));
+        layer(g, CENTER_EDGE, CENTER, 0, 0, 0, Ui.fade(hover == -2 ? EDGE_OK_HOVER : EDGE_OK, a));
 
         // items on top: the hovered one grows
         g.nextStratum();
@@ -233,13 +272,18 @@ final class Wheel {
         }
     }
 
-    /** One wheel texture rotated into sector k around the centre, pushed outwards by push GUI px. */
-    private void layer(GuiGraphicsExtractor g, Identifier tex, int apothem, int k, float push, int color) {
+    /** One piece of a ring, pushed outwards (through its own middle) by push GUI px. */
+    private void piece(GuiGraphicsExtractor g, Identifier[][] tex, Pos p, float push, int color) {
+        double[] d = dir(p);
+        layer(g, tex[p.ring()][p.piece()], RINGS[p.ring()][1], p.side(), (float) (d[0] / d[2] * push), (float) (d[1] / d[2] * push), color);
+    }
+
+    /** One wheel texture rotated onto octagon side k around the centre, shifted by (px, py) GUI px. */
+    private void layer(GuiGraphicsExtractor g, Identifier tex, int apothem, int k, float px, float py, int color) {
         int size = canvas(apothem);
         float z = zoom();
-        double a = angle(k);
         g.pose().pushMatrix();
-        g.pose().translate(cx + (float) Math.cos(a) * push * z, cy + (float) Math.sin(a) * push * z);
+        g.pose().translate(cx + px * z, cy + py * z);
         g.pose().scale(z, z);
         g.pose().rotate((float) Math.toRadians(45 * k));
         g.blit(RenderPipelines.GUI_TEXTURED, tex, -size / 2, -size / 2, 0, 0, size, size, size * 2, size * 2, size * 2, size * 2, color);

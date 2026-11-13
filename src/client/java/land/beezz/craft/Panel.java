@@ -74,6 +74,13 @@ final class Panel {
         return Crafter.jobs().stream().filter(j -> j.queued).toList();
     }
 
+    /** Height of the queue card: its rows, or the wrapped hint when it is empty. */
+    private static int queueH() {
+        int shown = Math.min(queued().size(), 8);
+        if (shown > 0) return 22 + shown * QROW + 4;
+        return 22 + Minecraft.getInstance().font.split(Component.translatable("beezzcraft.queue.empty"), W - 14).size() * 10 + 6;
+    }
+
     private static boolean showQueue() {
         return Config.get().queue || !queued().isEmpty();
     }
@@ -125,7 +132,7 @@ final class Panel {
     private static void renderQueue(AbstractContainerScreen<?> screen, GuiGraphicsExtractor g, Font font, int mx, int my) {
         List<Crafter.Job> jobs = queued();
         int shown = Math.min(jobs.size(), 8);
-        int y = queueY(), h = 22 + Math.max(1, shown) * QROW + 4;
+        int y = queueY(), h = queueH();
         Ui.panel(g, X, y, W, h);
         Ui.icon(g, Ui.QUEUE, X + 6, y + 5, 11, Ui.BLUE);
         g.text(font, Component.translatable("beezzcraft.hud"), X + 21, y + 7, Ui.BLUE, false);
@@ -199,7 +206,7 @@ final class Panel {
         if (showQueue()) {
             List<Crafter.Job> jobs = queued();
             int y = queueY(), shown = Math.min(jobs.size(), 8);
-            if (in(mx, my, X, y, W, 22 + Math.max(1, shown) * QROW + 4)) {
+            if (in(mx, my, X, y, W, queueH())) {
                 int ry = y + 21;
                 for (int i = 0; i < shown; i++) {
                     if (in(mx, my, X + W - 16, ry + 4, 12, 12)) {

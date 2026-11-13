@@ -10,6 +10,7 @@ from PIL import Image, ImageDraw, ImageFilter
 # must match Wheel.java
 CENTER = 20                                  # apothem of the centre plate
 RINGS = [(23, 51), (54, 82), (85, 113)]      # inner and outer apothem of each ring
+SPLIT = [1, 2, 3]                            # pieces per octagon side: 8, 16 and 24 buttons per ring
 GAP = 2.2                                    # gap between neighbouring sectors (GUI px)
 ROUND = 4.5                                  # corner radius (GUI px)
 EDGE = 1.0                                   # border thickness (GUI px)
@@ -52,15 +53,19 @@ def rounded(points, r):
     return out
 
 
-def sector(a_in, a_out, size, shrink=0.0):
+def sector(a_in, a_out, size, shrink=0.0, u0=-1.0, u1=1.0):
+    """One piece of an octagon side, pointing up. u0..u1 (from -1 to 1) is its share of the side; the lines between
+    pieces go through the centre, so every piece of a ring has the same shape (mirrored)."""
     c = size * SS / 2
     a_in, a_out = a_in + shrink, a_out - shrink
     t = math.tan(HALF)
-    side = GAP / 2 + shrink
-    pts = []
-    for a, sign in ((a_out, -1), (a_out, 1), (a_in, 1), (a_in, -1)):
-        half_w = a * t - side / math.cos(HALF)
-        pts.append((c + sign * half_w * SS, c - a * SS))
+
+    def x(a, u, side):  # side: +1 = left edge of the piece (moves right), -1 = right edge
+        gap = (GAP / 2 + shrink) / (math.cos(HALF) if abs(u) == 1 else 1)
+        return c + (u * a * t + side * gap) * SS
+
+    pts = [(x(a_out, u0, 1), c - a_out * SS), (x(a_out, u1, -1), c - a_out * SS),
+           (x(a_in, u1, -1), c - a_in * SS), (x(a_in, u0, 1), c - a_in * SS)]
     return rounded(pts, max(0.5, ROUND - shrink) * SS)
 
 
@@ -162,10 +167,14 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     for i, (a_in, a_out) in enumerate(RINGS, 1):
         size = canvas_size(a_out)
-        shape = sector(a_in, a_out, size)
-        save(shaded(shape, size, a_in, a_out), size, f"ring{i}_fill.png")
-        save(outline(shape, sector(a_in, a_out, size, EDGE), size), size, f"ring{i}_edge.png")
-        glow(shape, size).save(os.path.join(OUT, f"ring{i}_glow.png"))
+        m = SPLIT[i - 1]
+        for k in range(m):
+            u0, u1 = -1 + 2 * k / m, -1 + 2 * (k + 1) / m
+            shape = sector(a_in, a_out, size, 0, u0, u1)
+            name = f"ring{i}_{k}"
+            save(shaded(shape, size, a_in, a_out), size, name + "_fill.png")
+            save(outline(shape, sector(a_in, a_out, size, EDGE, u0, u1), size), size, name + "_edge.png")
+            glow(shape, size).save(os.path.join(OUT, name + "_glow.png"))
     size = canvas_size(CENTER)
     shape = octagon(CENTER, size)
     save(shaded(shape, size, 0, 0), size, "center_fill.png")

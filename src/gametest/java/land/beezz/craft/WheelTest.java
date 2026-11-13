@@ -80,12 +80,11 @@ public class WheelTest implements FabricClientGameTest {
     private double[] sectorOf(Item result) {
         return ctx.computeOnClient(mc -> {
             Wheel w = BeezzCraft.wheel;
-            float cx = (float) field(Wheel.class, w, "cx"), cy = (float) field(Wheel.class, w, "cy"), sc = (float) field(Wheel.class, w, "scale");
             for (int i = 0; i < w.shown.size(); i++) {
                 if (!w.shown.get(i).result.is(result)) continue;
-                int slot = i % Wheel.PER_PAGE, ring = slot / Wheel.PER_RING, k = slot % Wheel.PER_RING;
-                double mid = (Wheel.RINGS[ring][0] + Wheel.RINGS[ring][1]) / 2.0, a = Math.toRadians(-90 + 45 * k);
-                return new double[] {cx + Math.cos(a) * mid * sc, cy + Math.sin(a) * mid * sc};
+                w.page = i / Wheel.PER_PAGE;
+                float[] p = w.centre(i);
+                return new double[] {p[0], p[1]};
             }
             throw new IllegalStateException("no sector for " + result + " among " + w.shown.size());
         });
