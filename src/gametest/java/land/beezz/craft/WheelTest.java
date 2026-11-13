@@ -90,6 +90,11 @@ public class WheelTest implements FabricClientGameTest {
         });
     }
 
+    /** The recipes of the open wheel in their order. */
+    private String order() {
+        return ctx.computeOnClient(mc -> BeezzCraft.wheel.shown.stream().map(o -> o.itemId()).toList().toString());
+    }
+
     private int count(Item item) {
         return ctx.computeOnClient(mc -> mc.player.getInventory().countItem(item));
     }
@@ -137,11 +142,14 @@ public class WheelTest implements FabricClientGameTest {
             shot("craft_02_hover_tooltip");
 
             // 2) click crafts once, Ctrl ten times, Shift as much as possible
+            String before = order();
             int sticks = count(Items.STICK);
             double[] stick = sectorOf(Items.STICK);
             click(stick[0], stick[1], LEFT);
             waitCount(Items.STICK, sticks + 4);
             check("click crafts sticks once: " + sticks + " -> " + count(Items.STICK), count(Items.STICK) == sticks + 4);
+            ctx.waitTicks(12); // the wheel has refreshed by now
+            check("crafting does not move the recipes around", order().equals(before));
             ctx.waitTicks(8); // the wheel re-sorts after a craft
             table = sectorOf(Items.CRAFTING_TABLE);
             click(table[0], table[1], LEFT);

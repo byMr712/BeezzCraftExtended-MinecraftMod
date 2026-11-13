@@ -77,6 +77,7 @@ final class Wheel {
         place(mx, my);
     }
 
+    /** Sorts and lays out the recipes: only when the wheel opens (or the shown set changes), so nothing jumps around. */
     void refresh() {
         Minecraft mc = Minecraft.getInstance();
         Recipes.refresh(mc.player, screen.getMenu(), all);
@@ -84,6 +85,12 @@ final class Wheel {
         shown = new ArrayList<>();
         for (Recipes.Option o : all) if (o.craftable || Config.get().showMissing) shown.add(o);
         page = Math.min(page, Math.max(0, pages() - 1));
+        refreshIn = 5;
+    }
+
+    /** After a craft or when the inventory changes: only the colours (craftable or grey) and counts, same places. */
+    private void update() {
+        Recipes.refresh(Minecraft.getInstance().player, screen.getMenu(), all);
         refreshIn = 5;
     }
 
@@ -116,7 +123,7 @@ final class Wheel {
     }
 
     void tick() {
-        if (--refreshIn <= 0) refresh();
+        if (--refreshIn <= 0) update();
     }
 
     /** 0..1 eased opening animation. */
