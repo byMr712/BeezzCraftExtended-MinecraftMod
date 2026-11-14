@@ -6,7 +6,8 @@ an octagon wheel of everything you can craft from it.
 - **Inner ring**: what you can craft right now. **Grey**: missing resources.
 - Rings of 8, 16, 24 and 32 buttons (the outer rings split each octagon side in 2, 3 and 4), 80 per page; more go to
   pages (the «◀ 1/2 ▶» switch above the wheel or the mouse wheel).
-- Variants of one thing are one button with three dots under it: a fence of each wood, a banner of each colour, the
+- Variants of one thing are one button with three dots under it: items whose names end the same way (a fence of each
+  wood, new woods included; torch, soul torch, copper torch), a banner of each colour, the
   tiers of a tool (wooden, stone, copper, iron, golden, diamond pickaxe). The mouse wheel over it switches variants.
   It opens on the variant you crafted last, else on one you can make (the wood further up-left in the inventory wins).
 - Order: what you can make and what you craft often first, then popular things. Sticks at a crafting table: 112 recipes

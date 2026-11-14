@@ -27,12 +27,10 @@ final class Config {
     boolean sound = true;
     /** How many crafts Ctrl + click makes. */
     int ctrlCount = 10;
-    /** Result item ids, the latest first. */
+    /** Result item ids, the latest first: a button opens on the variant crafted last. */
     List<String> recent = new ArrayList<>();
-    /** How many times each family (pickaxe, torch, fence...) was crafted: the often made ones come first. */
+    /** How many times each item was crafted: the often made ones come first. */
     java.util.Map<String, Integer> counts = new java.util.HashMap<>();
-    /** The last crafted item of each family (iron_pickaxe for "pickaxe"): the wheel shows it first next time. */
-    java.util.Map<String, String> last = new java.util.HashMap<>();
 
     static Config get() {
         if (instance == null) instance = load();
@@ -50,7 +48,6 @@ final class Config {
                 if (c != null) {
                     if (c.recent == null) c.recent = new ArrayList<>();
                     if (c.counts == null) c.counts = new java.util.HashMap<>();
-                    if (c.last == null) c.last = new java.util.HashMap<>();
                     if (c.ctrlCount < 2) c.ctrlCount = 10;
                     return c;
                 }
@@ -72,10 +69,8 @@ final class Config {
     void crafted(String itemId) {
         recent.remove(itemId);
         recent.addFirst(itemId);
-        while (recent.size() > 24) recent.removeLast();
-        String family = Groups.family(itemId.substring(itemId.indexOf(':') + 1));
-        counts.merge(family, 1, Integer::sum);
-        last.put(family, itemId);
+        while (recent.size() > 64) recent.removeLast();
+        counts.merge(itemId, 1, Integer::sum);
         save();
     }
 }

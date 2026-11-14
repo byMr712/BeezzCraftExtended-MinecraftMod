@@ -128,7 +128,6 @@ public class WheelTest implements FabricClientGameTest {
         Config.get().queue = false;
         Config.get().recent.clear();
         Config.get().counts.clear();
-        Config.get().last.clear();
 
         try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
             var server = world.getServer();
@@ -296,6 +295,11 @@ public class WheelTest implements FabricClientGameTest {
             int fences = ctx.computeOnClient(mc -> BeezzCraft.wheel.shown.stream().filter(g -> g.family.equals("fence")).mapToInt(g -> g.members.size()).sum());
             int fenceButtons = ctx.computeOnClient(mc -> (int) BeezzCraft.wheel.shown.stream().filter(g -> g.family.equals("fence")).count());
             check("all " + fences + " wooden fences are one button", fences > 5 && fenceButtons == 1);
+            java.util.List<java.util.List<String>> torchButtons = ctx.computeOnClient(mc -> BeezzCraft.wheel.shown.stream()
+                    .filter(g -> g.members.stream().anyMatch(o -> o.result.is(Items.TORCH) || o.result.is(Items.SOUL_TORCH)))
+                    .map(g -> g.members.stream().map(o -> o.itemId().substring(10)).toList()).toList());
+            check("the torch and the soul torch are one button: " + torchButtons, torchButtons.size() == 1
+                    && torchButtons.getFirst().contains("torch") && torchButtons.getFirst().contains("soul_torch"));
 
             // multiplayer: the recipes come from the game's own data instead of the server
             ctx.runOnClient(mc -> {
