@@ -27,5 +27,8 @@
   "beezzcraft.queue.table": "needs a crafting table",
   "beezzcraft.queue.ready": "can be crafted",
   "beezzcraft.queue.wait": "waiting for resources",
-  "beezzcraft.card.variant": "variant %s/%s"
+  "beezzcraft.card.variant": "variant %s/%s",
+  "beezzcraft.set.needs": "Resources to get",
+  "beezzcraft.needs.title": "To get",
+  "beezzcraft.needs.ok": "You have everything"
 }

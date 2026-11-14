@@ -267,6 +267,11 @@ final class Recipes {
         return sum;
     }
 
+    /** The ingredients of a recipe with what the player has (for the «what to get» list). */
+    static List<Need> needsOf(Player player, AbstractContainerMenu menu, List<Ingredient> reqs) {
+        return needs(reqs, pool(player, menu));
+    }
+
     /** Copies of the stacks the player can craft with: the main inventory and the crafting grid. */
     private static List<ItemStack> pool(Player player, AbstractContainerMenu menu) {
         List<ItemStack> pool = new ArrayList<>();

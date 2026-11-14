@@ -27,5 +27,8 @@
   "beezzcraft.queue.table": "нужен верстак",
   "beezzcraft.queue.ready": "можно скрафтить",
   "beezzcraft.queue.wait": "ждёт ресурсы",
-  "beezzcraft.card.variant": "вариант %s/%s"
+  "beezzcraft.card.variant": "вариант %s/%s",
+  "beezzcraft.set.needs": "Нужные ресурсы",
+  "beezzcraft.needs.title": "Нужно добыть",
+  "beezzcraft.needs.ok": "Всё есть — можно крафтить"
 }

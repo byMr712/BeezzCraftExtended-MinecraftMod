@@ -25,6 +25,8 @@ final class Config {
     boolean showMissing = true;
     /** Click sound when something is crafted. */
     boolean sound = true;
+    /** Show what the craft queue still needs (in the inventory and on the screen while playing). */
+    boolean showNeeds = true;
     /** How many crafts Ctrl + click makes. */
     int ctrlCount = 10;
     /** Result item ids, the latest first: a button opens on the variant crafted last. */

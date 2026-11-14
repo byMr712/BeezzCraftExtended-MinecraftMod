@@ -212,8 +212,15 @@ public class WheelTest implements FabricClientGameTest {
                     ctx.computeOnClient(mc -> Crafter.jobs().stream().filter(j -> j.queued).count() == 1
                             && Crafter.jobs().stream().anyMatch(j -> j.queued && j.left == 12)));
             shot("craft_06_queued");
+            int coalMissing = ctx.computeOnClient(mc -> Needs.of(mc.player, mc.player.inventoryMenu).stream()
+                    .filter(n -> n.icon().is(Items.COAL) || n.icon().is(Items.CHARCOAL)).mapToInt(Needs.Item::missing).sum());
+            check("what to get: 12 coal for the 12 queued torches (" + coalMissing + ")", coalMissing == 12);
+            ctx.getInput().pressKey(InputConstants.KEY_ESCAPE);
+            ctx.waitTicks(3);
+            shot("craft_06b_needs_in_inventory");
             ctx.setScreen(() -> null);
             ctx.waitTicks(10);
+            shot("craft_06c_needs_while_playing");
             server.runCommand("give @a coal 2");
             waitCount(Items.TORCH, 8);
             check("queued torches crafted by themselves once coal came: " + count(Items.TORCH), count(Items.TORCH) == 8);

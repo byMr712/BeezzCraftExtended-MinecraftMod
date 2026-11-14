@@ -23,6 +23,9 @@ an octagon wheel of everything you can craft from it.
   items are in your inventory, but only while nothing or your own inventory is open (never with a chest open).
   3×3 recipes wait for a crafting table. While playing, a small card in the top left corner shows what waits. Some servers forbid automatic
   crafting, which is why it is off by default.
+- **What to get**: everything the queue still needs, added up (12 queued torches = 12 coal), as icons with how many
+  are missing. Under the queue in the inventory and, while playing, under the queue card at the top left. Switch:
+  «Resources to get» behind the gear.
 
 All crafting recipes of the game are known, not only the ones the recipe book has unlocked (a torch unlocks only once
 you hold a stone pickaxe): in singleplayer from the server, in multiplayer from the game's own data. Recipes the book

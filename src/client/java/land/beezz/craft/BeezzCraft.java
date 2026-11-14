@@ -140,6 +140,7 @@ public final class BeezzCraft implements ClientModInitializer {
             g.text(font, n, ix + 17 - font.width(n), y + 12, 0xFFFFFFFF, true);
         }
         if (queued.size() > shown) g.text(font, "+" + (queued.size() - shown), x + w + 3, y + 7, Ui.MUTED, true);
+        if (Config.get().showNeeds) Needs.render(g, font, Needs.of(mc.player, mc.player.inventoryMenu), x, y + 26, 0, false);
     }
 
     static Screen screen(Minecraft mc) {

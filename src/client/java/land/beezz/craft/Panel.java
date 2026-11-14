@@ -44,6 +44,7 @@ final class Panel {
             c.showMissing = !c.showMissing;
             if (BeezzCraft.wheel != null) BeezzCraft.wheel.refresh();
         }));
+        t.add(new Toggle(new ItemStack(Items.IRON_PICKAXE), Component.translatable("beezzcraft.set.needs"), c.showNeeds, () -> c.showNeeds = !c.showNeeds));
         t.add(new Toggle(new ItemStack(Items.NOTE_BLOCK), Component.translatable("beezzcraft.set.sound"), c.sound, () -> c.sound = !c.sound));
         return t;
     }
@@ -102,6 +103,9 @@ final class Panel {
 
         if (settings) renderSettings(g, font, mx, my);
         if (showQueue()) renderQueue(screen, g, font, mx, my);
+        if (showQueue() && Config.get().showNeeds && !queued().isEmpty()) {
+            Needs.render(g, font, Needs.of(Minecraft.getInstance().player, screen.getMenu()), X, queueY() + queueH() + 6, W, true);
+        }
         if (gh) Card.text(g, font, Component.translatable("beezzcraft.gear"), mx, my, screen.width, screen.height);
     }
 
