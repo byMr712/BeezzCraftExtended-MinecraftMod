@@ -23,7 +23,7 @@ final class Card {
         Component name = o.result.getHoverName();
         String count = o.result.getCount() > 1 ? " ×" + o.result.getCount() : "";
         List<Recipes.Need> needs = o.needs;
-        int queued = Crafter.queued(o.entry);
+        int queued = Crafter.queued(o);
         boolean queueOn = Config.get().queue;
 
         Component lmb = Component.translatable(o.craftable ? "beezzcraft.card.once" : queueOn ? "beezzcraft.card.queue" : "beezzcraft.card.missing");

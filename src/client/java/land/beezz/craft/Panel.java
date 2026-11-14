@@ -160,7 +160,7 @@ final class Panel {
             if (j.needsTable && !(screen.getMenu() instanceof CraftingMenu)) {
                 status = Component.translatable("beezzcraft.queue.table");
                 color = Ui.MUTED;
-            } else if (screen.getMenu() instanceof AbstractCraftingMenu m && Crafter.canCraft(mc.player, m, j.entry)) {
+            } else if (screen.getMenu() instanceof AbstractCraftingMenu m && Crafter.canCraft(mc.player, m, j.option)) {
                 status = Component.translatable("beezzcraft.queue.ready");
                 color = Ui.GREEN;
             } else {

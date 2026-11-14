@@ -9,43 +9,57 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.player.StackedItemContents;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AbstractCraftingMenu;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.display.RecipeDisplayEntry;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Crafts through the vanilla recipe book, exactly like clicking a recipe in it: the server lays the recipe out in the
- * grid from the inventory, then the result is shift-clicked into the inventory. One step per tick, so it works on any
- * server. Queued jobs wait until the inventory has the items; they run only in the player's own inventory (or at a
- * crafting table for 3x3 recipes), never while a chest or another container is open.
+ * Crafts a recipe, one batch per tick, on any server.
+ * <ul>
+ *   <li>Recipes in the recipe book: through the book, like clicking it there (the server lays the recipe out), then the
+ *       result is shift-clicked into the inventory.</li>
+ *   <li>Other recipes (a torch before you ever held a stone pickaxe): laid out with ordinary clicks, taking the items
+ *       from the inventory top left first, like a player would.</li>
+ * </ul>
+ * Queued jobs wait until the inventory has the items; they run only in the player's own inventory (or at a crafting
+ * table for 3x3 recipes), never while a chest or another container is open.
  */
 final class Crafter {
+    /** Hand-laid crafts per click at most: each costs a few clicks, servers limit how many clicks per second. */
+    private static final int HAND_MAX = 16;
 
     static final class Job {
-        final RecipeDisplayEntry entry;
+        final Recipes.Option option;
         final ItemStack result;
         final boolean needsTable;
-        /** Crafts left; ALL = as many as the resources allow. */
+        /** Crafts left. */
         int left;
+        /** As many as the resources allow. */
         boolean all;
         /** Waits for resources instead of giving up. */
         final boolean queued;
 
         Job(Recipes.Option o, int count, boolean all, boolean queued) {
-            this.entry = o.entry;
+            this.option = o;
             this.result = o.result;
             this.needsTable = o.needsTable;
             this.left = count;
             this.all = all;
             this.queued = queued;
+        }
+
+        boolean same(Recipes.Option o) {
+            return option.id().equals(o.id());
         }
     }
 
@@ -59,9 +73,9 @@ final class Crafter {
         return jobs;
     }
 
-    static int queued(RecipeDisplayEntry entry) {
+    static int queued(Recipes.Option o) {
         int n = 0;
-        for (Job j : jobs) if (j.queued && j.entry.id().equals(entry.id())) n += j.all ? 64 : j.left;
+        for (Job j : jobs) if (j.queued && j.same(o)) n += j.all ? 64 : j.left;
         return n;
     }
 
@@ -72,7 +86,7 @@ final class Crafter {
     /** Queues a recipe; the same recipe already waiting just gets more (one line «×3», not three «×1»). */
     static void enqueue(Recipes.Option o, int count, boolean all) {
         for (Job j : jobs) {
-            if (j.queued && j != current && j.entry.id().equals(o.entry.id())) {
+            if (j.queued && j != current && j.same(o)) {
                 j.left += count;
                 j.all |= all;
                 return;
@@ -81,8 +95,8 @@ final class Crafter {
         jobs.add(new Job(o, count, all, true));
     }
 
-    static boolean unqueue(RecipeDisplayEntry entry) {
-        return jobs.removeIf(j -> j.queued && j.entry.id().equals(entry.id()) && j != current);
+    static boolean unqueue(Recipes.Option o) {
+        return jobs.removeIf(j -> j.queued && j.same(o) && j != current);
     }
 
     static void clear() {
@@ -109,14 +123,14 @@ final class Crafter {
         AbstractContainerMenu menu = menu(mc);
         if (!(menu instanceof AbstractCraftingMenu crafting) || !player.containerMenu.equals(menu)) return;
         if (!player.containerMenu.getCarried().isEmpty()) return; // something on the cursor: wait
-
         if (cooldown > 0) {
             cooldown--; // let the server's answer to the last batch arrive before counting the inventory again
             return;
         }
         current = pick(player, crafting);
         if (current == null) return;
-        if (!canCraft(player, crafting, current.entry)) {
+        Recipes.Option o = current.option;
+        if (!Recipes.canCraft(player, crafting, o)) {
             finish(player, current.queued ? null : Component.translatable("beezzcraft.missing", current.result.getHoverName()));
             return;
         }
@@ -124,20 +138,88 @@ final class Crafter {
             finish(player, Component.translatable("beezzcraft.full"));
             return;
         }
-        // the whole batch in one tick: the server handles the packets in order (lay out, take, lay out, take...),
-        // so ten crafts land at once instead of the grid filling up ten times in front of the player
-        int times = current.all ? 1 : Math.max(1, Math.min(current.left, Recipes.timesPossible(player, crafting, current.entry)));
-        Slot result = crafting.getResultSlot();
-        for (int i = 0; i < times; i++) {
-            mc.gameMode.handlePlaceRecipe(menu.containerId, current.entry.id(), current.all);
-            mc.gameMode.handleContainerInput(menu.containerId, result.index, 0, ContainerInput.QUICK_MOVE, player);
+        int possible = Recipes.timesPossible(player, crafting, o);
+        boolean book = o.entry != null;
+        int times;
+        if (book) {
+            // the whole batch in one tick: the server handles the packets in order (lay out, take, lay out, take...)
+            times = current.all ? 1 : Math.max(1, Math.min(current.left, possible));
+            Slot result = crafting.getResultSlot();
+            for (int i = 0; i < times; i++) {
+                mc.gameMode.handlePlaceRecipe(menu.containerId, o.entry.id(), current.all);
+                mc.gameMode.handleContainerInput(menu.containerId, result.index, 0, ContainerInput.QUICK_MOVE, player);
+            }
+        } else if (o.width >= 0) {
+            times = Math.max(1, Math.min(current.all ? possible : Math.min(current.left, possible), HAND_MAX));
+            byHand(mc, player, crafting, o, times);
+        } else {
+            finish(player, Component.translatable("beezzcraft.missing", current.result.getHoverName()));
+            return;
         }
-        Config.get().crafted(new Recipes.Option(current.entry, current.result, current.needsTable).itemId());
+        Config.get().crafted(o.itemId());
         if (Config.get().sound) mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.4f));
         current.left -= times;
         if (current.all || current.left <= 0 || !current.queued) jobs.remove(current); // a click does what it can, once
         current = null;
         cooldown = 2;
+    }
+
+    /**
+     * Lays the recipe out with clicks, the same as a player: clears the grid, then for each cell picks up a matching
+     * stack (inventory top left first), right-clicks «times» items into the cell, puts the rest back; then shift-clicks
+     * the result. The client plays every click locally too, so the screen stays right.
+     */
+    private static void byHand(Minecraft mc, LocalPlayer player, AbstractCraftingMenu menu, Recipes.Option o, int times) {
+        int id = menu.containerId;
+        List<Slot> grid = menu.getInputGridSlots();
+        int gw = menu.getGridWidth();
+        for (Slot s : grid) if (s.hasItem()) mc.gameMode.handleContainerInput(id, s.index, 0, ContainerInput.QUICK_MOVE, player);
+
+        // which grid slot gets which ingredient
+        List<Slot> targets = new ArrayList<>();
+        List<Ingredient> wants = new ArrayList<>();
+        if (o.width > 0) {
+            for (int r = 0; r < o.height; r++) {
+                for (int c = 0; c < o.width; c++) {
+                    Optional<Ingredient> ing = o.cells.get(r * o.width + c);
+                    if (ing.isEmpty()) continue;
+                    targets.add(grid.get(r * gw + c));
+                    wants.add(ing.get());
+                }
+            }
+        } else {
+            for (int i = 0; i < o.reqs.size(); i++) {
+                targets.add(grid.get(i));
+                wants.add(o.reqs.get(i));
+            }
+        }
+
+        // the player's own slots as the screen shows them: top row first, the hotbar last
+        List<Slot> sources = new ArrayList<>();
+        for (Slot s : menu.slots) {
+            if (s.container instanceof Inventory && s.getContainerSlot() < Inventory.INVENTORY_SIZE) sources.add(s);
+        }
+        sources.sort(Comparator.<Slot>comparingInt(s -> s.y).thenComparingInt(s -> s.x));
+        int[] left = new int[sources.size()];
+        for (int i = 0; i < sources.size(); i++) left[i] = sources.get(i).getItem().getCount();
+
+        for (int t = 0; t < targets.size(); t++) {
+            int need = times;
+            for (int i = 0; i < sources.size() && need > 0; i++) {
+                ItemStack st = sources.get(i).getItem();
+                if (left[i] <= 0 || st.isEmpty() || !wants.get(t).test(st)) continue;
+                int put = Math.min(need, left[i]);
+                Slot src = sources.get(i);
+                mc.gameMode.handleContainerInput(id, src.index, 0, ContainerInput.PICKUP, player); // take the stack
+                for (int k = 0; k < put; k++) {
+                    mc.gameMode.handleContainerInput(id, targets.get(t).index, 1, ContainerInput.PICKUP, player); // one item
+                }
+                mc.gameMode.handleContainerInput(id, src.index, 0, ContainerInput.PICKUP, player); // the rest back
+                left[i] -= put;
+                need -= put;
+            }
+        }
+        mc.gameMode.handleContainerInput(id, menu.getResultSlot().index, 0, ContainerInput.QUICK_MOVE, player);
     }
 
     private static void finish(LocalPlayer player, Component message) {
@@ -150,16 +232,13 @@ final class Crafter {
     private static Job pick(LocalPlayer player, AbstractCraftingMenu menu) {
         for (Job j : jobs) {
             if (j.needsTable && !(menu instanceof CraftingMenu)) continue;
-            if (!j.queued || canCraft(player, menu, j.entry)) return j;
+            if (!j.queued || Recipes.canCraft(player, menu, j.option)) return j;
         }
         return null;
     }
 
-    static boolean canCraft(LocalPlayer player, AbstractCraftingMenu menu, RecipeDisplayEntry entry) {
-        StackedItemContents contents = new StackedItemContents();
-        player.getInventory().fillStackedContents(contents);
-        menu.fillCraftSlotsStackedContents(contents);
-        return entry.canCraft(contents);
+    static boolean canCraft(LocalPlayer player, AbstractCraftingMenu menu, Recipes.Option o) {
+        return Recipes.canCraft(player, menu, o);
     }
 
     private static boolean hasRoomFor(LocalPlayer player, ItemStack result) {

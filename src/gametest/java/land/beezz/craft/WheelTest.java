@@ -126,6 +126,9 @@ public class WheelTest implements FabricClientGameTest {
         ctx.runOnClient(Minecraft::reloadResourcePacks);
         ctx.waitFor(mc -> mc.gui.overlay() == null, 20 * 120);
         Config.get().queue = false;
+        Config.get().recent.clear();
+        Config.get().counts.clear();
+        Config.get().last.clear();
 
         try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
             var server = world.getServer();
@@ -221,6 +224,25 @@ public class WheelTest implements FabricClientGameTest {
             shot("craft_07_queue_hud");
             ctx.runOnClient(mc -> Crafter.clear());
 
+            // a recipe the recipe book does not have (a torch before any stone pickaxe): laid out by hand clicks
+            server.runCommand("recipe take @a minecraft:torch");
+            server.runCommand("give @a coal 1");
+            ctx.waitTicks(10);
+            ctx.setScreen(() -> new InventoryScreen(Minecraft.getInstance().player));
+            ctx.waitForScreen(InventoryScreen.class);
+            int torches = count(Items.TORCH);
+            wheelOn(Items.COAL);
+            check("a torch shows up although the recipe book does not know it", ctx.computeOnClient(mc ->
+                    BeezzCraft.wheel.shown.stream().anyMatch(g -> g.members.stream().anyMatch(o -> o.result.is(Items.TORCH) && o.entry == null))));
+            double[] t2 = sectorOf(Items.TORCH);
+            click(t2[0], t2[1], LEFT);
+            waitCount(Items.TORCH, torches + 4);
+            check("the unknown torch recipe is crafted by hand: " + torches + " -> " + count(Items.TORCH), count(Items.TORCH) == torches + 4);
+            ctx.getInput().pressKey(InputConstants.KEY_ESCAPE);
+            ctx.waitTicks(3);
+            ctx.setScreen(() -> null);
+            ctx.waitTicks(5);
+
             // 4) at a crafting table: 3x3 recipes from iron
             server.runCommand("give @a stick 4");
             BlockPos pos = ctx.computeOnClient(mc -> mc.player.blockPosition().north(2));
@@ -252,6 +274,9 @@ public class WheelTest implements FabricClientGameTest {
             BeezzCraft.LOG.info("BeezzCraft test: stick at the table: {} recipes, {} pages, torch at {}", info[0], info[1], torchAt);
             check("a torch short of only coal is on the first page, not lost among wood variants", torchAt >= 0 && torchAt < Wheel.PER_PAGE);
             check("sticks at the table fit on one page (" + info[0] + " buttons)", info[1] == 1);
+            String pickaxeShown = ctx.computeOnClient(mc -> BeezzCraft.wheel.shown.stream().filter(g -> g.family.equals("pickaxe"))
+                    .map(g -> g.current().itemId()).findFirst().orElse("none"));
+            check("the pickaxe button opens on the iron pickaxe crafted last: " + pickaxeShown, pickaxeShown.equals("minecraft:iron_pickaxe"));
             String pickaxes = ctx.computeOnClient(mc -> {
                 StringBuilder sb = new StringBuilder();
                 int last = -2;
@@ -259,18 +284,30 @@ public class WheelTest implements FabricClientGameTest {
                 for (int i = 0; i < BeezzCraft.wheel.shown.size(); i++) {
                     var grp = BeezzCraft.wheel.shown.get(i);
                     if (!grp.family.equals("pickaxe")) continue;
-                    if (last >= 0 && i != last + 1) together = false;
+                    if (last >= 0) together = false; // one button
                     last = i;
-                    sb.append(grp.key).append(' ');
+                    for (var m : grp.members) sb.append(m.itemId().substring(10)).append(' ');
                 }
                 return (together ? "together: " : "SPLIT: ") + sb.toString().trim();
             });
             BeezzCraft.LOG.info("BeezzCraft test: pickaxes {}", pickaxes);
-            check("pickaxes stand in a row from wooden to diamond", pickaxes.startsWith("together: wooden_pickaxe stone_pickaxe")
+            check("all pickaxes are one button, tiers in order from wooden to diamond", pickaxes.startsWith("together: wooden_pickaxe stone_pickaxe")
                     && pickaxes.indexOf("iron_pickaxe") < pickaxes.indexOf("golden_pickaxe") && pickaxes.indexOf("golden_pickaxe") < pickaxes.indexOf("diamond_pickaxe"));
             int fences = ctx.computeOnClient(mc -> BeezzCraft.wheel.shown.stream().filter(g -> g.family.equals("fence")).mapToInt(g -> g.members.size()).sum());
             int fenceButtons = ctx.computeOnClient(mc -> (int) BeezzCraft.wheel.shown.stream().filter(g -> g.family.equals("fence")).count());
             check("all " + fences + " wooden fences are one button", fences > 5 && fenceButtons == 1);
+
+            // multiplayer: the recipes come from the game's own data instead of the server
+            ctx.runOnClient(mc -> {
+                System.setProperty("beezzcraft.vanillaData", "true");
+                Recipes.forget();
+            });
+            int known = ctx.computeOnClient(mc -> Recipes.catalog(mc).size());
+            ctx.runOnClient(mc -> {
+                System.clearProperty("beezzcraft.vanillaData");
+                Recipes.forget();
+            });
+            check("the game's own recipe data reads (multiplayer): " + known + " crafting recipes", known > 400);
             shot("craft_10_table_sticks_page1");
             ctx.getInput().scroll(-1);
             ctx.waitTicks(5);

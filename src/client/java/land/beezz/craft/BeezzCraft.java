@@ -73,6 +73,7 @@ public final class BeezzCraft implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(Crafter::tick);
         ClientPlayConnectionEvents.DISCONNECT.register((handler, mc) -> {
             Crafter.clear();
+            Recipes.forget();
             wheel = null;
         });
         HudElementRegistry.addLast(Identifier.fromNamespaceAndPath("beezzcraft", "queue"), (g, delta) -> hud(g));

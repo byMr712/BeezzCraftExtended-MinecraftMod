@@ -6,10 +6,11 @@ an octagon wheel of everything you can craft from it.
 - **Inner ring**: what you can craft right now. **Grey**: missing resources.
 - Rings of 8, 16, 24 and 32 buttons (the outer rings split each octagon side in 2, 3 and 4), 80 per page; more go to
   pages (the «◀ 1/2 ▶» switch above the wheel or the mouse wheel).
-- Variants of one thing (a fence of each wood, a banner of each colour) are one button with three dots under it: it
-  shows a variant you can make, the mouse wheel over it switches to the others.
-- Order: popular things and what you craft often first; tiers of a tool in a row (wooden, stone, copper, iron, golden,
-  diamond). Sticks at a crafting table: 112 recipes fit in 64 buttons on one page.
+- Variants of one thing are one button with three dots under it: a fence of each wood, a banner of each colour, the
+  tiers of a tool (wooden, stone, copper, iron, golden, diamond pickaxe). The mouse wheel over it switches variants.
+  It opens on the variant you crafted last, else on one you can make (the wood further up-left in the inventory wins).
+- Order: what you can make and what you craft often first, then popular things. Sticks at a crafting table: 112 recipes
+  in 33 buttons.
 - **Hover** a sector: a card with the result, the ingredients as icons (green tick = enough, red = how many are
   missing) and the clicks drawn as mouse and key pictures.
 - **Click** crafts once, **Ctrl + click** crafts 10 times, **Shift + click** crafts as many as possible.
@@ -22,8 +23,10 @@ an octagon wheel of everything you can craft from it.
   3×3 recipes wait for a crafting table. While playing, a small card in the top left corner shows what waits. Some servers forbid automatic
   crafting, which is why it is off by default.
 
-Crafting goes through the vanilla recipe book: the server lays the recipe out from your inventory, like clicking a
-recipe in the recipe book. So the mod works on vanilla servers and knows only the recipes you have unlocked.
+All crafting recipes of the game are known, not only the ones the recipe book has unlocked (a torch unlocks only once
+you hold a stone pickaxe): in singleplayer from the server, in multiplayer from the game's own data. Recipes the book
+knows are crafted through it (the server lays them out); the others are laid out with ordinary clicks, taking the items
+from the inventory top left first. Both work on vanilla servers.
 
 Russian and English.
 

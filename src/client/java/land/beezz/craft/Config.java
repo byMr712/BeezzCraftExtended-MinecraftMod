@@ -31,6 +31,8 @@ final class Config {
     List<String> recent = new ArrayList<>();
     /** How many times each family (pickaxe, torch, fence...) was crafted: the often made ones come first. */
     java.util.Map<String, Integer> counts = new java.util.HashMap<>();
+    /** The last crafted item of each family (iron_pickaxe for "pickaxe"): the wheel shows it first next time. */
+    java.util.Map<String, String> last = new java.util.HashMap<>();
 
     static Config get() {
         if (instance == null) instance = load();
@@ -48,6 +50,7 @@ final class Config {
                 if (c != null) {
                     if (c.recent == null) c.recent = new ArrayList<>();
                     if (c.counts == null) c.counts = new java.util.HashMap<>();
+                    if (c.last == null) c.last = new java.util.HashMap<>();
                     if (c.ctrlCount < 2) c.ctrlCount = 10;
                     return c;
                 }
@@ -70,7 +73,9 @@ final class Config {
         recent.remove(itemId);
         recent.addFirst(itemId);
         while (recent.size() > 24) recent.removeLast();
-        counts.merge(Groups.family(itemId.substring(itemId.indexOf(':') + 1)), 1, Integer::sum);
+        String family = Groups.family(itemId.substring(itemId.indexOf(':') + 1));
+        counts.merge(family, 1, Integer::sum);
+        last.put(family, itemId);
         save();
     }
 }

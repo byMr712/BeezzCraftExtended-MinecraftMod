@@ -10,9 +10,10 @@ import java.util.Map;
 /**
  * Turns a long list of recipes into a tidy wheel:
  * <ul>
- *   <li>variants of the same thing (a fence of each wood, a banner of each colour) become one button that shows the
- *       variant you can make; the mouse wheel over it switches between them;</li>
- *   <li>tiers of the same tool stand in a row: wooden, stone, copper, iron, golden, diamond, netherite;</li>
+ *   <li>variants of the same thing become one button: a fence of each wood, a banner of each colour, and the tiers of a
+ *       tool (wooden, stone, copper, iron, golden, diamond pickaxe). The mouse wheel over it switches between them;</li>
+ *   <li>the button shows the variant you crafted last, else one you can make (from the wood further up-left in the
+ *       inventory), else the one you lack the least for;</li>
  *   <li>what is popular or what you craft often comes first.</li>
  * </ul>
  */
@@ -63,12 +64,21 @@ final class Groups {
             sel = Math.floorMod(sel + step, members.size());
         }
 
-        /** The variant to show first: one you can craft, else the one you lack the least for. */
+        /** The variant to show first: the last crafted, else one you can craft (top left wood first), else the closest. */
         void pickBest() {
+            String last = Config.get().last.get(family);
+            for (int i = 0; i < members.size(); i++) {
+                if (members.get(i).itemId().equals(last)) {
+                    sel = i;
+                    return;
+                }
+            }
             int best = 0;
             for (int i = 1; i < members.size(); i++) {
                 Recipes.Option a = members.get(i), b = members.get(best);
-                if (a.craftable != b.craftable ? a.craftable : Recipes.missing(a) < Recipes.missing(b)) best = i;
+                boolean better = a.craftable != b.craftable ? a.craftable
+                        : a.craftable ? a.rank < b.rank : Recipes.missing(a) < Recipes.missing(b);
+                if (better) best = i;
             }
             sel = best;
         }
@@ -106,13 +116,14 @@ final class Groups {
     static List<Group> build(List<Recipes.Option> options) {
         Map<String, Group> byKey = new LinkedHashMap<>();
         for (Recipes.Option o : options) {
-            String key = variantKey(path(o));
-            Group g = byKey.computeIfAbsent(key, k -> new Group(k, family(path(o)), tier(k)));
+            String family = family(path(o));
+            Group g = byKey.computeIfAbsent(family, k -> new Group(k, k, -1));
             g.members.add(o);
         }
         List<Group> groups = new ArrayList<>(byKey.values());
         for (Group g : groups) {
-            g.members.sort(Comparator.comparing(o -> path(o)));
+            // tiers in order (wooden → diamond), then the woods / colours by name
+            g.members.sort(Comparator.<Recipes.Option>comparingInt(o -> tier(variantKey(path(o)))).thenComparing(o -> path(o)));
             g.pickBest();
         }
         // a family is as wanted as its most wanted member: any craftable, how often you made it, how popular it is

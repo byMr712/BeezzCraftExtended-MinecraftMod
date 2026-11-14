@@ -205,7 +205,7 @@ final class Wheel {
             Recipes.Option o = shown.get(i).current();
             int slot = i - start;
             Pos p = pos(slot);
-            boolean queued = Crafter.queued(o.entry) > 0;
+            boolean queued = Crafter.queued(o) > 0;
             int glow = queued ? GLOW_QUEUED : o.craftable ? (lift[slot] > 0.5f ? GLOW_OK_HOVER : GLOW_OK) : 0;
             if (glow != 0) piece(g, HALO, p, lift[slot] * 2, Ui.fade(glow, a));
         }
@@ -215,7 +215,7 @@ final class Wheel {
             Pos p = pos(slot);
             boolean h = lift[slot] > 0.5f;
             int fill = o.craftable ? (h ? FILL_OK_HOVER : FILL_OK) : (h ? FILL_NO_HOVER : FILL_NO);
-            int edge = Crafter.queued(o.entry) > 0 ? EDGE_QUEUED : o.craftable ? (h ? EDGE_OK_HOVER : EDGE_OK) : (h ? EDGE_NO_HOVER : EDGE_NO);
+            int edge = Crafter.queued(o) > 0 ? EDGE_QUEUED : o.craftable ? (h ? EDGE_OK_HOVER : EDGE_OK) : (h ? EDGE_NO_HOVER : EDGE_NO);
             float push = lift[slot] * 2;
             piece(g, FILL, p, push, Ui.fade(fill, a));
             piece(g, EDGE, p, push, Ui.fade(edge, a));
@@ -244,7 +244,7 @@ final class Wheel {
                 int half = Math.round(8 * zoom() * (1 + 0.25f * lift[slot]));
                 Ui.rect(g, Math.round(p[0]) - half, Math.round(p[1]) - half, half * 2, half * 2, 0x8C14161C);
             }
-            if (Crafter.queued(o.entry) > 0) Ui.icon(g, Ui.QUEUE, Math.round(p[0]) + 4, Math.round(p[1]) - 12, 9, Ui.BLUE);
+            if (Crafter.queued(o) > 0) Ui.icon(g, Ui.QUEUE, Math.round(p[0]) + 4, Math.round(p[1]) - 12, 9, Ui.BLUE);
             if (shown.get(i).members.size() > 1) {
                 // three little dots: there are more variants inside (mouse wheel)
                 int dy = Math.round(p[1] + 10 * zoom() * (1 + 0.25f * lift[slot]));
@@ -353,7 +353,7 @@ final class Wheel {
         int h = hit(mx, my);
         if (h == -2 || h == -1) return false; // the centre or outside: close
         Recipes.Option o = shown.get(h).current();
-        if (right) return Crafter.unqueue(o.entry);
+        if (right) return Crafter.unqueue(o);
         if (!left) return true;
         int count = ctrl ? Config.get().ctrlCount : 1;
         if (o.craftable) {
