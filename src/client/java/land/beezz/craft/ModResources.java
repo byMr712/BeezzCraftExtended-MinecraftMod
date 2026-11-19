@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,11 +13,11 @@ import java.util.Map;
 
 /** Loads the mod's GUI textures from the JAR itself; Fabric API's resource loader is not a dependency. */
 final class ModResources {
-    private static final Map<ResourceLocation, DynamicTexture> TEXTURES = new HashMap<>();
+    private static final Map<Identifier, DynamicTexture> TEXTURES = new HashMap<>();
 
     private ModResources() {}
 
-    static void texture(ResourceLocation id) {
+    static void texture(Identifier id) {
         TextureManager manager = Minecraft.getInstance().getTextureManager();
         DynamicTexture ours = TEXTURES.get(id);
         if (ours != null && manager.getTexture(id) == ours) return;
