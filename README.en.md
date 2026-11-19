@@ -28,15 +28,15 @@ recipe book.
 
 | The wheel | Variants on the mouse wheel |
 | :---: | :---: |
-| ![The wheel](docs/wheel.jpg) | ![Variants](docs/variants.jpg) |
+| ![The wheel](docs/wheel.webp) | ![Variants](docs/variants.webp) |
 
 | Crafting table: iron pickaxe | Craft queue and "resources to get" |
 | :---: | :---: |
-| ![Crafting table](docs/table-iron.jpg) | ![Queue](docs/queue-needs.jpg) |
+| ![Crafting table](docs/table-iron.webp) | ![Queue](docs/queue-needs.webp) |
 
 | Settings |
 | :---: |
-| ![Settings](docs/settings.jpg) |
+| ![Settings](docs/settings.webp) |
 
 ## Features
 
