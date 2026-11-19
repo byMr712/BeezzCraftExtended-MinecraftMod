@@ -1,7 +1,7 @@
 package land.beezz.craft;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
@@ -16,7 +16,7 @@ final class Card {
 
     private Card() {}
 
-    static void recipe(GuiGraphicsExtractor g, Font font, Groups.Group group, int mx, int my, int sw, int sh) {
+    static void recipe(GuiGraphics g, Font font, Groups.Group group, int mx, int my, int sw, int sh) {
         Recipes.Option o = group.current();
         int variants = group.members.size();
         Component other = Component.translatable("beezzcraft.card.variant", group.sel + 1, variants);
@@ -47,9 +47,9 @@ final class Card {
 
         // result
         int cx = x + PAD, cy = y + PAD;
-        g.item(o.result, cx, cy);
-        g.text(font, name, cx + 20, cy + 4, o.craftable ? Ui.HONEY_SOFT : Ui.TEXT, false);
-        if (!count.isEmpty()) g.text(font, count, cx + 20 + font.width(name), cy + 4, Ui.MUTED, false);
+        g.renderItem(o.result, cx, cy);
+        g.drawString(font, name, cx + 20, cy + 4, o.craftable ? Ui.HONEY_SOFT : Ui.TEXT, false);
+        if (!count.isEmpty()) g.drawString(font, count, cx + 20 + font.width(name), cy + 4, Ui.MUTED, false);
         cy += 18 + 4;
 
         // the variants inside this button (woods, colours): the shown one underlined, the craftable ones bright
@@ -60,7 +60,7 @@ final class Card {
                 g.pose().pushMatrix();
                 g.pose().translate(vx, cy - 2);
                 g.pose().scale(0.75f, 0.75f);
-                g.item(v.result, 0, 0);
+                g.renderItem(v.result, 0, 0);
                 g.pose().popMatrix();
                 if (i == group.sel) Ui.rect(g, vx, cy + 11, 12, 1, Ui.HONEY);
                 else if (!v.craftable) Ui.rect(g, vx, cy - 2, 12, 12, 0x8014161C);
@@ -68,7 +68,7 @@ final class Card {
             }
             vx += 4;
             Ui.icon(g, Ui.MOUSE_WHEEL, vx, cy - 1, 12, 0xFFFFFFFF);
-            g.text(font, other, vx + 12, cy + 1, Ui.MUTED, false);
+            g.drawString(font, other, vx + 12, cy + 1, Ui.MUTED, false);
             cy += 16;
         }
 
@@ -77,11 +77,11 @@ final class Card {
         for (int i = 0; i < needs.size(); i++) {
             Recipes.Need n = needs.get(i);
             int ix = cx + i * CELL;
-            g.item(n.icon(), ix, cy);
+            g.renderItem(n.icon(), ix, cy);
             String c = String.valueOf(n.need());
-            g.text(font, c, ix + 17 - font.width(c), cy + 9, 0xFFFFFFFF, true);
+            g.drawString(font, c, ix + 17 - font.width(c), cy + 9, 0xFFFFFFFF, true);
             String s = n.missing() ? "-" + (n.need() - n.have()) : "✔";
-            g.text(font, s, ix + 8 - font.width(s) / 2, cy + 18, n.missing() ? Ui.RED : Ui.GREEN, false);
+            g.drawString(font, s, ix + 8 - font.width(s) / 2, cy + 18, n.missing() ? Ui.RED : Ui.GREEN, false);
         }
         cy += 16 + 11 + 6;
 
@@ -90,30 +90,30 @@ final class Card {
         if (o.craftable) {
             Ui.icon(g, Ui.MOUSE_LEFT, tx, cy - 1, 12, 0xFFFFFFFF);
             tx += 12;
-            g.text(font, lmb, tx, cy + 1, Ui.TEXT, false);
+            g.drawString(font, lmb, tx, cy + 1, Ui.TEXT, false);
             tx += font.width(lmb) + 8;
             tx += Ui.key(g, font, "Ctrl", tx, cy) + 2;
-            g.text(font, ten, tx, cy + 1, Ui.TEXT, false);
+            g.drawString(font, ten, tx, cy + 1, Ui.TEXT, false);
             tx += font.width(ten) + 8;
             tx += Ui.key(g, font, "Shift", tx, cy) + 2;
-            g.text(font, max, tx, cy + 1, Ui.TEXT, false);
+            g.drawString(font, max, tx, cy + 1, Ui.TEXT, false);
         } else if (queueOn) {
             Ui.icon(g, Ui.MOUSE_LEFT, tx, cy - 1, 12, 0xFFFFFFFF);
             tx += 12;
-            g.text(font, lmb, tx, cy + 1, Ui.BLUE, false);
+            g.drawString(font, lmb, tx, cy + 1, Ui.BLUE, false);
             tx += font.width(lmb) + 8;
             tx += Ui.key(g, font, "Ctrl", tx, cy) + 2;
-            g.text(font, ten, tx, cy + 1, Ui.BLUE, false);
+            g.drawString(font, ten, tx, cy + 1, Ui.BLUE, false);
         } else {
-            g.text(font, lmb, tx, cy + 1, Ui.RED, false);
+            g.drawString(font, lmb, tx, cy + 1, Ui.RED, false);
         }
         if (queued > 0) {
             cy += 13;
             Ui.icon(g, Ui.QUEUE, cx, cy, 10, Ui.BLUE);
-            g.text(font, queuedText, cx + 11, cy + 1, Ui.BLUE, false);
+            g.drawString(font, queuedText, cx + 11, cy + 1, Ui.BLUE, false);
             int rx = cx + 11 + font.width(queuedText) + 8;
             Ui.icon(g, Ui.MOUSE_RIGHT, rx, cy - 1, 12, 0xFFFFFFFF);
-            g.text(font, remove, rx + 12, cy + 1, Ui.TEXT, false);
+            g.drawString(font, remove, rx + 12, cy + 1, Ui.TEXT, false);
         }
     }
 
@@ -121,15 +121,15 @@ final class Card {
         return font.width(name) + 6;
     }
 
-    static void text(GuiGraphicsExtractor g, Font font, Component text, int mx, int my, int sw, int sh) {
+    static void text(GuiGraphics g, Font font, Component text, int mx, int my, int sw, int sh) {
         int w = font.width(text) + 10, h = 14;
         int x = Math.min(sw - w - 4, mx + 12), y = Math.max(4, Math.min(sh - h - 4, my - 7));
         g.nextStratum();
         Ui.panel(g, x, y, w, h);
-        g.text(font, text, x + 5, y + 3, Ui.TEXT, false);
+        g.drawString(font, text, x + 5, y + 3, Ui.TEXT, false);
     }
 
-    static void item(GuiGraphicsExtractor g, ItemStack s, int x, int y) {
-        g.item(s, x, y);
+    static void item(GuiGraphics g, ItemStack s, int x, int y) {
+        g.renderItem(s, x, y);
     }
 }

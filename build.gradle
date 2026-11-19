@@ -1,6 +1,13 @@
 plugins {
-    id 'net.fabricmc.fabric-loom' version '1.18.4'
+    id 'fabric-loom' version '1.18-SNAPSHOT'
     id 'maven-publish'
+}
+
+// Compile mixin annotations against Mixin 0.17.3. Starting with 0.17.4 `@Redirect.at`
+// is an array in the bytecode, which NeoForge's bundled MixinExtras 0.5.3 cannot read
+// (fixed only in MixinExtras 0.5.5).
+configurations.all {
+    resolutionStrategy.force 'net.fabricmc:sponge-mixin:0.17.3+mixin.0.8.7'
 }
 
 version = project.mod_version
@@ -29,7 +36,8 @@ fabricApi {
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     // Fabric API is only used by the optional Fabric client gametests, never by the mod itself.
     gametestImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 }
@@ -49,11 +57,11 @@ processResources {
 
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = "UTF-8"
-    it.options.release = 25
+    it.options.release = 21
 }
 
 java {
-    toolchain.languageVersion = JavaLanguageVersion.of(25)
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
 }
 
 // ---------------------------------------------------------------------------
@@ -113,4 +121,4 @@ task jarNeoForge(type: Jar) {
     from("LICENSE")
 }
 
-build.dependsOn(jarNeoForge)
+build.dependsOn(remapJar, jarNeoForge)

@@ -70,7 +70,7 @@ final class Needs {
      * compact: only what is missing, in one row (the HUD while playing).
      * @return its height
      */
-    static int render(net.minecraft.client.gui.GuiGraphicsExtractor g, net.minecraft.client.gui.Font font, List<Item> items,
+    static int render(net.minecraft.client.gui.GuiGraphics g, net.minecraft.client.gui.Font font, List<Item> items,
                       int x, int y, int w, boolean full) {
         List<Item> show = full ? items : items.stream().filter(i -> i.missing() > 0).limit(9).toList();
         if (show.isEmpty() && !full) return 0;
@@ -80,25 +80,25 @@ final class Needs {
         int h = full ? 20 + rows * 26 + 2 : 22;
         Ui.panel(g, x, y, width, h);
         if (full) {
-            g.item(new ItemStack(net.minecraft.world.item.Items.IRON_PICKAXE), x + 4, y + 2);
-            g.text(font, net.minecraft.network.chat.Component.translatable("beezzcraft.needs.title"), x + 22, y + 6, Ui.HONEY_SOFT, false);
+            g.renderItem(new ItemStack(net.minecraft.world.item.Items.IRON_PICKAXE), x + 4, y + 2);
+            g.drawString(font, net.minecraft.network.chat.Component.translatable("beezzcraft.needs.title"), x + 22, y + 6, Ui.HONEY_SOFT, false);
             if (show.isEmpty() || !anyMissing(show)) {
-                g.text(font, net.minecraft.network.chat.Component.translatable("beezzcraft.needs.ok"), x + 7, y + 26, Ui.GREEN, false);
+                g.drawString(font, net.minecraft.network.chat.Component.translatable("beezzcraft.needs.ok"), x + 7, y + 26, Ui.GREEN, false);
                 return h;
             }
         } else {
-            g.item(new ItemStack(net.minecraft.world.item.Items.IRON_PICKAXE), x + 3, y + 3);
+            g.renderItem(new ItemStack(net.minecraft.world.item.Items.IRON_PICKAXE), x + 3, y + 3);
         }
         for (int i = 0; i < show.size(); i++) {
             Item it = show.get(i);
             int cx = full ? x + 6 + (i % cols) * 22 : x + 22 + i * 22, cy = full ? y + 20 + (i / cols) * 26 : y + 3;
-            g.item(it.icon(), cx, cy);
+            g.renderItem(it.icon(), cx, cy);
             if (full) {
                 String s = it.missing() > 0 ? "-" + it.missing() : "✔";
-                g.text(font, s, cx + 8 - font.width(s) / 2, cy + 17, it.missing() > 0 ? Ui.RED : Ui.GREEN, false);
+                g.drawString(font, s, cx + 8 - font.width(s) / 2, cy + 17, it.missing() > 0 ? Ui.RED : Ui.GREEN, false);
             } else {
                 String s = String.valueOf(it.missing());
-                g.text(font, s, cx + 17 - font.width(s), cy + 9, Ui.RED, true);
+                g.drawString(font, s, cx + 17 - font.width(s), cy + 9, Ui.RED, true);
             }
         }
         return h;

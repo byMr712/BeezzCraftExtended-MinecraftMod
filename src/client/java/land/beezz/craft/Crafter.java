@@ -12,7 +12,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AbstractCraftingMenu;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -147,7 +147,7 @@ final class Crafter {
             Slot result = crafting.getResultSlot();
             for (int i = 0; i < times; i++) {
                 mc.gameMode.handlePlaceRecipe(menu.containerId, o.entry.id(), current.all);
-                mc.gameMode.handleContainerInput(menu.containerId, result.index, 0, ContainerInput.QUICK_MOVE, player);
+                mc.gameMode.handleInventoryMouseClick(menu.containerId, result.index, 0, ClickType.QUICK_MOVE, player);
             }
         } else if (o.width >= 0) {
             times = Math.max(1, Math.min(current.all ? possible : Math.min(current.left, possible), HAND_MAX));
@@ -173,7 +173,7 @@ final class Crafter {
         int id = menu.containerId;
         List<Slot> grid = menu.getInputGridSlots();
         int gw = menu.getGridWidth();
-        for (Slot s : grid) if (s.hasItem()) mc.gameMode.handleContainerInput(id, s.index, 0, ContainerInput.QUICK_MOVE, player);
+        for (Slot s : grid) if (s.hasItem()) mc.gameMode.handleInventoryMouseClick(id, s.index, 0, ClickType.QUICK_MOVE, player);
 
         // which grid slot gets which ingredient
         List<Slot> targets = new ArrayList<>();
@@ -210,22 +210,22 @@ final class Crafter {
                 if (left[i] <= 0 || st.isEmpty() || !wants.get(t).test(st)) continue;
                 int put = Math.min(need, left[i]);
                 Slot src = sources.get(i);
-                mc.gameMode.handleContainerInput(id, src.index, 0, ContainerInput.PICKUP, player); // take the stack
+                mc.gameMode.handleInventoryMouseClick(id, src.index, 0, ClickType.PICKUP, player); // take the stack
                 for (int k = 0; k < put; k++) {
-                    mc.gameMode.handleContainerInput(id, targets.get(t).index, 1, ContainerInput.PICKUP, player); // one item
+                    mc.gameMode.handleInventoryMouseClick(id, targets.get(t).index, 1, ClickType.PICKUP, player); // one item
                 }
-                mc.gameMode.handleContainerInput(id, src.index, 0, ContainerInput.PICKUP, player); // the rest back
+                mc.gameMode.handleInventoryMouseClick(id, src.index, 0, ClickType.PICKUP, player); // the rest back
                 left[i] -= put;
                 need -= put;
             }
         }
-        mc.gameMode.handleContainerInput(id, menu.getResultSlot().index, 0, ContainerInput.QUICK_MOVE, player);
+        mc.gameMode.handleInventoryMouseClick(id, menu.getResultSlot().index, 0, ClickType.QUICK_MOVE, player);
     }
 
     private static void finish(LocalPlayer player, Component message) {
         if (current != null && !current.queued) jobs.remove(current);
         current = null;
-        if (message != null) player.sendOverlayMessage(message.copy().withStyle(ChatFormatting.RED));
+        if (message != null) player.displayClientMessage(message.copy().withStyle(ChatFormatting.RED), true);
     }
 
     /** The first job that can run here: in the inventory only 2x2 recipes, queued ones only when they can be crafted. */

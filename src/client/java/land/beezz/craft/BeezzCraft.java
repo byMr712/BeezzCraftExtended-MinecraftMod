@@ -4,7 +4,7 @@ import land.beezz.craft.mixin.AbstractContainerScreenAccessor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
@@ -66,7 +66,7 @@ public final class BeezzCraft {
     }
 
     /** Called by ScreenMixin after the screen and before its tooltips. */
-    public static void renderWheel(Screen screen, GuiGraphicsExtractor g, int mx, int my) {
+    public static void renderWheel(Screen screen, GuiGraphics g, int mx, int my) {
         if (!(screen instanceof InventoryScreen) && !(screen instanceof CraftingScreen)) return;
         Font font = screen.getFont();
         if (wheel != null && wheel.screen == screen) wheel.render(g, font, mx, my);
@@ -110,15 +110,15 @@ public final class BeezzCraft {
             LOG.info("open {}: {} options, {} recipe collections", stack, options.size(), mc.player.getRecipeBook().getCollections().size());
         }
         if (options.isEmpty()) {
-            mc.player.sendOverlayMessage(Component.translatable(Recipes.gridSize(screen.getMenu()) >= 3 ? "beezzcraft.nothing" : "beezzcraft.nothing.inv",
-                    stack.getHoverName()).withStyle(ChatFormatting.GRAY));
+            mc.player.displayClientMessage(Component.translatable(Recipes.gridSize(screen.getMenu()) >= 3 ? "beezzcraft.nothing" : "beezzcraft.nothing.inv",
+                    stack.getHoverName()).withStyle(ChatFormatting.GRAY), true);
             return;
         }
         wheel = new Wheel(screen, stack, options, mx, my);
     }
 
     /** The craft queue on the HUD while playing: a small card with what waits for resources. */
-    public static void hud(GuiGraphicsExtractor g) {
+    public static void hud(GuiGraphics g) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || screen(mc) != null) return;
         List<Crafter.Job> queued = Crafter.jobs().stream().filter(j -> j.queued).toList();
@@ -130,11 +130,11 @@ public final class BeezzCraft {
         for (int i = 0; i < shown; i++) {
             Crafter.Job j = queued.get(i);
             int ix = x + 20 + i * 26;
-            g.item(j.result, ix, y + 3);
-            String n = j.all ? "в€ћ" : String.valueOf(j.left);
-            g.text(font, n, ix + 17 - font.width(n), y + 12, 0xFFFFFFFF, true);
+            g.renderItem(j.result, ix, y + 3);
+            String n = j.all ? "∞" : String.valueOf(j.left);
+            g.drawString(font, n, ix + 17 - font.width(n), y + 12, 0xFFFFFFFF, true);
         }
-        if (queued.size() > shown) g.text(font, "+" + (queued.size() - shown), x + w + 3, y + 7, Ui.MUTED, true);
+        if (queued.size() > shown) g.drawString(font, "+" + (queued.size() - shown), x + w + 3, y + 7, Ui.MUTED, true);
         if (Config.get().showNeeds) Needs.render(g, font, Needs.of(mc.player, mc.player.inventoryMenu), x, y + 26, 0, false);
     }
 

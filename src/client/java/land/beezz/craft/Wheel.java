@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -187,7 +187,7 @@ final class Wheel {
 
     // ------------------------------------------------------------------ drawing
 
-    void render(GuiGraphicsExtractor g, Font font, int mx, int my) {
+    void render(GuiGraphics g, Font font, int mx, int my) {
         float a = open();
         g.nextStratum();
         g.nextStratum(); // the inventory screen leaves its own picture in the stratum we would otherwise share
@@ -253,7 +253,7 @@ final class Wheel {
         }
 
         if (shown.isEmpty()) {
-            g.centeredText(font, Component.translatable("beezzcraft.none"), Math.round(cx), Math.round(cy + 30), Ui.MUTED);
+            g.drawCenteredString(font, Component.translatable("beezzcraft.none"), Math.round(cx), Math.round(cy + 30), Ui.MUTED);
         }
         hints(g, font);
         if (pages() > 1) pager(g, font, mx, my);
@@ -273,7 +273,7 @@ final class Wheel {
         return new int[] {x, y, w, h};
     }
 
-    private void pager(GuiGraphicsExtractor g, Font font, int mx, int my) {
+    private void pager(GuiGraphics g, Font font, int mx, int my) {
         int[] b = pagerBox(font);
         String label = (page + 1) + " / " + pages();
         g.nextStratum();
@@ -282,9 +282,9 @@ final class Wheel {
         boolean rh = mx >= b[0] + b[2] - 14 && mx < b[0] + b[2] && my >= b[1] && my < b[1] + b[3];
         if (lh) Ui.round(g, b[0], b[1], 14, b[3], 0xFF3A3214);
         if (rh) Ui.round(g, b[0] + b[2] - 14, b[1], 14, b[3], 0xFF3A3214);
-        g.text(font, "◀", b[0] + 4, b[1] + 3, lh ? Ui.HONEY_SOFT : Ui.HONEY, false);
-        g.text(font, label, b[0] + 20, b[1] + 3, Ui.TEXT, false);
-        g.text(font, "▶", b[0] + b[2] - 10, b[1] + 3, rh ? Ui.HONEY_SOFT : Ui.HONEY, false);
+        g.drawString(font, "◀", b[0] + 4, b[1] + 3, lh ? Ui.HONEY_SOFT : Ui.HONEY, false);
+        g.drawString(font, label, b[0] + 20, b[1] + 3, Ui.TEXT, false);
+        g.drawString(font, "▶", b[0] + b[2] - 10, b[1] + 3, rh ? Ui.HONEY_SOFT : Ui.HONEY, false);
     }
 
     /** @return true when the click turned a page */
@@ -304,7 +304,7 @@ final class Wheel {
     }
 
     /** The line of hints under the wheel, with mouse pictures instead of words. */
-    private void hints(GuiGraphicsExtractor g, Font font) {
+    private void hints(GuiGraphics g, Font font) {
         Component craft = Component.translatable("beezzcraft.hint.craft"), close = Component.translatable("beezzcraft.hint.close");
         Component pages = Component.translatable("beezzcraft.hint.pages", page + 1, pages());
         boolean multi = pages() > 1;
@@ -315,25 +315,25 @@ final class Wheel {
         Ui.panel(g, x, y, w, 14);
         int tx = x + 6;
         Ui.icon(g, Ui.MOUSE_LEFT, tx, y + 1, 12, 0xFFFFFFFF);
-        g.text(font, craft, tx + 12, y + 3, Ui.TEXT, false);
+        g.drawString(font, craft, tx + 12, y + 3, Ui.TEXT, false);
         tx += 12 + font.width(craft) + 10;
         Ui.icon(g, Ui.MOUSE_RIGHT, tx, y + 1, 12, 0xFFFFFFFF);
-        g.text(font, close, tx + 12, y + 3, Ui.TEXT, false);
+        g.drawString(font, close, tx + 12, y + 3, Ui.TEXT, false);
         tx += 12 + font.width(close) + 10;
         if (multi) {
             Ui.icon(g, Ui.MOUSE_WHEEL, tx, y + 1, 12, 0xFFFFFFFF);
-            g.text(font, pages, tx + 12, y + 3, Ui.HONEY_SOFT, false);
+            g.drawString(font, pages, tx + 12, y + 3, Ui.HONEY_SOFT, false);
         }
     }
 
     /** One piece of a ring, pushed outwards (through its own middle) by push GUI px. */
-    private void piece(GuiGraphicsExtractor g, Identifier[][] tex, Pos p, float push, int color) {
+    private void piece(GuiGraphics g, Identifier[][] tex, Pos p, float push, int color) {
         double[] d = dir(p);
         layer(g, tex[p.ring()][p.piece()], RINGS[p.ring()][1], p.side(), (float) (d[0] / d[2] * push), (float) (d[1] / d[2] * push), color);
     }
 
     /** One wheel texture rotated onto octagon side k around the centre, shifted by (px, py) GUI px. */
-    private void layer(GuiGraphicsExtractor g, Identifier tex, int apothem, int k, float px, float py, int color) {
+    private void layer(GuiGraphics g, Identifier tex, int apothem, int k, float px, float py, int color) {
         int size = canvas(apothem);
         float z = zoom();
         g.pose().pushMatrix();
@@ -360,9 +360,9 @@ final class Wheel {
             Crafter.craft(o, count, shift);
         } else if (Config.get().queue) {
             Crafter.enqueue(o, count, shift);
-            Minecraft.getInstance().player.sendOverlayMessage(Component.translatable("beezzcraft.added", o.result.getHoverName()).withStyle(ChatFormatting.AQUA));
+            Minecraft.getInstance().player.displayClientMessage(Component.translatable("beezzcraft.added", o.result.getHoverName()).withStyle(ChatFormatting.AQUA), true);
         } else {
-            Minecraft.getInstance().player.sendOverlayMessage(Component.translatable("beezzcraft.noqueue").withStyle(ChatFormatting.GRAY));
+            Minecraft.getInstance().player.displayClientMessage(Component.translatable("beezzcraft.noqueue").withStyle(ChatFormatting.GRAY), true);
             Panel.openSettings(); // show where the queue is switched on
         }
         refreshIn = 3;
