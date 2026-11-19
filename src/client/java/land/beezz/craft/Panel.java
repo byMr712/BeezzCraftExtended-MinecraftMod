@@ -36,16 +36,16 @@ final class Panel {
     private static List<Toggle> toggles() {
         Config c = Config.get();
         List<Toggle> t = new ArrayList<>();
-        t.add(new Toggle(new ItemStack(Items.CLOCK), Component.translatable("beezzcraft.set.queue"), c.queue, () -> {
+        t.add(new Toggle(new ItemStack(Items.CLOCK), Tr.t("beezzcraft.set.queue"), c.queue, () -> {
             c.queue = !c.queue;
             if (!c.queue) Crafter.jobs().removeIf(j -> j.queued);
         }));
-        t.add(new Toggle(new ItemStack(Items.SPYGLASS), Component.translatable("beezzcraft.set.missing"), c.showMissing, () -> {
+        t.add(new Toggle(new ItemStack(Items.SPYGLASS), Tr.t("beezzcraft.set.missing"), c.showMissing, () -> {
             c.showMissing = !c.showMissing;
             if (BeezzCraft.wheel != null) BeezzCraft.wheel.refresh();
         }));
-        t.add(new Toggle(new ItemStack(Items.IRON_PICKAXE), Component.translatable("beezzcraft.set.needs"), c.showNeeds, () -> c.showNeeds = !c.showNeeds));
-        t.add(new Toggle(new ItemStack(Items.NOTE_BLOCK), Component.translatable("beezzcraft.set.sound"), c.sound, () -> c.sound = !c.sound));
+        t.add(new Toggle(new ItemStack(Items.IRON_PICKAXE), Tr.t("beezzcraft.set.needs"), c.showNeeds, () -> c.showNeeds = !c.showNeeds));
+        t.add(new Toggle(new ItemStack(Items.NOTE_BLOCK), Tr.t("beezzcraft.set.sound"), c.sound, () -> c.sound = !c.sound));
         return t;
     }
 
@@ -54,8 +54,8 @@ final class Panel {
     /** The queue switch's explanation, wrapped to the panel. */
     private static List<net.minecraft.util.FormattedCharSequence> note() {
         Font font = Minecraft.getInstance().font;
-        List<net.minecraft.util.FormattedCharSequence> lines = new ArrayList<>(font.split(Component.translatable("beezzcraft.set.queue.note1"), W - 16));
-        lines.addAll(font.split(Component.translatable("beezzcraft.set.queue.note2"), W - 16));
+        List<net.minecraft.util.FormattedCharSequence> lines = new ArrayList<>(font.split(Tr.t("beezzcraft.set.queue.note1"), W - 16));
+        lines.addAll(font.split(Tr.t("beezzcraft.set.queue.note2"), W - 16));
         return lines;
     }
 
@@ -79,7 +79,7 @@ final class Panel {
     private static int queueH() {
         int shown = Math.min(queued().size(), 8);
         if (shown > 0) return 22 + shown * QROW + 4;
-        return 22 + Minecraft.getInstance().font.split(Component.translatable("beezzcraft.queue.empty"), W - 14).size() * 10 + 6;
+        return 22 + Minecraft.getInstance().font.split(Tr.t("beezzcraft.queue.empty"), W - 14).size() * 10 + 6;
     }
 
     private static boolean showQueue() {
@@ -106,7 +106,7 @@ final class Panel {
         if (showQueue() && Config.get().showNeeds && !queued().isEmpty()) {
             Needs.render(g, font, Needs.of(Minecraft.getInstance().player, screen.getMenu()), X, queueY() + queueH() + 6, W, true);
         }
-        if (gh) Card.text(g, font, Component.translatable("beezzcraft.gear"), mx, my, screen.width, screen.height);
+        if (gh) Card.text(g, font, Tr.t("beezzcraft.gear"), mx, my, screen.width, screen.height);
     }
 
     private static void renderSettings(GuiGraphicsExtractor g, Font font, int mx, int my) {
@@ -139,11 +139,11 @@ final class Panel {
         int y = queueY(), h = queueH();
         Ui.panel(g, X, y, W, h);
         Ui.icon(g, Ui.QUEUE, X + 6, y + 5, 11, Ui.BLUE);
-        g.text(font, Component.translatable("beezzcraft.hud"), X + 21, y + 7, Ui.BLUE, false);
+        g.text(font, Tr.t("beezzcraft.hud"), X + 21, y + 7, Ui.BLUE, false);
         int ry = y + 21;
         if (jobs.isEmpty()) {
             int ly = ry + 2;
-            for (var line : font.split(Component.translatable("beezzcraft.queue.empty"), W - 14)) {
+            for (var line : font.split(Tr.t("beezzcraft.queue.empty"), W - 14)) {
                 g.text(font, line, X + 7, ly, Ui.DIM, false);
                 ly += 10;
             }
@@ -162,13 +162,13 @@ final class Panel {
             Component status;
             int color;
             if (j.needsTable && !(screen.getMenu() instanceof CraftingMenu)) {
-                status = Component.translatable("beezzcraft.queue.table");
+                status = Tr.t("beezzcraft.queue.table");
                 color = Ui.MUTED;
             } else if (screen.getMenu() instanceof AbstractCraftingMenu m && Crafter.canCraft(mc.player, m, j.option)) {
-                status = Component.translatable("beezzcraft.queue.ready");
+                status = Tr.t("beezzcraft.queue.ready");
                 color = Ui.GREEN;
             } else {
-                status = Component.translatable("beezzcraft.queue.wait");
+                status = Tr.t("beezzcraft.queue.wait");
                 color = Ui.DIM;
             }
             g.text(font, status, X + 24, ry + 12, color, false);
