@@ -87,7 +87,7 @@ public final class BeezzCraft {
         }
         boolean panel = Panel.click(mx, my, button); // the gear, its settings and the queue (top left)
         if (Boolean.getBoolean("beezzcraft.debug")) LOG.info("click button={} alt={} slot={}", button, alt, ((AbstractContainerScreenAccessor) screen).beezzcraft$hoveredSlot());
-        if (alt && button == InputConstants.MOUSE_BUTTON_RIGHT) {
+        if ((alt || vDown()) && button == InputConstants.MOUSE_BUTTON_RIGHT) {
             Slot slot = ((AbstractContainerScreenAccessor) screen).beezzcraft$hoveredSlot();
             if (slot != null && slot.hasItem()) {
                 open(screen, slot.getItem(), mx, my);
@@ -122,13 +122,10 @@ public final class BeezzCraft {
         wheel = new Wheel(screen, stack, options, mx, my);
     }
 
-    /** V on a hovered item opens the wheel: a reliable fallback for Alt, which Windows can lose on focus changes. */
-    public static boolean fallbackKey(AbstractContainerScreen<?> screen, int key) {
-        if (wheel != null || key != InputConstants.KEY_V) return false;
-        Slot slot = ((AbstractContainerScreenAccessor) screen).beezzcraft$hoveredSlot();
-        if (slot == null || !slot.hasItem()) return false;
-        open(screen, slot.getItem(), screen.width / 2f, screen.height / 2f);
-        return true;
+    /** V is a reliable modifier when Alt is lost by the window: hold V and right-click a slot. */
+    public static boolean vDown() {
+        Minecraft mc = Minecraft.getInstance();
+        return InputConstants.isKeyDown(mc.getWindow().getWindow(), InputConstants.KEY_V);
     }
 
     /** The craft queue on the HUD while playing: a small card with what waits for resources. */
