@@ -70,6 +70,9 @@ public final class BeezzCraft {
     /** Called by ScreenMixin after the screen and before its tooltips. */
     public static void renderWheel(Screen screen, GuiGraphics g, int mx, int my) {
         if (!(screen instanceof InventoryScreen) && !(screen instanceof CraftingScreen)) return;
+        // 1.21.x batches the inventory items and flushes them after guiTextured; flush first so the wheel
+        // (and its centre item) is drawn above the vanilla slots instead of under them.
+        g.flush();
         Font font = Minecraft.getInstance().font;
         if (wheel != null && wheel.screen == screen) wheel.render(g, font, mx, my);
         Panel.render((AbstractContainerScreen<?>) screen, g, font, mx, my);
