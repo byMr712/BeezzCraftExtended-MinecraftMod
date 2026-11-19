@@ -8,9 +8,9 @@ import net.minecraft.client.Minecraft;
 /** The modifier that opens the wheel: hold it and right-click an item. Rebindable in Controls. */
 public final class BeezzCraftKeys {
     public static final KeyMapping MODIFIER = new KeyMapping(
-            "key.beezzcraft.modifier",
+            "key.beezzcraft.wheel",
             InputConstants.Type.KEYSYM,
-            InputConstants.KEY_LCONTROL,
+            InputConstants.KEY_C,
             "key.category.beezzcraft.beezz_craft_extended");
 
     public static boolean modifierDown() {
