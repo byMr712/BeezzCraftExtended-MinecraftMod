@@ -1,6 +1,7 @@
 package land.beezz.craft.mixin;
 
 import land.beezz.craft.BeezzCraft;
+import land.beezz.craft.BeezzCraftKeys;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -60,6 +61,12 @@ public abstract class ContainerScreenMixin {
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void beezzcraft$keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
+        if (!BeezzCraft.wheelOpen() && BeezzCraft.keyOnly()
+                && BeezzCraftKeys.matchesKey(keyCode, scanCode)
+                && BeezzCraft.openHovered((AbstractContainerScreen<?>) (Object) this)) {
+            cir.setReturnValue(true);
+            return;
+        }
         if (BeezzCraft.wheelOpenOn(this)) {
             boolean inventory = Minecraft.getInstance().options.keyInventory.matches(keyCode, scanCode);
             BeezzCraft.key((Screen) (Object) this, keyCode, inventory);

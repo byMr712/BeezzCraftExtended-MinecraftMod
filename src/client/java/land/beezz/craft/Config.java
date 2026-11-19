@@ -29,6 +29,10 @@ final class Config {
     boolean showNeeds = true;
     /** How many crafts Ctrl + click makes. */
     int ctrlCount = 10;
+    /** Pressing the functional key alone on a hovered item opens the wheel. */
+    boolean keyOnly = false;
+    /** 0 = left mouse button, 1 = right mouse button. */
+    int functionalClick = 1;
     /** Result item ids, the latest first: a button opens on the variant crafted last. */
     List<String> recent = new ArrayList<>();
     /** How many times each item was crafted: the often made ones come first. */
@@ -51,6 +55,7 @@ final class Config {
                     if (c.recent == null) c.recent = new ArrayList<>();
                     if (c.counts == null) c.counts = new java.util.HashMap<>();
                     if (c.ctrlCount < 2) c.ctrlCount = 10;
+                    if (c.functionalClick < 0 || c.functionalClick > 1) c.functionalClick = 1;
                     return c;
                 }
             }

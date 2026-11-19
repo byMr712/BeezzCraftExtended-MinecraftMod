@@ -25,7 +25,7 @@ final class Tr {
     private Tr() {}
 
     static MutableComponent t(String key, Object... args) {
-        String template = lang().get(key);
+        String template = raw(key);
         if (template == null) return Component.literal(key);
         Object[] values = new Object[args.length];
         for (int i = 0; i < args.length; i++) {
@@ -42,7 +42,9 @@ final class Tr {
     }
 
     private static Map<String, String> lang() {
-        String selected = Minecraft.getInstance().getLanguageManager().getSelected();
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft == null) return Map.of();
+        String selected = minecraft.getLanguageManager().getSelected();
         if (selected.equals(code)) return lang;
         code = selected;
         String file = "ru_ru".equals(selected) ? "ru_ru" : "en_us";
@@ -60,5 +62,9 @@ final class Tr {
         }
         lang = map;
         return map;
+    }
+
+    static String raw(String key) {
+        return lang().get(key);
     }
 }

@@ -6,7 +6,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-/** Lets the mod append its key bind to the vanilla options array. */
 @Mixin(Options.class)
 public interface OptionsAccessor {
     @Accessor("keyMappings")
