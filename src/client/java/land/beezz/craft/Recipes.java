@@ -157,7 +157,7 @@ final class Recipes {
             } else {
                 RegistryOps<com.google.gson.JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, mc.level.registryAccess());
                 Codec<Recipe<?>> codec = recipeCodec();
-                var files = mc.getResourceManager().listResources("recipe", id -> true);
+                var files = mc.getResourceManager().listResources("recipe/", id -> true);
                 for (var entry : files.entrySet()) {
                     try (InputStream in = entry.getValue().open()) {
                         codec.parse(ops, JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)))
