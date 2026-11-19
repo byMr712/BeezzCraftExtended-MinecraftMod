@@ -74,7 +74,7 @@ The mod is client-only: it does not need to be installed on the server and works
 
 | Key | Action |
 |---|---|
-| `Ctrl + right click` on an item | Open the crafting wheel (default) |
+| `C + right click` on an item | Open the crafting wheel (default) |
 | `Left click` a sector | Craft once |
 | `Ctrl + left click` | Craft 10 times |
 | `Shift + left click` | Craft as many as possible |
