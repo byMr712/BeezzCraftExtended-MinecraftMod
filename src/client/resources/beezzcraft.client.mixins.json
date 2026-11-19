@@ -8,6 +8,8 @@
     "ContainerScreenMixin",
     "HudMixin",
     "MinecraftMixin",
+    "OptionsAccessor",
+    "OptionsMixin",
     "ScreenMixin"
   ],
   "injectors": { "defaultRequire": 1 }
