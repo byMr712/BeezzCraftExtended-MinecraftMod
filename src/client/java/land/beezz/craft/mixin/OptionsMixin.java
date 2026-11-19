@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Arrays;
 
 /** Adds the BeezzCraft modifier key to Options so it appears in Controls and is saved in options.txt. */
-@Mixin(Options.class)
+@Mixin(value = Options.class, priority = 900)
 public class OptionsMixin {
 
     @Inject(method = "<init>", at = @At("TAIL"))

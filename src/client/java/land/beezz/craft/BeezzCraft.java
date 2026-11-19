@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * BeezzCraft: in the inventory or at a crafting table, Alt + right click on an item opens an octagon wheel of what can
+ * BeezzCraft: in the inventory or at a crafting table, the functional key + click on an item opens an octagon wheel of what can
  * be crafted from it. Click crafts once, Shift + click as much as possible, Ctrl + click ten times; clicking a grey
  * recipe puts it in the craft queue (when switched on behind the gear).
  * <p>
@@ -37,7 +37,7 @@ public final class BeezzCraft {
     public static void init() {
         // Do not touch Minecraft.getInstance() here: NeoForge constructs the mod before the client exists.
         // Config is loaded lazily on the client thread when the wheel or the HUD first needs it.
-        LOG.info("BeezzCraft ready: Alt + right click on an item in the inventory or at a crafting table");
+        LOG.info("BeezzCraft ready: hold the functional key and click an item in the inventory or at a crafting table");
     }
 
     /** Called once per client tick. */
