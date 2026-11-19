@@ -89,6 +89,11 @@ public final class BeezzCraft {
         return Config.get().keyOnly;
     }
 
+    /** Translation from the mod's own lang files, used by the vanilla Language mixin. */
+    public static String rawTranslation(String key) {
+        return Tr.raw(key);
+    }
+
     /** @return true to let the screen handle the click as usual */
     public static boolean mouse(AbstractContainerScreen<?> screen, double mx, double my, int button, boolean alt, boolean shift, boolean ctrl) {
         if (wheel != null) {
