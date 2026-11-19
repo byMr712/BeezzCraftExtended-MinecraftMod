@@ -32,7 +32,6 @@
   "beezzcraft.needs.title": "Нужно добыть",
   "beezzcraft.needs.ok": "Всё есть — можно крафтить",
   "key.category.beezzcraft.beezz_craft_extended": "Beezz Craft Extended",
-  "key.beezzcraft.modifier": "Функциональная клавиша",
   "beezzcraft.config.title": "BeezzCraft (Extended)",
   "beezzcraft.config.key": "Функциональная клавиша: %s",
   "beezzcraft.config.press": "Нажмите клавишу или кнопку мыши...",
@@ -49,5 +48,6 @@
   "beezzcraft.config.click.left.line1": "Открывает колесо левой кнопкой мыши",
   "beezzcraft.config.click.left.line2": "вместе с функциональной клавишей.",
   "beezzcraft.config.click.right.line1": "Открывает колесо правой кнопкой мыши",
-  "beezzcraft.config.click.right.line2": "вместе с функциональной клавишей."
+  "beezzcraft.config.click.right.line2": "вместе с функциональной клавишей.",
+  "key.beezzcraft.wheel": "Функциональная клавиша"
 }

@@ -17,7 +17,7 @@
 
 </div>
 
-**Crafting wheel for Minecraft (Fabric and NeoForge).** **Ctrl + right click** an item in the inventory or at a crafting
+**Crafting wheel for Minecraft (Fabric and NeoForge).** **C + right click** an item in the inventory or at a crafting
 table and an octagon wheel of everything you can craft from it opens. No need to remember recipes or page through the
 recipe book.
 
@@ -40,7 +40,7 @@ recipe book.
 
 ## Features
 
-- **Ctrl + right click** an item in the inventory (2×2 recipes) or at a crafting table (3×3): a wheel of everything it
+- **C + right click** an item in the inventory (2×2 recipes) or at a crafting table (3×3): a wheel of everything it
   makes. Gold buttons mean the resources are there, grey ones mean something is missing.
 - **Rings of 8, 16, 24 and 32 buttons**, up to 80 recipes per page; more go to the next pages (the «◀ 1/2 ▶» switch
   above the wheel or the mouse wheel).
@@ -82,7 +82,7 @@ The mod is client-only: it does not need to be installed on the server and works
 | Mouse wheel | Variants of the item / pages |
 | `Esc` or the inventory key | Close the wheel |
 
-> The modifier key can be changed in **Options → Controls → Key Binds → Beezz Craft Extended → Function key**.
+> The functional key can be changed in **Options → Controls → Key Binds → Beezz Craft Extended → Function key**.
 
 ## Mod Menu
 
