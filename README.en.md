@@ -20,8 +20,8 @@
 table and an octagon wheel of everything you can craft from it opens. No need to remember recipes or page through the
 recipe book.
 
-> Made by BeezzLand with AI and ported to every Minecraft version 1.21 – 26.3 with both loaders (Fabric and NeoForge)
-> by Mr712.
+> Made by BeezzLand with AI, and Mr712 ported it to every Minecraft version 1.21 – 26.3 with both loaders
+> (Fabric and NeoForge)
 
 ## Gallery
 
