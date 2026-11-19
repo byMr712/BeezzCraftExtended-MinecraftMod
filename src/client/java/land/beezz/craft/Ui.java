@@ -22,7 +22,7 @@ final class Ui {
     // palette (ARGB)
     static final int HONEY = 0xFFFACC15, HONEY_SOFT = 0xFFFDE68A, BLUE = 0xFF93C5FD, GREEN = 0xFF86EFAC, RED = 0xFFFCA5A5;
     static final int TEXT = 0xFFE5E7EB, MUTED = 0xFF9CA3AF, DIM = 0xFF6B7280;
-    static final int PANEL = 0xF2141720, PANEL_EDGE = 0xFF3A3F4D, PANEL_HI = 0xFF2A2F3B;
+    static final int PANEL = 0xFF141720, PANEL_EDGE = 0xFF3A3F4D, PANEL_HI = 0xFF2A2F3B;
 
     private Ui() {}
 
