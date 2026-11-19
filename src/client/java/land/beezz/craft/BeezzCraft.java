@@ -112,7 +112,7 @@ public final class BeezzCraft {
             LOG.info("open {}: {} options, {} recipe collections", stack, options.size(), mc.player.getRecipeBook().getCollections().size());
         }
         if (options.isEmpty()) {
-            mc.player.displayClientMessage(Component.translatable(Recipes.gridSize(screen.getMenu()) >= 3 ? "beezzcraft.nothing" : "beezzcraft.nothing.inv",
+            mc.player.displayClientMessage(Tr.t(Recipes.gridSize(screen.getMenu()) >= 3 ? "beezzcraft.nothing" : "beezzcraft.nothing.inv",
                     stack.getHoverName()).withStyle(ChatFormatting.GRAY), true);
             return;
         }
