@@ -88,7 +88,7 @@ crafting sound, the Ctrl count and the recently crafted items.
 
 ## Build
 
-JDK 25 or newer is required.
+JDK 21 or newer is required; the build uses a Java 21 toolchain.
 
 ```bash
 ./gradlew build
@@ -99,8 +99,8 @@ The command builds both files into `build/libs/`:
 - `BeezzCraft-Fabric-1.21.3-v1.0.0.jar`
 - `BeezzCraft-NeoForge-1.21.3-v1.0.0.jar`
 
-The client game test with screenshots runs with `./gradlew runClientGameTest`; screenshots are saved to
-`build/run/clientGameTest/screenshots/`.
+Client game tests with screenshots are available on 1.21.5 – 1.21.11 and 26.1 – 26.3; Fabric API has no
+client-gametest module for 1.21 – 1.21.4.
 
 ## Authors and licenses
 
