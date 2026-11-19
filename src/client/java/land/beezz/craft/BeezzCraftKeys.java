@@ -11,7 +11,6 @@ public final class BeezzCraftKeys {
 
     public static final KeyMapping MODIFIER = new KeyMapping(
             "key.beezzcraft.modifier",
-            InputConstants.Type.KEYSYM,
             InputConstants.KEY_LCONTROL,
             CATEGORY);
 
