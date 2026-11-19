@@ -8,6 +8,8 @@
     "ContainerScreenMixin",
     "GuiMixin",
     "MinecraftMixin",
+    "OptionsAccessor",
+    "OptionsMixin",
     "MouseHandlerMixin",
     "ScreenMixin"
   ],
