@@ -127,7 +127,7 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
             super.renderWidget(graphics, mouseX, mouseY, partialTick);
             if (isHovered()) {
                 Font font = Minecraft.getInstance().font;
-                graphics.renderTooltip(font, tooltip.get(), mouseX, mouseY);
+                graphics.setTooltipForNextFrame(font, tooltip.get(), mouseX, mouseY);
             }
         }
     }
