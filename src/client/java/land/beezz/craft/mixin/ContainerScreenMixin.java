@@ -53,10 +53,6 @@ public abstract class ContainerScreenMixin {
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void beezzcraft$keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
-        if (BeezzCraft.fallbackKey((AbstractContainerScreen<?>) (Object) this, keyCode)) {
-            cir.setReturnValue(true);
-            return;
-        }
         if (BeezzCraft.wheelOpenOn(this)) {
             boolean inventory = Minecraft.getInstance().options.keyInventory.matches(keyCode, scanCode);
             BeezzCraft.key((Screen) (Object) this, keyCode, inventory);
