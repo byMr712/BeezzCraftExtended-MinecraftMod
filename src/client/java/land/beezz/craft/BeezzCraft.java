@@ -75,7 +75,7 @@ public final class BeezzCraft {
         g.flush();
         Font font = Minecraft.getInstance().font;
         if (wheel != null && wheel.screen == screen) wheel.render(g, font, mx, my);
-        Panel.render((AbstractContainerScreen<?>) screen, g, font, mx, my);
+        else Panel.render((AbstractContainerScreen<?>) screen, g, font, mx, my);
     }
 
     public static boolean wheelOpenOn(Object screen) {
@@ -84,17 +84,20 @@ public final class BeezzCraft {
 
     /** @return true to let the screen handle the click as usual */
     public static boolean mouse(AbstractContainerScreen<?> screen, double mx, double my, int button, boolean alt, boolean shift, boolean ctrl) {
-        if (Panel.click(mx, my, button)) return false; // the gear, its settings and the queue (top left)
         if (wheel != null) {
             if (!wheel.click(mx, my, button, shift, ctrl)) wheel = null;
             return false;
         }
+        boolean panel = Panel.click(mx, my, button); // the gear, its settings and the queue (top left)
         if (Boolean.getBoolean("beezzcraft.debug")) LOG.info("click button={} alt={} slot={}", button, alt, ((AbstractContainerScreenAccessor) screen).beezzcraft$hoveredSlot());
-        if (!alt || button != InputConstants.MOUSE_BUTTON_RIGHT) return true;
-        Slot slot = ((AbstractContainerScreenAccessor) screen).beezzcraft$hoveredSlot();
-        if (slot == null || !slot.hasItem()) return true;
-        open(screen, slot.getItem(), mx, my);
-        return false;
+        if (alt && button == InputConstants.MOUSE_BUTTON_RIGHT) {
+            Slot slot = ((AbstractContainerScreenAccessor) screen).beezzcraft$hoveredSlot();
+            if (slot != null && slot.hasItem()) {
+                open(screen, slot.getItem(), mx, my);
+                return false;
+            }
+        }
+        return !panel;
     }
 
     /** The mouse wheel over the wheel: variants under the cursor, otherwise pages. */
