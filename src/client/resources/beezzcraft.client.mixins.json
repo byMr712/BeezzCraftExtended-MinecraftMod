@@ -8,6 +8,7 @@
     "ContainerScreenMixin",
     "GuiMixin",
     "MinecraftMixin",
+    "MouseHandlerMixin",
     "ScreenMixin"
   ],
   "injectors": { "defaultRequire": 1 }
