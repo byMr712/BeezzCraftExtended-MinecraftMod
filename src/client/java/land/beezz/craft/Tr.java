@@ -43,7 +43,7 @@ final class Tr {
 
     private static Map<String, String> lang() {
         Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft == null) return Map.of();
+        if (minecraft == null || minecraft.getLanguageManager() == null) return Map.of();
         String selected = minecraft.getLanguageManager().getSelected();
         if (selected.equals(code)) return lang;
         code = selected;
