@@ -86,7 +86,7 @@
 
 ## Сборка
 
-Нужен JDK 25 или новее.
+Нужен JDK 21 или новее; сборка использует toolchain Java 21.
 
 ```bash
 ./gradlew build
