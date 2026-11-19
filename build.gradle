@@ -110,6 +110,8 @@ task jarNeoForge(type: Jar) {
     from(sourceSets.client.output) {
         // Fabric-only entrypoint; NeoForge uses BeezzCraftNeoForge instead.
         exclude "land/beezz/craft/BeezzCraftClient.class"
+        exclude "land/beezz/craft/ModMenuIntegration.class"
+        exclude "land/beezz/craft/BeezzCraftConfigScreen*.class"
     }
     from(sourceSets.neoforge.output) {
         // Compile-time stubs must never reach the runtime classpath.
