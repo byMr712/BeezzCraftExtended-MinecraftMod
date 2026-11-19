@@ -2,6 +2,7 @@
 
 <div align="center">
 
+  <img width="150" alt="BeezzCraft (Extended) logo" src="images/icon.png">
   <h3>BeezzCraft (Extended)</h3>
 
 </div>
