@@ -86,7 +86,7 @@
 
 ## Сборка
 
-Нужен JDK 25 или новее.
+Нужен JDK 21 или новее; сборка использует toolchain Java 21.
 
 ```bash
 ./gradlew build
@@ -97,8 +97,8 @@
 - `BeezzCraft-Fabric-1.21.2-v1.0.0.jar`
 - `BeezzCraft-NeoForge-1.21.2-v1.0.0.jar`
 
-Игровые тесты со скриншотами запускаются командой `./gradlew runClientGameTest`, скриншоты сохраняются в
-`build/run/clientGameTest/screenshots/`.
+Игровые тесты со скриншотами доступны в ветках 1.21.5 – 1.21.11 и 26.1 – 26.3; в Fabric API для 1.21 – 1.21.4
+нет client-gametest модуля.
 
 ## Авторы и лицензии
 
