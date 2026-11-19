@@ -59,7 +59,7 @@ recipe book.
 
 ## Installation
 
-The mod runs on **Fabric** and **NeoForge**. Fabric API is required on Fabric (textures and translations); NeoForge needs nothing else.
+The mod runs on **Fabric** and **NeoForge**. Fabric API and other libraries are not required: the mod reads its textures and translations from its own JAR.
 
 1. Install [Fabric Loader](https://fabricmc.net/use/) or [NeoForge](https://neoforged.net/) for Minecraft **1.21.7**.
 2. Put one JAR for your loader into the `mods` folder:
