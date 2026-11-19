@@ -4,6 +4,7 @@
   "version": "${version}",
   "name": "BeezzCraft (Extended)",
   "description": "Alt + right click on an item: an octagon wheel of everything you can craft from it. Grey means missing resources; hover for the recipe, click to craft.",
+  "icon": "icon.png",
   "authors": [
     "BeezzLand & Mr712"
   ],
