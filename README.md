@@ -9,7 +9,7 @@
 <div align="center">
 
 ![Java 25+](https://img.shields.io/badge/Java-25+-blue.svg)
-![Minecraft](https://img.shields.io/badge/Minecraft-26.1-blue.svg)
+![Minecraft](https://img.shields.io/badge/Minecraft-26.1.1-blue.svg)
 ![Fabric](https://img.shields.io/badge/Loader-Fabric-blue.svg)
 ![NeoForge](https://img.shields.io/badge/Loader-NeoForge-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
@@ -19,7 +19,7 @@
 **Колесо крафта для Minecraft (Fabric и NeoForge).** Нажми **Alt + ПКМ** по предмету в инвентаре или у верстака —
 и перед тобой всё, что из него можно скрафтить. Не надо помнить рецепты и листать книгу рецептов.
 
-> Мод сделан автором BeezzLand с помощью ИИ и портирован на все версии Minecraft 1.21 – 26.1 с двумя загрузчиками
+> Мод сделан автором BeezzLand с помощью ИИ и портирован на все версии Minecraft 1.21 – 26.1.1 с двумя загрузчиками
 > (Fabric и NeoForge) командой Mr712.
 
 ## Галерея
@@ -59,10 +59,10 @@
 
 Мод работает на **Fabric** и **NeoForge**. Fabric API и другие библиотеки не требуются.
 
-1. Установите [Fabric Loader](https://fabricmc.net/use/) или [NeoForge](https://neoforged.net/) для Minecraft **26.1**.
+1. Установите [Fabric Loader](https://fabricmc.net/use/) или [NeoForge](https://neoforged.net/) для Minecraft **26.1.1**.
 2. Положите в папку `mods` один JAR под свой загрузчик:
-   - `BeezzCraft-Fabric-26.1-v1.0.0.jar` — для Fabric;
-   - `BeezzCraft-NeoForge-26.1-v1.0.0.jar` — для NeoForge.
+   - `BeezzCraft-Fabric-26.1.1-v1.0.0.jar` — для Fabric;
+   - `BeezzCraft-NeoForge-26.1.1-v1.0.0.jar` — для NeoForge.
 3. Запустите игру.
 
 Мод только клиентский: на сервер ставить не нужно, работает и на обычных (ванильных) серверах.
@@ -94,8 +94,8 @@
 
 Команда собирает сразу два файла в `build/libs/`:
 
-- `BeezzCraft-Fabric-26.1-v1.0.0.jar`
-- `BeezzCraft-NeoForge-26.1-v1.0.0.jar`
+- `BeezzCraft-Fabric-26.1.1-v1.0.0.jar`
+- `BeezzCraft-NeoForge-26.1.1-v1.0.0.jar`
 
 Игровые тесты со скриншотами запускаются командой `./gradlew runClientGameTest`, скриншоты сохраняются в
 `build/run/clientGameTest/screenshots/`.
@@ -103,4 +103,4 @@
 ## Авторы и лицензии
 
 - **Автор мода:** BeezzLand ([erkinpaw](https://github.com/erkinpaw/beezzcraft)) · **Лицензия:** [MIT](https://github.com/erkinpaw/beezzcraft/blob/main/LICENSE).
-- **Автор порта на Fabric/NeoForge 1.21 – 26.1:** [Mr712](https://github.com/byMr712/BeezzCraftExtended-MinecraftMod) · **Лицензия:** [MIT](LICENSE).
+- **Автор порта на Fabric/NeoForge 1.21 – 26.1.1:** [Mr712](https://github.com/byMr712/BeezzCraftExtended-MinecraftMod) · **Лицензия:** [MIT](LICENSE).
