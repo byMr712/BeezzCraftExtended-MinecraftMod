@@ -122,6 +122,15 @@ public final class BeezzCraft {
         wheel = new Wheel(screen, stack, options, mx, my);
     }
 
+    /** V on a hovered item opens the wheel: a reliable fallback for Alt, which Windows can lose on focus changes. */
+    public static boolean fallbackKey(AbstractContainerScreen<?> screen, int key) {
+        if (wheel != null || key != InputConstants.KEY_V) return false;
+        Slot slot = ((AbstractContainerScreenAccessor) screen).beezzcraft$hoveredSlot();
+        if (slot == null || !slot.hasItem()) return false;
+        open(screen, slot.getItem(), screen.width / 2f, screen.height / 2f);
+        return true;
+    }
+
     /** The craft queue on the HUD while playing: a small card with what waits for resources. */
     public static void hud(GuiGraphics g) {
         Minecraft mc = Minecraft.getInstance();
