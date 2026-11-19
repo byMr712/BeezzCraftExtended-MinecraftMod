@@ -95,7 +95,8 @@ If Mod Menu is installed, the mod has a config screen:
 ## Where the settings live
 
 All mod settings are in `.minecraft/config/beezzcraft.json`: the craft queue, grey recipes, "resources to get", the
-crafting sound, the Ctrl count and the recently crafted items.
+crafting sound, the Ctrl count, `keyOnly` (functional key only), `functionalClick` (0 = left, 1 = right) and the
+recently crafted items.
 
 ## Build
 
