@@ -10,7 +10,7 @@ public final class BeezzCraftKeys {
     public static final KeyMapping MODIFIER = new KeyMapping(
             "key.beezzcraft.wheel",
             InputConstants.Type.KEYSYM,
-            InputConstants.KEY_C,
+            InputConstants.KEY_LCONTROL,
             "key.category.beezzcraft.beezz_craft_extended");
 
     public static boolean modifierDown() {
