@@ -99,8 +99,8 @@ The command builds both files into `build/libs/`:
 - `BeezzCraft-Fabric-1.21.1-v1.0.0.jar`
 - `BeezzCraft-NeoForge-1.21.1-v1.0.0.jar`
 
-Client game tests with screenshots are available on 1.21.5 – 1.21.11 and 26.1 – 26.3; Fabric API has no
-client-gametest module for 1.21 – 1.21.4.
+Client game tests with screenshots are available on 1.21.4 – 1.21.11 and 26.1 – 26.3; Fabric API has no
+client-gametest module for 1.21 – 1.21.3.
 
 ## Authors and licenses
 
