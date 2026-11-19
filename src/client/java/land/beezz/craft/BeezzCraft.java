@@ -42,6 +42,7 @@ public final class BeezzCraft {
 
     /** Called once per client tick. */
     public static void onTick(Minecraft mc) {
+        Config.get(); // first call on the client thread: config paths need Minecraft.getInstance()
         Crafter.tick(mc);
     }
 
