@@ -17,7 +17,7 @@ public final class BeezzCraftKeys {
 
     public static boolean modifierDown() {
         InputConstants.Key key = ((KeyMappingAccessor) MODIFIER).beezzcraft$key();
-        return MODIFIER.isDown() || InputConstants.isKeyDown(key.getValue());
+        return MODIFIER.isDown() || InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), key.getValue());
     }
 
     private BeezzCraftKeys() {}
