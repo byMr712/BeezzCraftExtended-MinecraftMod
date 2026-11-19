@@ -75,12 +75,15 @@ The mod is client-only: it does not need to be installed on the server and works
 | Key | Action |
 |---|---|
 | `Alt + right click` on an item | Open the crafting wheel |
+| `V` on a hovered item | Open the crafting wheel (reliable backup) |
 | `Left click` a sector | Craft once |
 | `Ctrl + left click` | Craft 10 times |
 | `Shift + left click` | Craft as many as possible |
 | `Right click` a sector | Remove it from the queue |
 | Mouse wheel | Variants of the item / pages |
 | `Esc` or the inventory key | Close the wheel |
+
+> On Windows, holding Alt can make the game lose the Alt state: the wheel may not open and the item is split instead. Press **V** on the hovered item as a reliable backup.
 
 ## Where the settings live
 
