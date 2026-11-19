@@ -31,9 +31,6 @@ dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    // Runtime resources (textures and translations) are mounted by Fabric API; the release mod has no Fabric API
-    // dependency, so this line is for the dev test client only.
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 }
 
 processResources {
