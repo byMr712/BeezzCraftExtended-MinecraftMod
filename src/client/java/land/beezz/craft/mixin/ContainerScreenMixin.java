@@ -50,14 +50,6 @@ public abstract class ContainerScreenMixin {
         if (BeezzCraft.wheelOpenOn(this)) cir.setReturnValue(false);
     }
 
-    @Inject(method = "mouseScrolled", at = @At("HEAD"), cancellable = true)
-    private void beezzcraft$mouseScrolled(double mx, double my, double scrollX, double scrollY, CallbackInfoReturnable<Boolean> cir) {
-        if (BeezzCraft.wheelOpenOn(this)) {
-            BeezzCraft.scroll(scrollY);
-            cir.setReturnValue(true);
-        }
-    }
-
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void beezzcraft$keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
         if (BeezzCraft.wheelOpenOn(this)) {

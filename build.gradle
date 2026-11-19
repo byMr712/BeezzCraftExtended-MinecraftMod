@@ -6,9 +6,11 @@ plugins {
 // Compile mixin annotations against Mixin 0.17.3. Starting with 0.17.4 `@Redirect.at`
 // is an array in the bytecode, which NeoForge's bundled MixinExtras 0.5.3 cannot read
 // (fixed only in MixinExtras 0.5.5).
-configurations.all {
-    resolutionStrategy.force 'net.fabricmc:sponge-mixin:0.17.3+mixin.0.8.7'
-}
+// Fabric Loader 0.15.11 on 1.21.1 cannot use Mixin 0.17.3 (AbstractMethodError in MixinServiceKnot);
+// the force below is only needed for the NeoForge compile test.
+// configurations.all {
+//     resolutionStrategy.force 'net.fabricmc:sponge-mixin:0.17.3+mixin.0.8.7'
+// }
 
 version = project.mod_version
 group = project.maven_group

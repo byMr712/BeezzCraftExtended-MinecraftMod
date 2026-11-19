@@ -32,7 +32,8 @@ final class Ui {
     static void quad(GuiGraphics g, ResourceLocation tex, int x, int y, int w, int h, int tw, int th, int color) {
         if (w <= 0 || h <= 0) return;
         g.setColor(((color >> 16) & 0xFF) / 255f, ((color >> 8) & 0xFF) / 255f, (color & 0xFF) / 255f, ((color >>> 24) & 0xFF) / 255f);
-        g.blit(tex, x, y, 0f, 0f, w, h, tw, th);
+        // The 9-arg overload uses width/height as the source size too, which crops the 252x252 wheel pieces.
+        g.blit(tex, x, y, w, h, 0f, 0f, tw, th, tw, th);
         g.setColor(1f, 1f, 1f, 1f);
     }
 
