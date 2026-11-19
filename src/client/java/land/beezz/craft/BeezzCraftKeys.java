@@ -11,9 +11,9 @@ public final class BeezzCraftKeys {
             net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("beezzcraft", "beezz_craft_extended"));
 
     public static final KeyMapping MODIFIER = new KeyMapping(
-            "key.beezzcraft.modifier",
+            "key.beezzcraft.wheel",
             InputConstants.Type.KEYSYM,
-            InputConstants.KEY_LCONTROL,
+            InputConstants.KEY_C,
             CATEGORY);
 
     public static boolean modifierDown() {
