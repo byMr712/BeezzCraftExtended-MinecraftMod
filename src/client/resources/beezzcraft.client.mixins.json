@@ -2,6 +2,13 @@
   "required": true,
   "package": "land.beezz.craft.mixin",
   "compatibilityLevel": "JAVA_25",
-  "client": ["AbstractContainerScreenAccessor", "AbstractContainerScreenMixin", "ScreenMixin"],
+  "client": [
+    "AbstractContainerScreenAccessor",
+    "AbstractContainerScreenMixin",
+    "ContainerScreenMixin",
+    "HudMixin",
+    "MinecraftMixin",
+    "ScreenMixin"
+  ],
   "injectors": { "defaultRequire": 1 }
 }
