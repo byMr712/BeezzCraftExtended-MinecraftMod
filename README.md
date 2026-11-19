@@ -14,7 +14,7 @@
 | 26.1 – 26.1.2 | [beezzcraft-1.0.0+26.1.jar](https://github.com/erkinpaw/beezzcraft/releases/download/v1.0.0/beezzcraft-1.0.0+26.1.jar) |
 
 Все версии — на странице [Releases](https://github.com/erkinpaw/beezzcraft/releases) и на сайте
-[beezzland.com/mods/beezzcraft](https://beezzland.com/mods/beezzcraft).
+[beezzland.com](https://beezzland.com/ai-mods/beezzcraft-koleso-krafta.html).
 
 **Установка:** [Fabric Loader](https://fabricmc.net/use/installer/) + [Fabric API](https://modrinth.com/mod/fabric-api)
 для своей версии, jar мода — в папку `mods`. Мод только клиентский: на сервер ставить не нужно, работает и на
