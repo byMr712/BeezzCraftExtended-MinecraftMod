@@ -125,7 +125,7 @@ public final class BeezzCraft {
     /** V is a reliable modifier when Alt is lost by the window: hold V and right-click a slot. */
     public static boolean vDown() {
         Minecraft mc = Minecraft.getInstance();
-        return InputConstants.isKeyDown(mc.getWindow().handle(), InputConstants.KEY_V);
+        return InputConstants.isKeyDown(InputConstants.KEY_V);
     }
 
     /** The craft queue on the HUD while playing: a small card with what waits for resources. */
