@@ -13,6 +13,10 @@ public final class BeezzCraftKeys {
             InputConstants.KEY_LCONTROL,
             "key.category.beezzcraft.beezz_craft_extended");
 
+    public static boolean matchesKey(int keyCode, int scanCode) {
+        return MODIFIER.matches(keyCode, scanCode);
+    }
+
     public static boolean modifierDown() {
         InputConstants.Key key = ((KeyMappingAccessor) MODIFIER).beezzcraft$key();
         Minecraft mc = Minecraft.getInstance();
