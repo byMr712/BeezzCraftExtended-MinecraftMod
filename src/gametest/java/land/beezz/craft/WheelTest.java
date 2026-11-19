@@ -65,13 +65,13 @@ public class WheelTest implements FabricClientGameTest {
         });
     }
 
-    /** Opens the wheel on an item: Alt + right click. */
+    /** Opens the wheel on an item: the functional key (Left Ctrl by default) + right click. */
     private void wheelOn(Item item) {
         double[] p = slotOf(item);
         cursor(p[0], p[1]);
-        ctx.getInput().holdAlt();
+        ctx.getInput().holdControl();
         ctx.getInput().pressMouse(RIGHT);
-        ctx.getInput().releaseAlt();
+        ctx.getInput().releaseControl();
         ctx.waitTicks(5);
         if (ctx.computeOnClient(mc -> BeezzCraft.wheel == null)) throw new IllegalStateException("the wheel did not open on " + item);
     }
@@ -190,13 +190,16 @@ public class WheelTest implements FabricClientGameTest {
             ctx.waitTicks(3);
             check("Esc closes only the wheel", ctx.computeOnClient(mc -> BeezzCraft.wheel == null && BeezzCraft.screen(mc) instanceof InventoryScreen));
             wheelOn(Items.STICK);
-            // the gear sits in the top left corner of the inventory; its first switch is the craft queue
+            // the gear is hidden while the wheel is open: close the wheel, then open the settings
+            ctx.getInput().pressKey(InputConstants.KEY_ESCAPE);
+            ctx.waitTicks(3);
             click(16, 16, LEFT);
             shot("craft_04_settings");
             click(90, 6 + 20 + 6 + 4 + 9, LEFT);
             check("the switch turns the craft queue on", Config.get().queue);
             click(16, 16, LEFT); // close the settings
             ctx.waitTicks(8);
+            wheelOn(Items.STICK);
             double[] torch = sectorOf(Items.TORCH);
             cursor(torch[0], torch[1]);
             shot("craft_05_grey_torch");
