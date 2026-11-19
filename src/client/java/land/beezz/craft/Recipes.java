@@ -126,13 +126,20 @@ final class Recipes {
                 for (RecipeHolder<?> h : server.getRecipeManager().getRecipes()) add(out, h.value(), registries);
             } else {
                 RegistryOps<com.google.gson.JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, mc.level.registryAccess());
-                var files = mc.getResourceManager().listResources("recipe/", id -> true);
-                for (var entry : files.entrySet()) {
-                    try (InputStream in = entry.getValue().open()) {
-                        Recipe.CODEC.parse(ops, JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)))
-                                .ifSuccess(r -> add(out, r, registries));
-                    } catch (Exception ignored) {
-                        // one odd recipe must not hide the others
+                var seen = new java.util.HashSet<>();
+                for (PackResources pack : mc.getResourcePackRepository().openAllSelected()) {
+                    try (pack) {
+                        for (String namespace : pack.getNamespaces(PackType.SERVER_DATA)) {
+                            pack.listResources(PackType.SERVER_DATA, namespace, "recipe", (id, supplier) -> {
+                                if (!seen.add(id)) return;
+                                try (InputStream in = supplier.get()) {
+                                    Recipe.CODEC.parse(ops, JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)))
+                                            .ifSuccess(r -> add(out, r, registries));
+                                } catch (Exception ignored) {
+                                    // one odd recipe must not hide the others
+                                }
+                            });
+                        }
                     }
                 }
             }
