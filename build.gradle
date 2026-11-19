@@ -29,7 +29,12 @@ loom {
 // Fabric API's client gametest module appeared only in 1.21.5, so this branch has no
 // automated client screenshot suite. Build both release JARs with ./gradlew build.
 
+repositories {
+    maven { name = "TerraformersMC"; url = "https://maven.terraformersmc.com/releases/" }
+}
+
 dependencies {
+    modCompileOnly "com.terraformersmc:modmenu:11.0.5"
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
