@@ -2,7 +2,7 @@ package land.beezz.craft;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -26,7 +26,7 @@ final class Ui {
     /** A filled rectangle drawn as a textured quad (plain fills can land under the screen picture). */
     static void rect(GuiGraphics g, int x, int y, int w, int h, int color) {
         if (w <= 0 || h <= 0) return;
-        g.blit(RenderPipelines.GUI_TEXTURED, WHITE, x, y, 0, 0, w, h, 16, 16, 16, 16, color);
+        g.blit(RenderType::guiTextured, WHITE, x, y, 0, 0, w, h, 16, 16, 16, 16, color);
     }
 
     /** Rectangle with 2 px rounded corners. */
@@ -48,7 +48,7 @@ final class Ui {
     }
 
     static void icon(GuiGraphics g, ResourceLocation tex, int x, int y, int size, int color) {
-        g.blit(RenderPipelines.GUI_TEXTURED, tex, x, y, 0, 0, size, size, 32, 32, 32, 32, color);
+        g.blit(RenderType::guiTextured, tex, x, y, 0, 0, size, size, 32, 32, 32, 32, color);
     }
 
     /** A keyboard key cap with its name, e.g. Ctrl. @return its width */
@@ -68,12 +68,12 @@ final class Ui {
 
     /** An item with its count in the corner, optionally scaled around its centre. */
     static void item(GuiGraphics g, Font font, ItemStack stack, float cx, float cy, float scale, boolean decorations) {
-        g.pose().pushMatrix();
-        g.pose().translate(cx, cy);
-        g.pose().scale(scale, scale);
+        g.pose().pushPose();
+        g.pose().translate(cx, cy, 0);
+        g.pose().scale(scale, scale, 1);
         g.renderItem(stack, -8, -8);
         if (decorations) g.renderItemDecorations(font, stack, -8, -8);
-        g.pose().popMatrix();
+        g.pose().popPose();
     }
 
     static int width(Font font, Component c) {

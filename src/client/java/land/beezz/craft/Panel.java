@@ -89,7 +89,6 @@ final class Panel {
     // ------------------------------------------------------------------ drawing
 
     static void render(AbstractContainerScreen<?> screen, GuiGraphics g, Font font, int mx, int my) {
-        g.nextStratum();
         boolean gh = in(mx, my, X, Y, GEAR, GEAR);
         Ui.panel(g, X, Y, GEAR, GEAR);
         if (gh || settings) Ui.round(g, X, Y, GEAR, GEAR, 0xFF3A3214);

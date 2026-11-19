@@ -9,13 +9,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * The wheel is drawn after the whole screen but before the deferred tooltip: so it covers the inventory and its own
- * tooltip still shows.
+ * The wheel is drawn after the whole screen (and its deferred tooltip): so it covers the inventory and its own card
+ * still shows.
  */
 @Mixin(Screen.class)
 public abstract class ScreenMixin {
-    @Inject(method = "renderWithTooltip",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;renderDeferredTooltip()V"))
+    @Inject(method = "renderWithTooltip", at = @At("TAIL"))
     private void beezzcraft$wheel(GuiGraphics g, int mx, int my, float delta, CallbackInfo ci) {
         BeezzCraft.renderWheel((Screen) (Object) this, g, mx, my);
     }

@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -189,8 +189,6 @@ final class Wheel {
 
     void render(GuiGraphics g, Font font, int mx, int my) {
         float a = open();
-        g.nextStratum();
-        g.nextStratum(); // the inventory screen leaves its own picture in the stratum we would otherwise share
         Ui.rect(g, 0, 0, screen.width, screen.height, Ui.fade(BG_DIM, a));
         hover = hit(mx, my);
         int start = page * PER_PAGE, end = Math.min(shown.size(), start + PER_PAGE);
@@ -225,7 +223,6 @@ final class Wheel {
         layer(g, CENTER_EDGE, CENTER, 0, 0, 0, Ui.fade(hover == -2 ? EDGE_OK_HOVER : EDGE_OK, a));
 
         // items on top: the hovered one grows
-        g.nextStratum();
         for (int i = start; i < end; i++) {
             int slot = i - start;
             Recipes.Option o = shown.get(i).current();
@@ -235,7 +232,6 @@ final class Wheel {
         Ui.item(g, font, source, cx, cy, zoom() * (hover == -2 ? 1.1f : 1f), false);
 
         // grey items get a veil, queued ones a little hourglass
-        g.nextStratum();
         for (int i = start; i < end; i++) {
             int slot = i - start;
             Recipes.Option o = shown.get(i).current();
@@ -276,7 +272,6 @@ final class Wheel {
     private void pager(GuiGraphics g, Font font, int mx, int my) {
         int[] b = pagerBox(font);
         String label = (page + 1) + " / " + pages();
-        g.nextStratum();
         Ui.panel(g, b[0], b[1], b[2], b[3]);
         boolean lh = mx >= b[0] && mx < b[0] + 14 && my >= b[1] && my < b[1] + b[3];
         boolean rh = mx >= b[0] + b[2] - 14 && mx < b[0] + b[2] && my >= b[1] && my < b[1] + b[3];
@@ -336,12 +331,12 @@ final class Wheel {
     private void layer(GuiGraphics g, ResourceLocation tex, int apothem, int k, float px, float py, int color) {
         int size = canvas(apothem);
         float z = zoom();
-        g.pose().pushMatrix();
-        g.pose().translate(cx + px * z, cy + py * z);
-        g.pose().scale(z, z);
-        g.pose().rotate((float) Math.toRadians(45 * k));
-        g.blit(RenderPipelines.GUI_TEXTURED, tex, -size / 2, -size / 2, 0, 0, size, size, size * 2, size * 2, size * 2, size * 2, color);
-        g.pose().popMatrix();
+        g.pose().pushPose();
+        g.pose().translate(cx + px * z, cy + py * z, 0);
+        g.pose().scale(z, z, 1);
+        g.pose().mulPose(com.mojang.math.Axis.ZP.rotation((float) Math.toRadians(45 * k)));
+        g.blit(RenderType::guiTextured, tex, -size / 2, -size / 2, 0, 0, size, size, size * 2, size * 2, size * 2, size * 2, color);
+        g.pose().popPose();
     }
 
     // ------------------------------------------------------------------ input

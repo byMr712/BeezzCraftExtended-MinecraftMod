@@ -2,7 +2,7 @@ package land.beezz.craft.mixin;
 
 import land.beezz.craft.BeezzCraft;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.screens.Screen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,8 +17,8 @@ public class MinecraftMixin {
         BeezzCraft.onTick((Minecraft) (Object) this);
     }
 
-    @Inject(method = "disconnectFromWorld", at = @At("HEAD"))
-    private void beezzcraft$disconnect(Component message, CallbackInfo ci) {
+    @Inject(method = "clearClientLevel", at = @At("HEAD"))
+    private void beezzcraft$disconnect(Screen screen, CallbackInfo ci) {
         BeezzCraft.onDisconnect();
     }
 }

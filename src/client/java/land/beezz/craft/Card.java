@@ -41,7 +41,6 @@ final class Card {
         int x = mx + 14, y = my - 8;
         if (x + w > sw - 4) x = mx - 14 - w;
         y = Math.max(4, Math.min(sh - h - 4, y));
-        g.nextStratum();
         Ui.panel(g, x, y, w, h);
         if (o.craftable) Ui.rect(g, x, y, w, 1, 0x90FACC15);
 
@@ -57,11 +56,11 @@ final class Card {
             int vx = cx;
             for (int i = 0; i < Math.min(variants, 12); i++) {
                 Recipes.Option v = group.members.get(i);
-                g.pose().pushMatrix();
-                g.pose().translate(vx, cy - 2);
-                g.pose().scale(0.75f, 0.75f);
+                g.pose().pushPose();
+                g.pose().translate(vx, cy - 2, 0);
+                g.pose().scale(0.75f, 0.75f, 1);
                 g.renderItem(v.result, 0, 0);
-                g.pose().popMatrix();
+                g.pose().popPose();
                 if (i == group.sel) Ui.rect(g, vx, cy + 11, 12, 1, Ui.HONEY);
                 else if (!v.craftable) Ui.rect(g, vx, cy - 2, 12, 12, 0x8014161C);
                 vx += 13;
@@ -124,7 +123,6 @@ final class Card {
     static void text(GuiGraphics g, Font font, Component text, int mx, int my, int sw, int sh) {
         int w = font.width(text) + 10, h = 14;
         int x = Math.min(sw - w - 4, mx + 12), y = Math.max(4, Math.min(sh - h - 4, my - 7));
-        g.nextStratum();
         Ui.panel(g, x, y, w, h);
         g.drawString(font, text, x + 5, y + 3, Ui.TEXT, false);
     }
