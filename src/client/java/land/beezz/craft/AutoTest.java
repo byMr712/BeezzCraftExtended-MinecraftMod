@@ -39,6 +39,21 @@ public final class AutoTest {
             return;
         }
         ticks++;
+        if (phase == 0 && ticks == 10) {
+            mc.player.connection.sendCommand("gamemode survival @s");
+        }
+        if (phase == 0 && ticks == 20) {
+            if (mc.player.getInventory().countItem(Items.OAK_PLANKS) == 0) {
+                mc.player.connection.sendCommand("give @s oak_planks 12");
+            }
+            if (mc.player.getInventory().countItem(Items.STICK) == 0) {
+                mc.player.connection.sendCommand("give @s stick 2");
+            }
+        }
+        if (phase == 0 && ticks == 30 && mc.player.getInventory().countItem(Items.OAK_PLANKS) == 0) {
+            mc.player.getInventory().add(new ItemStack(Items.OAK_PLANKS, 12));
+            mc.player.getInventory().add(new ItemStack(Items.STICK, 2));
+        }
         if (phase == 0 && ticks >= 40 && BeezzCraft.screen(mc) == null) {
             setScreen(mc, new InventoryScreen(mc.player));
             phase = 1;
