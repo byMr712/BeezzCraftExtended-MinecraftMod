@@ -125,7 +125,7 @@ public final class BeezzCraft implements ClientModInitializer {
     /** The craft queue on the HUD while playing: a small card with what waits for resources. */
     private static void hud(GuiGraphicsExtractor g) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.gui.screen() != null) return;
+        if (mc.player == null || screen(mc) != null) return;
         List<Crafter.Job> queued = Crafter.jobs().stream().filter(j -> j.queued).toList();
         if (queued.isEmpty()) return;
         Font font = mc.font;
@@ -143,7 +143,27 @@ public final class BeezzCraft implements ClientModInitializer {
         if (Config.get().showNeeds) Needs.render(g, font, Needs.of(mc.player, mc.player.inventoryMenu), x, y + 26, 0, false);
     }
 
+    private static java.lang.invoke.MethodHandle screenGetter;
+
+    /**
+     * The open screen. 26.2+ keeps it in Gui (mc.gui.screen()), 26.1 in the Minecraft.screen field; found once at run
+     * time so one jar source builds for every supported version.
+     */
     static Screen screen(Minecraft mc) {
-        return mc.gui.screen();
+        try {
+            if (screenGetter == null) {
+                var lookup = java.lang.invoke.MethodHandles.publicLookup();
+                try {
+                    screenGetter = java.lang.invoke.MethodHandles.filterReturnValue(
+                            lookup.findGetter(Minecraft.class, "gui", net.minecraft.client.gui.Gui.class),
+                            lookup.findVirtual(net.minecraft.client.gui.Gui.class, "screen", java.lang.invoke.MethodType.methodType(Screen.class)));
+                } catch (NoSuchMethodException | NoSuchFieldException e) {
+                    screenGetter = lookup.findGetter(Minecraft.class, "screen", Screen.class);
+                }
+            }
+            return (Screen) screenGetter.invoke(mc);
+        } catch (Throwable t) {
+            throw new IllegalStateException("BeezzCraft: cannot read the open screen", t);
+        }
     }
 }

@@ -37,7 +37,7 @@ public class WheelTest implements FabricClientGameTest {
     }
 
     private void cursor(double x, double y) {
-        double scale = ctx.computeOnClient(mc -> (double) mc.getWindow().getWidth() / mc.gui.screen().width);
+        double scale = ctx.computeOnClient(mc -> (double) mc.getWindow().getWidth() / BeezzCraft.screen(mc).width);
         ctx.getInput().setCursorPos(x * scale, y * scale);
         ctx.waitTicks(3);
     }
@@ -56,7 +56,7 @@ public class WheelTest implements FabricClientGameTest {
     /** Screen point of the first inventory slot holding this item. */
     private double[] slotOf(Item item) {
         return ctx.computeOnClient(mc -> {
-            AbstractContainerScreen<?> s = (AbstractContainerScreen<?>) mc.gui.screen();
+            AbstractContainerScreen<?> s = (AbstractContainerScreen<?>) BeezzCraft.screen(mc);
             int left = (int) field(AbstractContainerScreen.class, s, "leftPos"), top = (int) field(AbstractContainerScreen.class, s, "topPos");
             for (Slot slot : s.getMenu().slots) {
                 if (slot.container instanceof Inventory && slot.getItem().is(item)) return new double[] {left + slot.x + 8, top + slot.y + 8};
@@ -124,7 +124,7 @@ public class WheelTest implements FabricClientGameTest {
             mc.resizeGui();
         });
         ctx.runOnClient(Minecraft::reloadResourcePacks);
-        ctx.waitFor(mc -> mc.gui.overlay() == null, 20 * 120);
+        ctx.waitFor(mc -> overlay(mc) == null, 20 * 120);
         Config.get().queue = false;
         Config.get().recent.clear();
         Config.get().counts.clear();
@@ -188,7 +188,7 @@ public class WheelTest implements FabricClientGameTest {
             // 3) the gear and the craft queue: a torch needs coal we don't have yet
             ctx.getInput().pressKey(InputConstants.KEY_ESCAPE);
             ctx.waitTicks(3);
-            check("Esc closes only the wheel", ctx.computeOnClient(mc -> BeezzCraft.wheel == null && mc.gui.screen() instanceof InventoryScreen));
+            check("Esc closes only the wheel", ctx.computeOnClient(mc -> BeezzCraft.wheel == null && BeezzCraft.screen(mc) instanceof InventoryScreen));
             wheelOn(Items.STICK);
             // the gear sits in the top left corner of the inventory; its first switch is the craft queue
             click(16, 16, LEFT);
@@ -329,5 +329,19 @@ public class WheelTest implements FabricClientGameTest {
         Config.get().recent.clear();
         Config.get().save();
         BeezzCraft.LOG.info("BeezzCraft test: all steps done");
+    }
+
+    /** The loading overlay: mc.gui.overlay() since 26.2, mc.getOverlay() in 26.1. */
+    private static Object overlay(Minecraft mc) {
+        try {
+            Object gui = Minecraft.class.getField("gui").get(mc);
+            return gui.getClass().getMethod("overlay").invoke(gui);
+        } catch (ReflectiveOperationException e) {
+            try {
+                return Minecraft.class.getMethod("getOverlay").invoke(mc);
+            } catch (ReflectiveOperationException e2) {
+                throw new IllegalStateException(e2);
+            }
+        }
     }
 }

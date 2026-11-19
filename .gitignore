@@ -5,3 +5,4 @@ run/
 .idea/
 *.iml
 __pycache__/
+dist/

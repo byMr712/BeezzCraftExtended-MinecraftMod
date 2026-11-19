@@ -107,7 +107,7 @@ final class Crafter {
 
     /** The menu crafting may use right now: the open crafting table, or the inventory (open or closed). */
     static AbstractContainerMenu menu(Minecraft mc) {
-        Screen s = mc.gui.screen();
+        Screen s = BeezzCraft.screen(mc);
         if (s instanceof CraftingScreen cs) return cs.getMenu();
         if (s == null || s instanceof InventoryScreen) return mc.player.inventoryMenu;
         return null; // a chest or another container is open: leave it alone

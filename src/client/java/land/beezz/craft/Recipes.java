@@ -2,6 +2,8 @@ package land.beezz.craft;
 
 import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.Codec;
+import net.minecraft.server.packs.PackResources;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.recipebook.RecipeCollection;
 import net.minecraft.client.server.IntegratedServer;
@@ -117,6 +119,29 @@ final class Recipes {
     private static List<Option> catalog;
     private static Object catalogFor;
 
+    /**
+     * The game's own data pack. 26.3 wraps it (createVanillaPackSource().fullResources()), 26.1–26.2 return it directly;
+     * picked at run time so one source builds for every supported version.
+     */
+    private static PackResources vanillaPack() throws Exception {
+        Object source = ServerPacksSource.createVanillaPackSource();
+        if (source instanceof PackResources pack) return pack;
+        return (PackResources) source.getClass().getMethod("fullResources").invoke(source);
+    }
+
+    /** The plain recipe codec: Recipe.DIRECT_CODEC since 26.3, Recipe.CODEC before (in 26.3 CODEC means holders). */
+    @SuppressWarnings("unchecked")
+    private static Codec<Recipe<?>> recipeCodec() throws Exception {
+        for (String name : new String[] {"DIRECT_CODEC", "CODEC"}) {
+            try {
+                return (Codec<Recipe<?>>) Recipe.class.getField(name).get(null);
+            } catch (NoSuchFieldException ignored) {
+                // older name below
+            }
+        }
+        throw new NoSuchFieldException("Recipe codec");
+    }
+
     /** Every shaped and shapeless crafting recipe, read once per world. */
     static List<Option> catalog(Minecraft mc) {
         if (catalog != null && catalogFor == mc.getConnection()) return catalog;
@@ -129,10 +154,11 @@ final class Recipes {
                 for (RecipeHolder<?> h : server.getRecipeManager().getRecipes()) add(out, h.value(), ctx);
             } else {
                 RegistryOps<com.google.gson.JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, mc.level.registryAccess());
-                try (var pack = ServerPacksSource.createVanillaPackSource().fullResources()) {
+                Codec<Recipe<?>> codec = recipeCodec();
+                try (PackResources pack = vanillaPack()) {
                     pack.listResources(PackType.SERVER_DATA, "minecraft", "recipe", (id, supplier) -> {
                         try (InputStream in = supplier.get()) {
-                            Recipe.DIRECT_CODEC.parse(ops, JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)))
+                            codec.parse(ops, JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)))
                                     .ifSuccess(r -> add(out, r, ctx));
                         } catch (Exception ignored) {
                             // one odd recipe must not hide the others
