@@ -20,7 +20,9 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AbstractCraftingMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapedRecipe;
@@ -155,15 +157,14 @@ final class Recipes {
             } else {
                 RegistryOps<com.google.gson.JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, mc.level.registryAccess());
                 Codec<Recipe<?>> codec = recipeCodec();
-                try (PackResources pack = vanillaPack()) {
-                    pack.listResources(PackType.SERVER_DATA, "minecraft", "recipe", (id, supplier) -> {
-                        try (InputStream in = supplier.get()) {
-                            codec.parse(ops, JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)))
-                                    .ifSuccess(r -> add(out, r, ctx));
-                        } catch (Exception ignored) {
-                            // one odd recipe must not hide the others
-                        }
-                    });
+                var files = mc.getResourceManager().listResources("recipe", id -> true);
+                for (var entry : files.entrySet()) {
+                    try (InputStream in = entry.getValue().open()) {
+                        codec.parse(ops, JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)))
+                                .ifSuccess(r -> add(out, r, ctx));
+                    } catch (Exception ignored) {
+                        // one odd recipe must not hide the others
+                    }
                 }
             }
         } catch (Exception e) {
@@ -188,9 +189,15 @@ final class Recipes {
         if (r instanceof ShapedRecipe s) {
             List<Ingredient> reqs = s.getIngredients().stream().flatMap(Optional::stream).toList();
             out.add(new Option(result, reqs, s.getIngredients(), s.getWidth(), s.getHeight(), s.getWidth() > 2 || s.getHeight() > 2));
-        } else if (r instanceof ShapelessRecipe s) {
-            List<Ingredient> reqs = s.placementInfo().ingredients();
-            out.add(new Option(result, reqs, reqs.stream().map(Optional::of).toList(), 0, 0, reqs.size() > 4));
+        } else if (r instanceof CraftingRecipe) {
+            PlacementInfo pi = r.placementInfo();
+            if (pi == null || pi.ingredients().isEmpty()) return;
+            List<Ingredient> reqs = pi.ingredients();
+            if (displays.getFirst() instanceof ShapelessCraftingRecipeDisplay) {
+                out.add(new Option(result, reqs, reqs.stream().map(Optional::of).toList(), 0, 0, reqs.size() > 4));
+            }
+            // custom shaped recipes on 1.21.2/1.21.3 have no slot-to-ingredient map;
+            // the recipe book path adds them once unlocked
         }
     }
 
