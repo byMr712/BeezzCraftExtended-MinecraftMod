@@ -1,0 +1,29 @@
+modLoader="javafml"
+loaderVersion="[1,)"
+license="MIT"
+issueTrackerURL="https://github.com/byMr712/BeezzCraftExtended-MinecraftMod/issues"
+
+[[mods]]
+modId="beezzcraft"
+version="${version}"
+displayName="BeezzCraft (Extended)"
+displayURL="https://github.com/byMr712/BeezzCraftExtended-MinecraftMod"
+authors="BeezzLand, Mr712"
+description="Alt + right click on an item: an octagon wheel of everything you can craft from it. Grey means missing resources; hover for the recipe, click to craft."
+
+[[mixins]]
+config="beezzcraft.client.mixins.json"
+
+[[dependencies.beezzcraft]]
+modId="neoforge"
+type="required"
+versionRange="[26.3.0,)"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.beezzcraft]]
+modId="minecraft"
+type="required"
+versionRange="[${minecraft_version}]"
+ordering="NONE"
+side="CLIENT"
