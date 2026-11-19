@@ -34,11 +34,6 @@ fabricApi {
     }
 }
 
-// 1.21.6+ can fail with "Network synchronizer in invalid state" during the test.
-tasks.matching { it.name == 'runClientGameTest' }.configureEach {
-    jvmArgs '-Dfabric.client.gametest.disableNetworkSynchronizer=true'
-}
-
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
