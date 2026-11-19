@@ -57,7 +57,7 @@
 
 ## Установка
 
-Мод работает на **Fabric** и **NeoForge**. Для Fabric нужен Fabric API (текстуры и переводы); на NeoForge ничего дополнительно не нужно.
+Мод работает на **Fabric** и **NeoForge**. Fabric API и другие библиотеки не требуются: текстуры и переводы мод читает из своего JAR.
 
 1. Установите [Fabric Loader](https://fabricmc.net/use/) или [NeoForge](https://neoforged.net/) для Minecraft **1.21.9**.
 2. Положите в папку `mods` один JAR под свой загрузчик:
