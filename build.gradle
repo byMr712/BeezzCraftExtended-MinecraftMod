@@ -34,7 +34,12 @@ fabricApi {
     }
 }
 
+repositories {
+    maven { name = "TerraformersMC"; url = "https://maven.terraformersmc.com/releases/" }
+}
+
 dependencies {
+    modCompileOnly "com.terraformersmc:modmenu:14.0.2"
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
