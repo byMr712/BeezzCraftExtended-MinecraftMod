@@ -12,7 +12,7 @@ public final class BeezzCraftKeys {
 
     public static final KeyMapping MODIFIER = new KeyMapping(
             "key.beezzcraft.wheel",
-            InputConstants.KEY_C,
+            InputConstants.KEY_LCONTROL,
             CATEGORY);
 
     public static boolean modifierDown() {
