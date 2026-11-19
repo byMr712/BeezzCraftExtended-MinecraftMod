@@ -87,7 +87,7 @@ public final class BeezzCraft {
         }
         boolean panel = Panel.click(mx, my, button); // the gear, its settings and the queue (top left)
         if (Boolean.getBoolean("beezzcraft.debug")) LOG.info("click button={} alt={} slot={}", button, alt, ((AbstractContainerScreenAccessor) screen).beezzcraft$hoveredSlot());
-        if (BeezzCraftKeys.MODIFIER.isDown() && button == InputConstants.MOUSE_BUTTON_RIGHT) {
+        if (BeezzCraftKeys.modifierDown() && button == InputConstants.MOUSE_BUTTON_RIGHT) {
             Slot slot = ((AbstractContainerScreenAccessor) screen).beezzcraft$hoveredSlot();
             if (slot != null && slot.hasItem()) {
                 open(screen, slot.getItem(), mx, my);
