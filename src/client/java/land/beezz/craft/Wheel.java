@@ -254,6 +254,8 @@ final class Wheel {
         hints(g, font);
         if (pages() > 1) pager(g, font, mx, my);
 
+        // The card must sit above the wheel's items and the vanilla slots; flush them before drawing it.
+        g.flush();
         if (hover >= 0) Card.recipe(g, font, shown.get(hover), mx, my, screen.width, screen.height);
         else if (hover == -2) Card.text(g, font, Tr.t("beezzcraft.center"), mx, my, screen.width, screen.height);
     }
