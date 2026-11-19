@@ -39,7 +39,12 @@ tasks.matching { it.name == 'runClientGameTest' }.configureEach {
     jvmArgs '-Dfabric.client.gametest.disableNetworkSynchronizer=true'
 }
 
+repositories {
+    maven { name = "TerraformersMC"; url = "https://maven.terraformersmc.com/releases/" }
+}
+
 dependencies {
+    modCompileOnly "com.terraformersmc:modmenu:15.0.2"
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
