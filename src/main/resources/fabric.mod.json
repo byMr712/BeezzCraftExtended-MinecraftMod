@@ -5,8 +5,7 @@
   "name": "BeezzCraft (Extended)",
   "description": "Alt + right click on an item: an octagon wheel of everything you can craft from it. Grey means missing resources; hover for the recipe, click to craft.",
   "authors": [
-    "BeezzLand",
-    "Mr712"
+    "BeezzLand & Mr712"
   ],
   "contact": {
     "homepage": "https://github.com/byMr712/BeezzCraftExtended-MinecraftMod",
