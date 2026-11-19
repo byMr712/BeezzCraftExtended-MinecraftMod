@@ -8,6 +8,8 @@
     "ContainerScreenMixin",
     "GuiMixin",
     "MinecraftMixin",
+    "OptionsAccessor",
+    "OptionsMixin",
     "ScreenMixin"
   ],
   "injectors": { "defaultRequire": 1 }
