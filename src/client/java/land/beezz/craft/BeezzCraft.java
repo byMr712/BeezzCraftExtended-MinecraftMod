@@ -35,7 +35,8 @@ public final class BeezzCraft {
     private BeezzCraft() {}
 
     public static void init() {
-        Config.get();
+        // Do not touch Minecraft.getInstance() here: NeoForge constructs the mod before the client exists.
+        // Config is loaded lazily on the client thread when the wheel or the HUD first needs it.
         LOG.info("BeezzCraft ready: Alt + right click on an item in the inventory or at a crafting table");
     }
 
