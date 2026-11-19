@@ -126,7 +126,7 @@ final class Recipes {
                 for (RecipeHolder<?> h : server.getRecipeManager().getRecipes()) add(out, h.value(), registries);
             } else {
                 RegistryOps<com.google.gson.JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, mc.level.registryAccess());
-                var files = mc.getResourceManager().listResources("recipe", id -> true);
+                var files = mc.getResourceManager().listResources("recipe/", id -> true);
                 for (var entry : files.entrySet()) {
                     try (InputStream in = entry.getValue().open()) {
                         Recipe.CODEC.parse(ops, JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)))
