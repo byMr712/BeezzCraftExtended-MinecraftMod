@@ -2,7 +2,6 @@ package land.beezz.craft;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -23,10 +22,18 @@ final class Ui {
         return ResourceLocation.fromNamespaceAndPath("beezzcraft", "textures/gui/" + name + ".png");
     }
 
-    /** A filled rectangle drawn as a textured quad (plain fills can land under the screen picture). */
+    /** A filled rectangle. */
     static void rect(GuiGraphics g, int x, int y, int w, int h, int color) {
         if (w <= 0 || h <= 0) return;
-        g.blit(RenderType::guiTextured, WHITE, x, y, 0, 0, w, h, 16, 16, 16, 16, color);
+        g.fill(x, y, x + w, y + h, color);
+    }
+
+    /** A texture tinted by color: 1.21.1 GUI blits take no colour, so the shader colour does the tint. */
+    static void quad(GuiGraphics g, ResourceLocation tex, int x, int y, int w, int h, int tw, int th, int color) {
+        if (w <= 0 || h <= 0) return;
+        g.setColor(((color >> 16) & 0xFF) / 255f, ((color >> 8) & 0xFF) / 255f, (color & 0xFF) / 255f, ((color >>> 24) & 0xFF) / 255f);
+        g.blit(tex, x, y, 0f, 0f, w, h, tw, th);
+        g.setColor(1f, 1f, 1f, 1f);
     }
 
     /** Rectangle with 2 px rounded corners. */
@@ -48,7 +55,7 @@ final class Ui {
     }
 
     static void icon(GuiGraphics g, ResourceLocation tex, int x, int y, int size, int color) {
-        g.blit(RenderType::guiTextured, tex, x, y, 0, 0, size, size, 32, 32, 32, 32, color);
+        quad(g, tex, x, y, size, size, 32, 32, color);
     }
 
     /** A keyboard key cap with its name, e.g. Ctrl. @return its width */

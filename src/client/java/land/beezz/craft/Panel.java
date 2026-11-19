@@ -6,7 +6,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.inventory.AbstractCraftingMenu;
+import net.minecraft.world.inventory.RecipeBookMenu;
 import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -163,7 +163,7 @@ final class Panel {
             if (j.needsTable && !(screen.getMenu() instanceof CraftingMenu)) {
                 status = Component.translatable("beezzcraft.queue.table");
                 color = Ui.MUTED;
-            } else if (screen.getMenu() instanceof AbstractCraftingMenu m && Crafter.canCraft(mc.player, m, j.option)) {
+            } else if (screen.getMenu() instanceof RecipeBookMenu<?, ?> m && Crafter.canCraft(mc.player, m, j.option)) {
                 status = Component.translatable("beezzcraft.queue.ready");
                 color = Ui.GREEN;
             } else {

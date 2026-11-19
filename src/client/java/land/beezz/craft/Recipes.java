@@ -2,22 +2,22 @@ package land.beezz.craft;
 
 import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
-import com.mojang.serialization.Codec;
-import net.minecraft.server.packs.PackResources;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.recipebook.RecipeCollection;
 import net.minecraft.client.server.IntegratedServer;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.ServerPacksSource;
-import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.StackedItemContents;
+import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.AbstractCraftingMenu;
+import net.minecraft.world.inventory.RecipeBookMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -25,11 +25,6 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
-import net.minecraft.world.item.crafting.display.RecipeDisplay;
-import net.minecraft.world.item.crafting.display.RecipeDisplayEntry;
-import net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay;
-import net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay;
-import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -66,14 +61,17 @@ final class Recipes {
         final List<Optional<Ingredient>> cells;
         final int width, height;
         final boolean needsTable;
+        /** The recipe itself, for the craftable check (1.21.1 StackedContents works on recipes, not ingredients). */
+        final Recipe<?> recipe;
         /** The recipe book entry, when the book knows this recipe (then it is crafted through the book). */
-        RecipeDisplayEntry entry;
+        RecipeHolder<?> entry;
         boolean craftable;
         List<Need> needs = List.of();
         /** Where its ingredients sit in the inventory, top left first: the variant made from the first wood wins. */
         int rank;
 
-        Option(ItemStack result, List<Ingredient> reqs, List<Optional<Ingredient>> cells, int width, int height, boolean needsTable) {
+        Option(Recipe<?> recipe, ItemStack result, List<Ingredient> reqs, List<Optional<Ingredient>> cells, int width, int height, boolean needsTable) {
+            this.recipe = recipe;
             this.result = result;
             this.reqs = reqs;
             this.cells = cells;
@@ -99,18 +97,15 @@ final class Recipes {
 
     private Recipes() {}
 
-    static ContextMap context(Minecraft mc) {
-        return SlotDisplayContext.fromLevel(mc.level);
-    }
-
     /** Grid size of the menu: 3 at a crafting table, 2 in the inventory. */
     static int gridSize(AbstractContainerMenu menu) {
-        return menu instanceof AbstractCraftingMenu c ? Math.min(c.getGridWidth(), c.getGridHeight()) : 2;
+        return menu instanceof RecipeBookMenu<?, ?> c ? Math.min(c.getGridWidth(), c.getGridHeight()) : 2;
     }
 
-    static boolean fits(RecipeDisplay display, int grid) {
-        if (display instanceof ShapedCraftingRecipeDisplay s) return s.width() <= grid && s.height() <= grid;
-        if (display instanceof ShapelessCraftingRecipeDisplay s) return s.ingredients().size() <= grid * grid;
+    /** Shaped and shapeless recipes, if they fit the grid. */
+    static boolean fits(Recipe<?> r, int grid) {
+        if (r instanceof ShapedRecipe s) return s.getWidth() <= grid && s.getHeight() <= grid;
+        if (r instanceof ShapelessRecipe s) return s.getIngredients().size() <= grid * grid;
         return false;
     }
 
@@ -119,47 +114,23 @@ final class Recipes {
     private static List<Option> catalog;
     private static Object catalogFor;
 
-    /**
-     * The game's own data pack. 26.3 wraps it (createVanillaPackSource().fullResources()), 26.1–26.2 return it directly;
-     * picked at run time so one source builds for every supported version.
-     */
-    private static PackResources vanillaPack() throws Exception {
-        Object source = ServerPacksSource.createVanillaPackSource();
-        if (source instanceof PackResources pack) return pack;
-        return (PackResources) source.getClass().getMethod("fullResources").invoke(source);
-    }
-
-    /** The plain recipe codec: Recipe.DIRECT_CODEC since 26.3, Recipe.CODEC before (in 26.3 CODEC means holders). */
-    @SuppressWarnings("unchecked")
-    private static Codec<Recipe<?>> recipeCodec() throws Exception {
-        for (String name : new String[] {"DIRECT_CODEC", "CODEC"}) {
-            try {
-                return (Codec<Recipe<?>>) Recipe.class.getField(name).get(null);
-            } catch (NoSuchFieldException ignored) {
-                // older name below
-            }
-        }
-        throw new NoSuchFieldException("Recipe codec");
-    }
-
     /** Every shaped and shapeless crafting recipe, read once per world. */
     static List<Option> catalog(Minecraft mc) {
         if (catalog != null && catalogFor == mc.getConnection()) return catalog;
         List<Option> out = new ArrayList<>();
-        ContextMap ctx = context(mc);
+        HolderLookup.Provider registries = mc.level.registryAccess();
         IntegratedServer server = mc.getSingleplayerServer();
         boolean fromServer = server != null && !Boolean.getBoolean("beezzcraft.vanillaData"); // the flag: test the multiplayer way
         try {
             if (fromServer) {
-                for (RecipeHolder<?> h : server.getRecipeManager().getRecipes()) add(out, h.value(), ctx);
+                for (RecipeHolder<?> h : server.getRecipeManager().getRecipes()) add(out, h.value(), registries);
             } else {
                 RegistryOps<com.google.gson.JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, mc.level.registryAccess());
-                Codec<Recipe<?>> codec = recipeCodec();
-                try (PackResources pack = vanillaPack()) {
+                try (PackResources pack = ServerPacksSource.createVanillaPackSource()) {
                     pack.listResources(PackType.SERVER_DATA, "minecraft", "recipe", (id, supplier) -> {
                         try (InputStream in = supplier.get()) {
-                            codec.parse(ops, JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)))
-                                    .ifSuccess(r -> add(out, r, ctx));
+                            Recipe.CODEC.parse(ops, JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)))
+                                    .ifSuccess(r -> add(out, r, registries));
                         } catch (Exception ignored) {
                             // one odd recipe must not hide the others
                         }
@@ -175,22 +146,27 @@ final class Recipes {
         return out;
     }
 
-    private static void add(List<Option> out, Recipe<?> r, ContextMap ctx) {
-        ItemStack result;
-        List<RecipeDisplay> displays = r.display();
-        if (displays.isEmpty()) return;
-        try {
-            result = displays.getFirst().result().resolveForFirstStack(ctx);
-        } catch (RuntimeException e) {
-            return;
-        }
-        if (result.isEmpty()) return;
+    private static void add(List<Option> out, Recipe<?> r, HolderLookup.Provider registries) {
         if (r instanceof ShapedRecipe s) {
-            List<Ingredient> reqs = s.getIngredients().stream().flatMap(Optional::stream).toList();
-            out.add(new Option(result, reqs, s.getIngredients(), s.getWidth(), s.getHeight(), s.getWidth() > 2 || s.getHeight() > 2));
+            ItemStack result = r.getResultItem(registries);
+            if (result.isEmpty()) return;
+            List<Ingredient> reqs = new ArrayList<>();
+            List<Optional<Ingredient>> cells = new ArrayList<>();
+            for (Ingredient ing : s.getIngredients()) {
+                if (ing.isEmpty()) {
+                    cells.add(Optional.empty());
+                } else {
+                    reqs.add(ing);
+                    cells.add(Optional.of(ing));
+                }
+            }
+            out.add(new Option(r, result, reqs, cells, s.getWidth(), s.getHeight(), s.getWidth() > 2 || s.getHeight() > 2));
         } else if (r instanceof ShapelessRecipe s) {
-            List<Ingredient> reqs = s.placementInfo().ingredients();
-            out.add(new Option(result, reqs, reqs.stream().map(Optional::of).toList(), 0, 0, reqs.size() > 4));
+            ItemStack result = r.getResultItem(registries);
+            if (result.isEmpty()) return;
+            List<Ingredient> reqs = new ArrayList<>();
+            for (Ingredient ing : s.getIngredients()) if (!ing.isEmpty()) reqs.add(ing);
+            out.add(new Option(r, result, reqs, reqs.stream().map(Optional::of).toList(), 0, 0, reqs.size() > 4));
         }
     }
 
@@ -202,31 +178,35 @@ final class Recipes {
 
     /** Every crafting recipe that uses this item and fits the grid; the recipe book's entries attached where known. */
     static List<Option> uses(Minecraft mc, ItemStack stack, int grid) {
-        ContextMap ctx = context(mc);
+        HolderLookup.Provider registries = mc.level.registryAccess();
         Map<String, Option> byKey = new HashMap<>();
         List<Option> out = new ArrayList<>();
         for (Option o : catalog(mc)) {
             if (o.needsTable && grid < 3) continue;
             if (o.reqs.stream().noneMatch(i -> i.test(stack))) continue;
-            Option copy = new Option(o.result, o.reqs, o.cells, o.width, o.height, o.needsTable);
+            Option copy = new Option(o.recipe, o.result, o.reqs, o.cells, o.width, o.height, o.needsTable);
             out.add(copy);
             byKey.putIfAbsent(copy.key(), copy);
         }
         // the recipe book: attach its entries (crafting through the book is cheaper); recipes only it knows are added
         for (RecipeCollection collection : mc.player.getRecipeBook().getCollections()) {
-            for (RecipeDisplayEntry entry : collection.getRecipes()) {
-                RecipeDisplay display = entry.display();
-                if (!fits(display, grid) || entry.craftingRequirements().isEmpty()) continue;
-                List<Ingredient> reqs = entry.craftingRequirements().get();
+            for (RecipeHolder<?> holder : collection.getRecipes()) {
+                if (!mc.player.getRecipeBook().contains(holder)) continue;
+                Recipe<?> r = holder.value();
+                if (!fits(r, grid)) continue;
+                NonNullList<Ingredient> list = r.getIngredients();
+                List<Ingredient> reqs = new ArrayList<>();
+                for (Ingredient ing : list) if (!ing.isEmpty()) reqs.add(ing);
+                if (reqs.isEmpty()) continue;
                 if (reqs.stream().noneMatch(i -> i.test(stack))) continue;
-                List<ItemStack> results = entry.resultItems(ctx);
-                if (results.isEmpty() || results.getFirst().isEmpty()) continue;
-                Option book = new Option(results.getFirst(), reqs, List.of(), -1, -1, !fits(display, 2));
+                ItemStack result = r.getResultItem(registries);
+                if (result.isEmpty()) continue;
+                Option book = new Option(r, result, reqs, List.of(), -1, -1, !fits(r, 2));
                 Option known = byKey.get(book.key());
                 if (known != null) {
-                    if (known.entry == null) known.entry = entry;
+                    if (known.entry == null) known.entry = holder;
                 } else {
-                    book.entry = entry;
+                    book.entry = holder;
                     out.add(book);
                     byKey.put(book.key(), book);
                 }
@@ -235,21 +215,12 @@ final class Recipes {
         return out;
     }
 
-    /** 1.21.2-1.21.3 count ingredients as StackedContents.IngredientInfo, not bare Ingredient. */
-    private static List<net.minecraft.world.entity.player.StackedContents.IngredientInfo<net.minecraft.core.Holder<net.minecraft.world.item.Item>>> ingredientInfos(List<Ingredient> reqs) {
-        List<net.minecraft.world.entity.player.StackedContents.IngredientInfo<net.minecraft.core.Holder<net.minecraft.world.item.Item>>> infos = new ArrayList<>();
-        for (Ingredient ing : reqs) infos.add(new net.minecraft.world.entity.player.StackedContents.IngredientInfo<>(ing.items()));
-        return infos;
-    }
-
     /** Fills craftable / needs / rank for the current inventory (and the items already in the crafting grid). */
     static void refresh(Player player, AbstractContainerMenu menu, List<Option> options) {
-        StackedItemContents contents = new StackedItemContents();
-        player.getInventory().fillStackedContents(contents);
-        if (menu instanceof AbstractCraftingMenu c) c.fillCraftSlotsStackedContents(contents);
+        StackedContents contents = stacked(player, menu);
         List<ItemStack> pool = pool(player, menu);
         for (Option o : options) {
-            o.craftable = contents.canCraft(ingredientInfos(o.reqs), null);
+            o.craftable = contents.canCraft(o.recipe, null);
             o.needs = needs(o.reqs, pool);
             o.rank = rank(player, o.reqs);
         }
@@ -263,10 +234,23 @@ final class Recipes {
     }
 
     static boolean canCraft(Player player, AbstractContainerMenu menu, Option o) {
-        StackedItemContents contents = new StackedItemContents();
+        return stacked(player, menu).canCraft(o.recipe, null);
+    }
+
+    /** 1.21.1 counts craftability against the recipe object; the inventory and the crafting grid are the stock. */
+    private static StackedContents stacked(Player player, AbstractContainerMenu menu) {
+        StackedContents contents = new StackedContents();
         player.getInventory().fillStackedContents(contents);
-        if (menu instanceof AbstractCraftingMenu c) c.fillCraftSlotsStackedContents(contents);
-        return contents.canCraft(ingredientInfos(o.reqs), null);
+        if (menu instanceof RecipeBookMenu<?, ?> c) c.fillCraftSlotsStackedContents(contents);
+        return contents;
+    }
+
+    /** The grid slots of a crafting menu: they follow the result slot. */
+    private static List<Slot> gridSlots(RecipeBookMenu<?, ?> menu) {
+        int first = menu.getResultSlotIndex() + 1, n = menu.getGridWidth() * menu.getGridHeight();
+        List<Slot> out = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) out.add(menu.getSlot(first + i));
+        return out;
     }
 
     /** How many items short this recipe is; ingredients the player has none of at all count double. */
@@ -312,8 +296,8 @@ final class Recipes {
         for (int i = 0; i < Inventory.INVENTORY_SIZE; i++) {
             if (!inv.getItem(i).isEmpty()) pool.add(inv.getItem(i).copy());
         }
-        if (menu instanceof AbstractCraftingMenu c) {
-            for (Slot s : c.getInputGridSlots()) if (s.hasItem()) pool.add(s.getItem().copy());
+        if (menu instanceof RecipeBookMenu<?, ?> c) {
+            for (Slot s : gridSlots(c)) if (s.hasItem()) pool.add(s.getItem().copy());
         }
         return pool;
     }
@@ -343,7 +327,8 @@ final class Recipes {
                 }
             }
             if (icon.isEmpty()) {
-                icon = ing.items().stream().findFirst().map(h -> new ItemStack(h.value())).orElse(ItemStack.EMPTY);
+                ItemStack[] items = ing.getItems();
+                icon = items.length > 0 ? items[0].copyWithCount(1) : ItemStack.EMPTY;
             }
             out.add(new Need(icon, counts.get(i), have));
         }

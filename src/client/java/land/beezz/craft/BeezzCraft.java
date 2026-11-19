@@ -68,7 +68,7 @@ public final class BeezzCraft {
     /** Called by ScreenMixin after the screen and before its tooltips. */
     public static void renderWheel(Screen screen, GuiGraphics g, int mx, int my) {
         if (!(screen instanceof InventoryScreen) && !(screen instanceof CraftingScreen)) return;
-        Font font = screen.getFont();
+        Font font = Minecraft.getInstance().font;
         if (wheel != null && wheel.screen == screen) wheel.render(g, font, mx, my);
         Panel.render((AbstractContainerScreen<?>) screen, g, font, mx, my);
     }

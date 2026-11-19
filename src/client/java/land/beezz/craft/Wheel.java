@@ -6,7 +6,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -335,7 +334,7 @@ final class Wheel {
         g.pose().translate(cx + px * z, cy + py * z, 0);
         g.pose().scale(z, z, 1);
         g.pose().mulPose(com.mojang.math.Axis.ZP.rotation((float) Math.toRadians(45 * k)));
-        g.blit(RenderType::guiTextured, tex, -size / 2, -size / 2, 0, 0, size, size, size * 2, size * 2, size * 2, size * 2, color);
+        Ui.quad(g, tex, -size / 2, -size / 2, size, size, size * 2, size * 2, color);
         g.pose().popPose();
     }
 

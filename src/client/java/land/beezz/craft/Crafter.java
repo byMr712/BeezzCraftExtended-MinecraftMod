@@ -11,7 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.AbstractCraftingMenu;
+import net.minecraft.world.inventory.RecipeBookMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.inventory.Slot;
@@ -121,7 +121,7 @@ final class Crafter {
         }
         if (jobs.isEmpty()) return;
         AbstractContainerMenu menu = menu(mc);
-        if (!(menu instanceof AbstractCraftingMenu crafting) || !player.containerMenu.equals(menu)) return;
+        if (!(menu instanceof RecipeBookMenu<?, ?> crafting) || !player.containerMenu.equals(menu)) return;
         if (!player.containerMenu.getCarried().isEmpty()) return; // something on the cursor: wait
         if (cooldown > 0) {
             cooldown--; // let the server's answer to the last batch arrive before counting the inventory again
@@ -144,9 +144,9 @@ final class Crafter {
         if (book) {
             // the whole batch in one tick: the server handles the packets in order (lay out, take, lay out, take...)
             times = current.all ? 1 : Math.max(1, Math.min(current.left, possible));
-            Slot result = crafting.getResultSlot();
+            Slot result = crafting.getSlot(crafting.getResultSlotIndex());
             for (int i = 0; i < times; i++) {
-                mc.gameMode.handlePlaceRecipe(menu.containerId, o.entry.id(), current.all);
+                mc.gameMode.handlePlaceRecipe(menu.containerId, o.entry, current.all);
                 mc.gameMode.handleInventoryMouseClick(menu.containerId, result.index, 0, ClickType.QUICK_MOVE, player);
             }
         } else if (o.width >= 0) {
@@ -169,9 +169,9 @@ final class Crafter {
      * stack (inventory top left first), right-clicks «times» items into the cell, puts the rest back; then shift-clicks
      * the result. The client plays every click locally too, so the screen stays right.
      */
-    private static void byHand(Minecraft mc, LocalPlayer player, AbstractCraftingMenu menu, Recipes.Option o, int times) {
+    private static void byHand(Minecraft mc, LocalPlayer player, RecipeBookMenu<?, ?> menu, Recipes.Option o, int times) {
         int id = menu.containerId;
-        List<Slot> grid = menu.getInputGridSlots();
+        List<Slot> grid = gridSlots(menu);
         int gw = menu.getGridWidth();
         for (Slot s : grid) if (s.hasItem()) mc.gameMode.handleInventoryMouseClick(id, s.index, 0, ClickType.QUICK_MOVE, player);
 
@@ -219,7 +219,7 @@ final class Crafter {
                 need -= put;
             }
         }
-        mc.gameMode.handleInventoryMouseClick(id, menu.getResultSlot().index, 0, ClickType.QUICK_MOVE, player);
+        mc.gameMode.handleInventoryMouseClick(id, menu.getSlot(menu.getResultSlotIndex()).index, 0, ClickType.QUICK_MOVE, player);
     }
 
     private static void finish(LocalPlayer player, Component message) {
@@ -229,7 +229,7 @@ final class Crafter {
     }
 
     /** The first job that can run here: in the inventory only 2x2 recipes, queued ones only when they can be crafted. */
-    private static Job pick(LocalPlayer player, AbstractCraftingMenu menu) {
+    private static Job pick(LocalPlayer player, RecipeBookMenu<?, ?> menu) {
         for (Job j : jobs) {
             if (j.needsTable && !(menu instanceof CraftingMenu)) continue;
             if (!j.queued || Recipes.canCraft(player, menu, j.option)) return j;
@@ -237,8 +237,16 @@ final class Crafter {
         return null;
     }
 
-    static boolean canCraft(LocalPlayer player, AbstractCraftingMenu menu, Recipes.Option o) {
+    static boolean canCraft(LocalPlayer player, RecipeBookMenu<?, ?> menu, Recipes.Option o) {
         return Recipes.canCraft(player, menu, o);
+    }
+
+    /** The grid slots of a crafting menu: they follow the result slot. */
+    private static List<Slot> gridSlots(RecipeBookMenu<?, ?> menu) {
+        int first = menu.getResultSlotIndex() + 1, n = menu.getGridWidth() * menu.getGridHeight();
+        List<Slot> out = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) out.add(menu.getSlot(first + i));
+        return out;
     }
 
     private static boolean hasRoomFor(LocalPlayer player, ItemStack result) {
