@@ -27,7 +27,12 @@ fabricApi {
     }
 }
 
+repositories {
+    maven { name = "TerraformersMC"; url = "https://maven.terraformersmc.com/releases/" }
+}
+
 dependencies {
+    compileOnly "com.terraformersmc:modmenu:20.0.3"
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
     // Fabric API is only used by the optional Fabric client gametests, never by the mod itself.
