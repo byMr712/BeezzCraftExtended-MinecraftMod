@@ -47,7 +47,7 @@ import java.util.Optional;
  * <p>
  * Every crafting recipe of the game is known, not only the ones the recipe book has unlocked (a torch only unlocks
  * once you hold a stone pickaxe, yet you can craft it by hand from the start): in singleplayer straight from the
- * server, in multiplayer from the vanilla data inside the game. Recipes the recipe book knows are crafted through it;
+ * server, in multiplayer from the client's own data packs. Recipes the recipe book knows are crafted through it;
  * the others are laid out in the grid with ordinary clicks, like a player would.
  */
 final class Recipes {
@@ -144,7 +144,7 @@ final class Recipes {
         throw new NoSuchFieldException("Recipe codec");
     }
 
-    /** Every shaped and shapeless crafting recipe, read once per world. */
+    /** Every crafting recipe the client can read, loaded once per world. */
     static List<Option> catalog(Minecraft mc) {
         if (catalog != null && catalogFor == mc.getConnection()) return catalog;
         List<Option> out = new ArrayList<>();
@@ -177,7 +177,7 @@ final class Recipes {
         } catch (Exception e) {
             BeezzCraft.LOG.warn("BeezzCraft: cannot read the recipes: {}", e.toString());
         }
-        BeezzCraft.LOG.info("BeezzCraft: {} crafting recipes known ({})", out.size(), fromServer ? "singleplayer" : "vanilla data");
+        BeezzCraft.LOG.info("BeezzCraft: {} crafting recipes known ({})", out.size(), fromServer ? "singleplayer" : "client packs");
         catalog = out;
         catalogFor = mc.getConnection();
         return out;
