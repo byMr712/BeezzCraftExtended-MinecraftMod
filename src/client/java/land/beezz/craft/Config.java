@@ -2,7 +2,7 @@ package land.beezz.craft;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.Minecraft;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -40,7 +40,7 @@ final class Config {
     }
 
     private static Path file() {
-        return FabricLoader.getInstance().getConfigDir().resolve("beezzcraft.json");
+        return Minecraft.getInstance().gameDirectory.toPath().resolve("config").resolve("beezzcraft.json");
     }
 
     private static Config load() {
