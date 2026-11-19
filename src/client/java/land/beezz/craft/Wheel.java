@@ -341,6 +341,7 @@ final class Wheel {
         g.pose().scale(z, z);
         g.pose().rotate((float) Math.toRadians(45 * k));
         ModResources.texture(tex);
+        ModResources.texture(tex);
         g.blit(RenderPipelines.GUI_TEXTURED, tex, -size / 2, -size / 2, 0, 0, size, size, size * 2, size * 2, size * 2, size * 2, color);
         g.pose().popMatrix();
     }

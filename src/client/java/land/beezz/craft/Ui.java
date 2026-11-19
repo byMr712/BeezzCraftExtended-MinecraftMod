@@ -27,6 +27,7 @@ final class Ui {
     static void rect(GuiGraphicsExtractor g, int x, int y, int w, int h, int color) {
         if (w <= 0 || h <= 0) return;
         ModResources.texture(WHITE);
+        ModResources.texture(WHITE);
         g.blit(RenderPipelines.GUI_TEXTURED, WHITE, x, y, 0, 0, w, h, 16, 16, 16, 16, color);
     }
 
@@ -49,6 +50,7 @@ final class Ui {
     }
 
     static void icon(GuiGraphicsExtractor g, Identifier tex, int x, int y, int size, int color) {
+        ModResources.texture(tex);
         ModResources.texture(tex);
         g.blit(RenderPipelines.GUI_TEXTURED, tex, x, y, 0, 0, size, size, 32, 32, 32, 32, color);
     }
