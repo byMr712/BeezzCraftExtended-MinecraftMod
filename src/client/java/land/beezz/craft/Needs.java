@@ -81,9 +81,9 @@ final class Needs {
         Ui.panel(g, x, y, width, h);
         if (full) {
             g.item(new ItemStack(net.minecraft.world.item.Items.IRON_PICKAXE), x + 4, y + 2);
-            g.text(font, net.minecraft.network.chat.Component.translatable("beezzcraft.needs.title"), x + 22, y + 6, Ui.HONEY_SOFT, false);
+            g.text(font, Tr.t("beezzcraft.needs.title"), x + 22, y + 6, Ui.HONEY_SOFT, false);
             if (show.isEmpty() || !anyMissing(show)) {
-                g.text(font, net.minecraft.network.chat.Component.translatable("beezzcraft.needs.ok"), x + 7, y + 26, Ui.GREEN, false);
+                g.text(font, Tr.t("beezzcraft.needs.ok"), x + 7, y + 26, Ui.GREEN, false);
                 return h;
             }
         } else {

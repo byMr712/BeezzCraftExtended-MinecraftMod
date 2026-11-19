@@ -253,13 +253,13 @@ final class Wheel {
         }
 
         if (shown.isEmpty()) {
-            g.centeredText(font, Component.translatable("beezzcraft.none"), Math.round(cx), Math.round(cy + 30), Ui.MUTED);
+            g.centeredText(font, Tr.t("beezzcraft.none"), Math.round(cx), Math.round(cy + 30), Ui.MUTED);
         }
         hints(g, font);
         if (pages() > 1) pager(g, font, mx, my);
 
         if (hover >= 0) Card.recipe(g, font, shown.get(hover), mx, my, screen.width, screen.height);
-        else if (hover == -2) Card.text(g, font, Component.translatable("beezzcraft.center"), mx, my, screen.width, screen.height);
+        else if (hover == -2) Card.text(g, font, Tr.t("beezzcraft.center"), mx, my, screen.width, screen.height);
     }
 
     // ------------------------------------------------------------------ pages
@@ -305,8 +305,8 @@ final class Wheel {
 
     /** The line of hints under the wheel, with mouse pictures instead of words. */
     private void hints(GuiGraphicsExtractor g, Font font) {
-        Component craft = Component.translatable("beezzcraft.hint.craft"), close = Component.translatable("beezzcraft.hint.close");
-        Component pages = Component.translatable("beezzcraft.hint.pages", page + 1, pages());
+        Component craft = Tr.t("beezzcraft.hint.craft"), close = Tr.t("beezzcraft.hint.close");
+        Component pages = Tr.t("beezzcraft.hint.pages", page + 1, pages());
         boolean multi = pages() > 1;
         int w = 12 + font.width(craft) + 10 + 12 + font.width(close) + (multi ? 10 + 12 + font.width(pages) : 0) + 12;
         float rOut = RINGS[ringsUsed() - 1][1] / (float) Math.cos(HALF) * zoom();
@@ -340,6 +340,7 @@ final class Wheel {
         g.pose().translate(cx + px * z, cy + py * z);
         g.pose().scale(z, z);
         g.pose().rotate((float) Math.toRadians(45 * k));
+        ModResources.texture(tex);
         g.blit(RenderPipelines.GUI_TEXTURED, tex, -size / 2, -size / 2, 0, 0, size, size, size * 2, size * 2, size * 2, size * 2, color);
         g.pose().popMatrix();
     }
@@ -360,9 +361,9 @@ final class Wheel {
             Crafter.craft(o, count, shift);
         } else if (Config.get().queue) {
             Crafter.enqueue(o, count, shift);
-            Minecraft.getInstance().player.sendOverlayMessage(Component.translatable("beezzcraft.added", o.result.getHoverName()).withStyle(ChatFormatting.AQUA));
+            Minecraft.getInstance().player.sendOverlayMessage(Tr.t("beezzcraft.added", o.result.getHoverName()).withStyle(ChatFormatting.AQUA));
         } else {
-            Minecraft.getInstance().player.sendOverlayMessage(Component.translatable("beezzcraft.noqueue").withStyle(ChatFormatting.GRAY));
+            Minecraft.getInstance().player.sendOverlayMessage(Tr.t("beezzcraft.noqueue").withStyle(ChatFormatting.GRAY));
             Panel.openSettings(); // show where the queue is switched on
         }
         refreshIn = 3;
