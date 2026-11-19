@@ -336,7 +336,7 @@ final class Wheel {
         g.pose().scale(z, z, 1);
         g.pose().mulPose(com.mojang.math.Axis.ZP.rotation((float) Math.toRadians(45 * k)));
         ModResources.texture(tex);
-        g.blit(RenderType::guiTexturedOverlay, tex, -size / 2, -size / 2, 0, 0, size, size, size * 2, size * 2, size * 2, size * 2, color);
+        g.blit(RenderType::guiTextured, tex, -size / 2, -size / 2, 0, 0, size, size, size * 2, size * 2, size * 2, size * 2, color);
         g.pose().popPose();
     }
 
