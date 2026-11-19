@@ -88,7 +88,7 @@ crafting sound, the Ctrl count and the recently crafted items.
 
 ## Build
 
-JDK 25 or newer is required.
+JDK 21 or newer is required; the build uses a Java 21 toolchain.
 
 ```bash
 ./gradlew build
