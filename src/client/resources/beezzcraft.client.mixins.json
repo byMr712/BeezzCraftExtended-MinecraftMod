@@ -8,6 +8,7 @@
     "ContainerScreenMixin",
     "HudMixin",
     "MinecraftMixin",
+    "LanguageMixin",
     "KeyMappingAccessor",
     "OptionsAccessor",
     "OptionsMixin",
