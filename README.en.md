@@ -9,7 +9,7 @@
 <div align="center">
 
 ![Java 25+](https://img.shields.io/badge/Java-25+-blue.svg)
-![Minecraft](https://img.shields.io/badge/Minecraft-1.21.7-blue.svg)
+![Minecraft](https://img.shields.io/badge/Minecraft-1.21.6-blue.svg)
 ![Fabric](https://img.shields.io/badge/Loader-Fabric-blue.svg)
 ![NeoForge](https://img.shields.io/badge/Loader-NeoForge-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
@@ -61,10 +61,10 @@ recipe book.
 
 The mod runs on **Fabric** and **NeoForge**. Fabric API and other libraries are not required.
 
-1. Install [Fabric Loader](https://fabricmc.net/use/) or [NeoForge](https://neoforged.net/) for Minecraft **1.21.7**.
+1. Install [Fabric Loader](https://fabricmc.net/use/) or [NeoForge](https://neoforged.net/) for Minecraft **1.21.6**.
 2. Put one JAR for your loader into the `mods` folder:
-   - `BeezzCraft-Fabric-1.21.7-v1.0.0.jar` — for Fabric;
-   - `BeezzCraft-NeoForge-1.21.7-v1.0.0.jar` — for NeoForge.
+   - `BeezzCraft-Fabric-1.21.6-v1.0.0.jar` — for Fabric;
+   - `BeezzCraft-NeoForge-1.21.6-v1.0.0.jar` — for NeoForge.
 3. Start the game.
 
 The mod is client-only: it does not need to be installed on the server and works on ordinary (vanilla) servers.
@@ -96,8 +96,8 @@ JDK 25 or newer is required.
 
 The command builds both files into `build/libs/`:
 
-- `BeezzCraft-Fabric-1.21.7-v1.0.0.jar`
-- `BeezzCraft-NeoForge-1.21.7-v1.0.0.jar`
+- `BeezzCraft-Fabric-1.21.6-v1.0.0.jar`
+- `BeezzCraft-NeoForge-1.21.6-v1.0.0.jar`
 
 The client game test with screenshots runs with `./gradlew runClientGameTest`; screenshots are saved to
 `build/run/clientGameTest/screenshots/`.
