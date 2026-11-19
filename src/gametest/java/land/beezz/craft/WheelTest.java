@@ -9,12 +9,19 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 /**
  * Plays the mod in a real client: the wheel in the inventory, a hover tooltip, craft once / Shift / Ctrl, the craft
@@ -322,6 +329,7 @@ public class WheelTest implements FabricClientGameTest {
                 Recipes.forget();
             });
             check("the game's own recipe data reads (multiplayer): " + known + " crafting recipes", known > 400);
+            customRecipeTest();
             shot("craft_10_table_sticks_page1");
             ctx.getInput().scroll(-1);
             ctx.waitTicks(5);
@@ -334,6 +342,47 @@ public class WheelTest implements FabricClientGameTest {
             Config.get().save();
         });
         BeezzCraft.LOG.info("BeezzCraft test: all steps done");
+    }
+
+    /** A custom CraftingRecipe (not Shaped/Shapeless) must still be read by the generic branch. */
+    private void customRecipeTest() {
+        ctx.runOnClient(mc -> {
+            var all = mc.getSingleplayerServer().getRecipeManager().getRecipes().stream()
+                    .map(h -> h.value()).toList();
+            ShapelessRecipe shapeless = all.stream().filter(r -> r instanceof ShapelessRecipe)
+                    .map(r -> (ShapelessRecipe) r).findFirst().orElse(null);
+            ShapedRecipe shaped = all.stream().filter(r -> r instanceof ShapedRecipe)
+                    .map(r -> (ShapedRecipe) r).findFirst().orElse(null);
+            if (shapeless == null || shaped == null) throw new IllegalStateException("no base recipes");
+            try {
+                Method add = Recipes.class.getDeclaredMethod("add", java.util.List.class, Recipe.class, ContextMap.class);
+                add.setAccessible(true);
+                java.util.List<Recipes.Option> out = new java.util.ArrayList<>();
+
+                add.invoke(null, out, custom(shapeless), Recipes.context(mc));
+                check("custom CraftingRecipe (shapeless) is read",
+                        out.stream().anyMatch(o -> o.width == 0 && !o.reqs.isEmpty()));
+
+                out.clear();
+                add.invoke(null, out, custom(shaped), Recipes.context(mc));
+                check("custom CraftingRecipe (shaped) is read", out.stream().anyMatch(o -> o.width == shaped.getWidth()
+                        && o.height == shaped.getHeight() && !o.cells.isEmpty()));
+            } catch (ReflectiveOperationException e) {
+                throw new IllegalStateException(e);
+            }
+        });
+    }
+
+    /** A proxy that is a CraftingRecipe but neither ShapedRecipe nor ShapelessRecipe. */
+    private static CraftingRecipe custom(CraftingRecipe base) {
+        return (CraftingRecipe) Proxy.newProxyInstance(CraftingRecipe.class.getClassLoader(),
+                new Class<?>[] {CraftingRecipe.class}, (proxy, method, args) -> {
+                    try {
+                        return method.invoke(base, args);
+                    } catch (java.lang.reflect.InvocationTargetException e) {
+                        throw e.getCause();
+                    }
+                });
     }
 
     /** mc.resizeGui() since 26.x, mc.resizeDisplay() in 1.21.x. */
