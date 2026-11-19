@@ -82,6 +82,18 @@ public final class BeezzCraft {
         return wheel != null && wheel.screen == screen;
     }
 
+    public static boolean wheelOpen() {
+        return wheel != null;
+    }
+
+    public static boolean keyOnly() {
+        return Config.get().keyOnly;
+    }
+
+    public static String rawTranslation(String key) {
+        return Tr.raw(key);
+    }
+
     /** @return true to let the screen handle the click as usual */
     public static boolean mouse(AbstractContainerScreen<?> screen, double mx, double my, int button, boolean alt, boolean shift, boolean ctrl) {
         if (wheel != null) {
@@ -90,7 +102,8 @@ public final class BeezzCraft {
         }
         boolean panel = Panel.click(mx, my, button); // the gear, its settings and the queue (top left)
         if (Boolean.getBoolean("beezzcraft.debug")) LOG.info("click button={} alt={} slot={}", button, alt, ((AbstractContainerScreenAccessor) screen).beezzcraft$hoveredSlot());
-        if (BeezzCraftKeys.modifierDown() && button == InputConstants.MOUSE_BUTTON_RIGHT) {
+        if (BeezzCraftKeys.modifierDown()
+                && button == (Config.get().functionalClick == 0 ? InputConstants.MOUSE_BUTTON_LEFT : InputConstants.MOUSE_BUTTON_RIGHT)) {
             Slot slot = ((AbstractContainerScreenAccessor) screen).beezzcraft$hoveredSlot();
             if (slot != null && slot.hasItem()) {
                 open(screen, slot.getItem(), mx, my);
@@ -123,6 +136,13 @@ public final class BeezzCraft {
             return;
         }
         wheel = new Wheel(screen, stack, options, mx, my);
+    }
+
+    public static boolean openHovered(AbstractContainerScreen<?> screen) {
+        Slot slot = ((AbstractContainerScreenAccessor) screen).beezzcraft$hoveredSlot();
+        if (slot == null || !slot.hasItem()) return false;
+        open(screen, slot.getItem(), screen.width / 2f, screen.height / 2f);
+        return true;
     }
 
 
