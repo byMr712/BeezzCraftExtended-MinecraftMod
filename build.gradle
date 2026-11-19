@@ -24,22 +24,13 @@ loom {
     }
 }
 
-fabricApi {
-    configureTests {
-        createSourceSet = true
-        modId = "beezzcraft-test"
-        enableGameTests = false
-        enableClientGameTests = true
-        eula = true
-    }
-}
+// Fabric API's client gametest module appeared only in 1.21.5, so this branch has no
+// automated client screenshot suite. Build both release JARs with ./gradlew build.
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    // Fabric API is only used by the optional Fabric client gametests, never by the mod itself.
-    gametestImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 }
 
 processResources {
