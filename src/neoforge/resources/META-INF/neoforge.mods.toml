@@ -8,7 +8,7 @@ modId="beezzcraft"
 version="${version}"
 displayName="BeezzCraft (Extended)"
 displayURL="https://github.com/byMr712/BeezzCraftExtended-MinecraftMod"
-authors="BeezzLand, Mr712"
+authors="BeezzLand & Mr712"
 description="Alt + right click on an item: an octagon wheel of everything you can craft from it. Grey means missing resources; hover for the recipe, click to craft."
 
 [[mixins]]
