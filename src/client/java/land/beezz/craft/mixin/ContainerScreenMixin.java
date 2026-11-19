@@ -2,6 +2,7 @@ package land.beezz.craft.mixin;
 
 import land.beezz.craft.BeezzCraft;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,6 +31,11 @@ public abstract class ContainerScreenMixin {
     @Inject(method = "tick", at = @At("TAIL"))
     private void beezzcraft$tick(CallbackInfo ci) {
         BeezzCraft.onScreenTick((Screen) (Object) this);
+    }
+
+    @Inject(method = "renderSlots", at = @At("HEAD"), cancellable = true)
+    private void beezzcraft$hideSlots(GuiGraphics g, CallbackInfo ci) {
+        if (BeezzCraft.wheelOpenOn(this)) ci.cancel();
     }
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
