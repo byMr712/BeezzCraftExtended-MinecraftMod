@@ -6,6 +6,7 @@
     "AbstractContainerScreenAccessor",
     "AbstractContainerScreenMixin",
     "ContainerScreenMixin",
+    "CreativeInventoryMixin",
     "GuiMixin",
     "MinecraftMixin",
     "MouseHandlerMixin",
