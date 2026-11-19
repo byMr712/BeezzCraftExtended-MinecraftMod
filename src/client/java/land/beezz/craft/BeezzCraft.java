@@ -87,7 +87,7 @@ public final class BeezzCraft {
         }
         boolean panel = Panel.click(mx, my, button); // the gear, its settings and the queue (top left)
         if (Boolean.getBoolean("beezzcraft.debug")) LOG.info("click button={} alt={} slot={}", button, alt, ((AbstractContainerScreenAccessor) screen).beezzcraft$hoveredSlot());
-        if ((alt || vDown()) && button == InputConstants.MOUSE_BUTTON_RIGHT) {
+        if (BeezzCraftKeys.MODIFIER.isDown() && button == InputConstants.MOUSE_BUTTON_RIGHT) {
             Slot slot = ((AbstractContainerScreenAccessor) screen).beezzcraft$hoveredSlot();
             if (slot != null && slot.hasItem()) {
                 open(screen, slot.getItem(), mx, my);
@@ -122,11 +122,6 @@ public final class BeezzCraft {
         wheel = new Wheel(screen, stack, options, mx, my);
     }
 
-    /** V is a reliable modifier when Alt is lost by the window: hold V and right-click a slot. */
-    public static boolean vDown() {
-        Minecraft mc = Minecraft.getInstance();
-        return InputConstants.isKeyDown(mc.getWindow(), InputConstants.KEY_V);
-    }
 
     /** The craft queue on the HUD while playing: a small card with what waits for resources. */
     public static void hud(GuiGraphicsExtractor g) {
