@@ -121,7 +121,7 @@ public class WheelTest implements FabricClientGameTest {
             mc.options.languageCode = LANG;
             mc.getLanguageManager().setSelected(LANG);
             mc.options.guiScale().set(3);
-            mc.resizeGui();
+            resizeGui(mc);
         });
         ctx.runOnClient(Minecraft::reloadResourcePacks);
         ctx.waitFor(mc -> overlay(mc) == null, 20 * 120);
@@ -254,7 +254,7 @@ public class WheelTest implements FabricClientGameTest {
             BlockPos pos = ctx.computeOnClient(mc -> mc.player.blockPosition().north(2));
             server.runCommand("setblock " + pos.getX() + " " + pos.getY() + " " + pos.getZ() + " crafting_table");
             ctx.waitTicks(10);
-            ctx.getInput().lookAt(pos);
+            ctx.runOnClient(mc -> lookAt(mc, pos));
             ctx.waitTicks(5);
             ctx.getInput().pressKey(mc -> mc.keyUse);
             ctx.waitForScreen(CraftingScreen.class);
@@ -325,10 +325,37 @@ public class WheelTest implements FabricClientGameTest {
             shot("craft_11_table_sticks_page2");
             ctx.setScreen(() -> null);
         }
-        Config.get().queue = false;
-        Config.get().recent.clear();
-        Config.get().save();
+        ctx.runOnClient(mc -> {
+            Config.get().queue = false;
+            Config.get().recent.clear();
+            Config.get().save();
+        });
         BeezzCraft.LOG.info("BeezzCraft test: all steps done");
+    }
+
+    /** mc.resizeGui() since 26.x, mc.resizeDisplay() in 1.21.x. */
+    private static void resizeGui(Minecraft mc) {
+        try {
+            Minecraft.class.getMethod("resizeGui").invoke(mc);
+        } catch (NoSuchMethodException e) {
+            try {
+                Minecraft.class.getMethod("resizeDisplay").invoke(mc);
+            } catch (ReflectiveOperationException e2) {
+                throw new IllegalStateException(e2);
+            }
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    /** Looks at the centre of a block; TestInput.lookAt(BlockPos) exists only in newer Fabric API. */
+    private static void lookAt(Minecraft mc, BlockPos pos) {
+        var eye = mc.player.getEyePosition();
+        var target = net.minecraft.world.phys.Vec3.atCenterOf(pos);
+        double dx = target.x - eye.x, dy = target.y - eye.y, dz = target.z - eye.z;
+        double flat = Math.sqrt(dx * dx + dz * dz);
+        mc.player.setYRot((float) (Math.toDegrees(Math.atan2(dz, dx)) - 90.0));
+        mc.player.setXRot((float) -Math.toDegrees(Math.atan2(dy, flat)));
     }
 
     /** The loading overlay: mc.gui.overlay() since 26.2, mc.getOverlay() in 26.1. */
