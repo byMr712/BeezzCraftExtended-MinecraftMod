@@ -131,11 +131,11 @@ final class Crafter {
         if (current == null) return;
         Recipes.Option o = current.option;
         if (!Recipes.canCraft(player, crafting, o)) {
-            finish(player, current.queued ? null : Component.translatable("beezzcraft.missing", current.result.getHoverName()));
+            finish(player, current.queued ? null : Tr.t("beezzcraft.missing", current.result.getHoverName()));
             return;
         }
         if (player.getInventory().getFreeSlot() < 0 && !hasRoomFor(player, current.result)) {
-            finish(player, Component.translatable("beezzcraft.full"));
+            finish(player, Tr.t("beezzcraft.full"));
             return;
         }
         int possible = Recipes.timesPossible(player, crafting, o);
@@ -153,7 +153,7 @@ final class Crafter {
             times = Math.max(1, Math.min(current.all ? possible : Math.min(current.left, possible), HAND_MAX));
             byHand(mc, player, crafting, o, times);
         } else {
-            finish(player, Component.translatable("beezzcraft.missing", current.result.getHoverName()));
+            finish(player, Tr.t("beezzcraft.missing", current.result.getHoverName()));
             return;
         }
         Config.get().crafted(o.itemId());

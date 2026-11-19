@@ -114,3 +114,7 @@ task jarNeoForge(type: Jar) {
 }
 
 build.dependsOn(jarNeoForge)
+
+tasks.named('jar') {
+    from("LICENSE")
+}
