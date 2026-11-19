@@ -9,7 +9,7 @@
 <div align="center">
 
 ![Java 25+](https://img.shields.io/badge/Java-25+-blue.svg)
-![Minecraft](https://img.shields.io/badge/Minecraft-1.21.11-blue.svg)
+![Minecraft](https://img.shields.io/badge/Minecraft-1.21.10-blue.svg)
 ![Fabric](https://img.shields.io/badge/Loader-Fabric-blue.svg)
 ![NeoForge](https://img.shields.io/badge/Loader-NeoForge-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
@@ -59,10 +59,10 @@
 
 Мод работает на **Fabric** и **NeoForge**. Fabric API и другие библиотеки не требуются.
 
-1. Установите [Fabric Loader](https://fabricmc.net/use/) или [NeoForge](https://neoforged.net/) для Minecraft **1.21.11**.
+1. Установите [Fabric Loader](https://fabricmc.net/use/) или [NeoForge](https://neoforged.net/) для Minecraft **1.21.10**.
 2. Положите в папку `mods` один JAR под свой загрузчик:
-   - `BeezzCraft-Fabric-1.21.11-v1.0.0.jar` — для Fabric;
-   - `BeezzCraft-NeoForge-1.21.11-v1.0.0.jar` — для NeoForge.
+   - `BeezzCraft-Fabric-1.21.10-v1.0.0.jar` — для Fabric;
+   - `BeezzCraft-NeoForge-1.21.10-v1.0.0.jar` — для NeoForge.
 3. Запустите игру.
 
 Мод только клиентский: на сервер ставить не нужно, работает и на обычных (ванильных) серверах.
@@ -94,8 +94,8 @@
 
 Команда собирает сразу два файла в `build/libs/`:
 
-- `BeezzCraft-Fabric-1.21.11-v1.0.0.jar`
-- `BeezzCraft-NeoForge-1.21.11-v1.0.0.jar`
+- `BeezzCraft-Fabric-1.21.10-v1.0.0.jar`
+- `BeezzCraft-NeoForge-1.21.10-v1.0.0.jar`
 
 Игровые тесты со скриншотами запускаются командой `./gradlew runClientGameTest`, скриншоты сохраняются в
 `build/run/clientGameTest/screenshots/`.

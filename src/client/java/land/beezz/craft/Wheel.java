@@ -8,7 +8,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
@@ -28,15 +28,15 @@ final class Wheel {
     private static final double HALF = Math.toRadians(22.5);
     private static final long OPEN_MS = 160;
 
-    private static final Identifier[][] FILL = new Identifier[4][], EDGE = new Identifier[4][], HALO = new Identifier[4][];
-    private static final Identifier CENTER_FILL = Ui.tex("center_fill"), CENTER_EDGE = Ui.tex("center_edge"),
+    private static final ResourceLocation[][] FILL = new ResourceLocation[4][], EDGE = new ResourceLocation[4][], HALO = new ResourceLocation[4][];
+    private static final ResourceLocation CENTER_FILL = Ui.tex("center_fill"), CENTER_EDGE = Ui.tex("center_edge"),
             CENTER_GLOW = Ui.tex("center_glow"), SHADOW = Ui.tex("shadow");
 
     static {
         for (int i = 0; i < RINGS.length; i++) {
-            FILL[i] = new Identifier[SPLIT[i]];
-            EDGE[i] = new Identifier[SPLIT[i]];
-            HALO[i] = new Identifier[SPLIT[i]];
+            FILL[i] = new ResourceLocation[SPLIT[i]];
+            EDGE[i] = new ResourceLocation[SPLIT[i]];
+            HALO[i] = new ResourceLocation[SPLIT[i]];
             for (int t = 0; t < SPLIT[i]; t++) {
                 String name = "ring" + (i + 1) + "_" + t;
                 FILL[i][t] = Ui.tex(name + "_fill");
@@ -327,13 +327,13 @@ final class Wheel {
     }
 
     /** One piece of a ring, pushed outwards (through its own middle) by push GUI px. */
-    private void piece(GuiGraphics g, Identifier[][] tex, Pos p, float push, int color) {
+    private void piece(GuiGraphics g, ResourceLocation[][] tex, Pos p, float push, int color) {
         double[] d = dir(p);
         layer(g, tex[p.ring()][p.piece()], RINGS[p.ring()][1], p.side(), (float) (d[0] / d[2] * push), (float) (d[1] / d[2] * push), color);
     }
 
     /** One wheel texture rotated onto octagon side k around the centre, shifted by (px, py) GUI px. */
-    private void layer(GuiGraphics g, Identifier tex, int apothem, int k, float px, float py, int color) {
+    private void layer(GuiGraphics g, ResourceLocation tex, int apothem, int k, float px, float py, int color) {
         int size = canvas(apothem);
         float z = zoom();
         g.pose().pushMatrix();

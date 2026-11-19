@@ -4,13 +4,13 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 /** Small drawing helpers shared by the wheel, the recipe card and the panel: soft panels, badges, key caps, icons. */
 final class Ui {
-    static final Identifier WHITE = tex("white"), GEAR = tex("icon_gear"), QUEUE = tex("icon_queue");
-    static final Identifier MOUSE_LEFT = tex("mouse_left"), MOUSE_RIGHT = tex("mouse_right"), MOUSE_WHEEL = tex("mouse_wheel");
+    static final ResourceLocation WHITE = tex("white"), GEAR = tex("icon_gear"), QUEUE = tex("icon_queue");
+    static final ResourceLocation MOUSE_LEFT = tex("mouse_left"), MOUSE_RIGHT = tex("mouse_right"), MOUSE_WHEEL = tex("mouse_wheel");
 
     // palette (ARGB)
     static final int HONEY = 0xFFFACC15, HONEY_SOFT = 0xFFFDE68A, BLUE = 0xFF93C5FD, GREEN = 0xFF86EFAC, RED = 0xFFFCA5A5;
@@ -19,8 +19,8 @@ final class Ui {
 
     private Ui() {}
 
-    static Identifier tex(String name) {
-        return Identifier.fromNamespaceAndPath("beezzcraft", "textures/gui/" + name + ".png");
+    static ResourceLocation tex(String name) {
+        return ResourceLocation.fromNamespaceAndPath("beezzcraft", "textures/gui/" + name + ".png");
     }
 
     /** A filled rectangle drawn as a textured quad (plain fills can land under the screen picture). */
@@ -47,7 +47,7 @@ final class Ui {
         round(g, x, y, w, h, PANEL);
     }
 
-    static void icon(GuiGraphics g, Identifier tex, int x, int y, int size, int color) {
+    static void icon(GuiGraphics g, ResourceLocation tex, int x, int y, int size, int color) {
         g.blit(RenderPipelines.GUI_TEXTURED, tex, x, y, 0, 0, size, size, 32, 32, 32, 32, color);
     }
 
