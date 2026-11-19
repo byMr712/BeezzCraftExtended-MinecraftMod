@@ -19,20 +19,20 @@ final class Card {
     static void recipe(GuiGraphicsExtractor g, Font font, Groups.Group group, int mx, int my, int sw, int sh) {
         Recipes.Option o = group.current();
         int variants = group.members.size();
-        Component other = Component.translatable("beezzcraft.card.variant", group.sel + 1, variants);
+        Component other = Tr.t("beezzcraft.card.variant", group.sel + 1, variants);
         Component name = o.result.getHoverName();
         String count = o.result.getCount() > 1 ? " ×" + o.result.getCount() : "";
         List<Recipes.Need> needs = o.needs;
         int queued = Crafter.queued(o);
         boolean queueOn = Config.get().queue;
 
-        Component lmb = Component.translatable(o.craftable ? "beezzcraft.card.once" : queueOn ? "beezzcraft.card.queue" : "beezzcraft.card.missing");
-        Component max = Component.translatable("beezzcraft.card.max");
+        Component lmb = Tr.t(o.craftable ? "beezzcraft.card.once" : queueOn ? "beezzcraft.card.queue" : "beezzcraft.card.missing");
+        Component max = Tr.t("beezzcraft.card.max");
         String ten = "×" + Config.get().ctrlCount;
         int hintsW = o.craftable
                 ? 12 + font.width(lmb) + 8 + keyW(font, "Ctrl") + 2 + font.width(ten) + 8 + keyW(font, "Shift") + 2 + font.width(max)
                 : (queueOn ? 12 : 0) + font.width(lmb) + (queueOn ? 8 + keyW(font, "Ctrl") + 2 + font.width(ten) : 0);
-        Component queuedText = Component.translatable("beezzcraft.card.queued", queued), remove = Component.translatable("beezzcraft.card.remove");
+        Component queuedText = Tr.t("beezzcraft.card.queued", queued), remove = Tr.t("beezzcraft.card.remove");
         int queuedW = queued > 0 ? 11 + font.width(queuedText) + 8 + 12 + font.width(remove) : 0;
         int stripW = variants > 1 ? Math.min(variants, 12) * 13 + 4 + 12 + font.width(other) : 0;
         int w = Math.max(Math.max(Math.max(20 + font.width(name) + font.width(count), needs.size() * CELL), Math.max(hintsW, queuedW)), stripW) + PAD * 2;

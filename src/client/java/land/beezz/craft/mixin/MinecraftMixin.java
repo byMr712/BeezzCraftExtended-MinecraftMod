@@ -1,5 +1,6 @@
 package land.beezz.craft.mixin;
 
+import land.beezz.craft.AutoTest;
 import land.beezz.craft.BeezzCraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -16,6 +17,7 @@ public class MinecraftMixin {
     private void beezzcraft$tick(CallbackInfo ci) {
         Minecraft mc = (Minecraft) (Object) this;
         BeezzCraft.onTick(mc);
+        AutoTest.tick(mc);
     }
 
     @Inject(method = "disconnectFromWorld", at = @At("HEAD"))
