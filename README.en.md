@@ -84,6 +84,14 @@ The mod is client-only: it does not need to be installed on the server and works
 
 > The modifier key can be changed in **Options → Controls → Key Binds → Beezz Craft Extended → Function key**.
 
+## Mod Menu
+
+If Mod Menu is installed, the mod has a config screen:
+
+* **Functional key** - the same key as in Controls; click it and press a key or mouse button.
+* **Use only the functional key** - off by default. Hover an item and press the functional key to open the wheel without a mouse click.
+* **Functional click** - the mouse button used with the functional key: **Left button** or **Right button** (default: Right button).
+
 ## Where the settings live
 
 All mod settings are in `.minecraft/config/beezzcraft.json`: the craft queue, grey recipes, "resources to get", the

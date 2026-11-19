@@ -27,9 +27,18 @@ fabricApi {
     }
 }
 
+repositories {
+    maven {
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/releases/"
+    }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    // Mod Menu is optional: it is only needed to compile the config screen.
+    compileOnly "com.terraformersmc:modmenu:21.0.1"
     // Fabric API is only used by the optional Fabric client gametests, never by the mod itself.
     gametestImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 }
@@ -105,6 +114,9 @@ task jarNeoForge(type: Jar) {
     from(sourceSets.client.output) {
         // Fabric-only entrypoint; NeoForge uses BeezzCraftNeoForge instead.
         exclude "land/beezz/craft/BeezzCraftClient.class"
+        // Mod Menu is Fabric-only; these classes must not reach the NeoForge classloader.
+        exclude "land/beezz/craft/ModMenuIntegration.class"
+        exclude "land/beezz/craft/BeezzCraftConfigScreen*.class"
     }
     from(sourceSets.neoforge.output) {
         // Compile-time stubs must never reach the runtime classpath.
