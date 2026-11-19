@@ -235,6 +235,13 @@ final class Recipes {
         return out;
     }
 
+    /** 1.21.2-1.21.3 count ingredients as StackedContents.IngredientInfo, not bare Ingredient. */
+    private static List<net.minecraft.world.entity.player.StackedContents.IngredientInfo<net.minecraft.core.Holder<net.minecraft.world.item.Item>>> ingredientInfos(List<Ingredient> reqs) {
+        List<net.minecraft.world.entity.player.StackedContents.IngredientInfo<net.minecraft.core.Holder<net.minecraft.world.item.Item>>> infos = new ArrayList<>();
+        for (Ingredient ing : reqs) infos.add(new net.minecraft.world.entity.player.StackedContents.IngredientInfo<>(ing.items()));
+        return infos;
+    }
+
     /** Fills craftable / needs / rank for the current inventory (and the items already in the crafting grid). */
     static void refresh(Player player, AbstractContainerMenu menu, List<Option> options) {
         StackedItemContents contents = new StackedItemContents();
@@ -242,7 +249,7 @@ final class Recipes {
         if (menu instanceof AbstractCraftingMenu c) c.fillCraftSlotsStackedContents(contents);
         List<ItemStack> pool = pool(player, menu);
         for (Option o : options) {
-            o.craftable = contents.canCraft(o.reqs, null);
+            o.craftable = contents.canCraft(ingredientInfos(o.reqs), null);
             o.needs = needs(o.reqs, pool);
             o.rank = rank(player, o.reqs);
         }
@@ -259,7 +266,7 @@ final class Recipes {
         StackedItemContents contents = new StackedItemContents();
         player.getInventory().fillStackedContents(contents);
         if (menu instanceof AbstractCraftingMenu c) c.fillCraftSlotsStackedContents(contents);
-        return contents.canCraft(o.reqs, null);
+        return contents.canCraft(ingredientInfos(o.reqs), null);
     }
 
     /** How many items short this recipe is; ingredients the player has none of at all count double. */
@@ -336,7 +343,7 @@ final class Recipes {
                 }
             }
             if (icon.isEmpty()) {
-                icon = ing.items().findFirst().map(h -> new ItemStack(h.value())).orElse(ItemStack.EMPTY);
+                icon = ing.items().stream().findFirst().map(h -> new ItemStack(h.value())).orElse(ItemStack.EMPTY);
             }
             out.add(new Need(icon, counts.get(i), have));
         }
