@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractCraftingMenu;
 import net.minecraft.world.inventory.CraftingMenu;
@@ -233,8 +234,12 @@ final class Panel {
             ry += ROW;
             if (i == 0) {
                 // what the queue does, right under its switch
-                for (var line : note()) {
+                for (var line : font.split(Tr.t("beezzcraft.set.queue.note1"), W - 16)) {
                     g.drawString(font, line, x + 8, ry, Ui.DIM, false);
+                    ry += 10;
+                }
+                for (var line : font.split(Tr.t("beezzcraft.set.queue.note2"), W - 16)) {
+                    g.drawString(font, line, x + 8, ry, Ui.RED, false);
                     ry += 10;
                 }
                 ry += 4;
@@ -246,7 +251,11 @@ final class Panel {
     private static void drawTooltip(GuiGraphics g, Font font, String[] keys, int mx, int my) {
         if (keys.length == 0) return;
         List<net.minecraft.util.FormattedCharSequence> lines = new ArrayList<>(keys.length);
-        for (String key : keys) lines.add(Tr.t(key).getVisualOrderText());
+        for (String key : keys) {
+            Component line = Tr.t(key);
+            if (key.equals("beezzcraft.set.queue.note2")) line = line.copy().withStyle(ChatFormatting.RED);
+            lines.add(line.getVisualOrderText());
+        }
         g.renderTooltip(font, lines, mx, my);
     }
 
