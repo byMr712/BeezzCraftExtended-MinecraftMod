@@ -36,7 +36,7 @@ final class Card {
         int queuedW = queued > 0 ? 11 + font.width(queuedText) + 8 + 12 + font.width(remove) : 0;
         int stripW = variants > 1 ? Math.min(variants, 12) * 13 + 4 + 12 + font.width(other) : 0;
         int w = Math.max(Math.max(Math.max(20 + font.width(name) + font.width(count), needs.size() * CELL), Math.max(hintsW, queuedW)), stripW) + PAD * 2;
-        int h = PAD + 18 + 4 + 16 + 11 + 6 + 12 + (queued > 0 ? 13 : 0) + (variants > 1 ? 16 : 0) + PAD - 4;
+        int h = PAD + 18 + 4 + 16 + 21 + 6 + 12 + (queued > 0 ? 13 : 0) + (variants > 1 ? 16 : 0) + PAD - 4;
 
         int x = mx + 14, y = my - 8;
         if (x + w > sw - 4) x = mx - 14 - w;
@@ -78,11 +78,11 @@ final class Card {
             int ix = cx + i * CELL;
             g.renderItem(n.icon(), ix, cy);
             String c = String.valueOf(n.need());
-            g.drawString(font, c, ix + 17 - font.width(c), cy + 9, 0xFFFFFFFF, true);
+            g.drawString(font, c, ix + 1, cy + 17, 0xFFFFFFFF, true);
             String s = n.missing() ? "-" + (n.need() - n.have()) : "✔";
-            g.drawString(font, s, ix + 8 - font.width(s) / 2, cy + 18, n.missing() ? Ui.RED : Ui.GREEN, false);
+            g.drawString(font, s, ix + 1, cy + 27, n.missing() ? Ui.RED : Ui.GREEN, false);
         }
-        cy += 16 + 11 + 6;
+        cy += 16 + 21 + 6;
 
         // what the clicks do
         int tx = cx;
