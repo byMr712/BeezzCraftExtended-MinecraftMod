@@ -19,7 +19,7 @@ API = "https://api.curseforge.com/v1"
 GAME_ID = 432  # Minecraft
 PROJECT_ID = "1817202"
 PROJECT_SLUG = "beezz-craft-extended"
-DISPLAY_NAME = "BeezzCraft"
+DISPLAY_NAME = "BeezzCraftExtended"
 JAR_RE = re.compile(
     r"^BeezzCraftExtended-(?P<loader>Fabric|NeoForge)-(?P<mc>\d+\.\d+(?:\.\d+)?)-v(?P<version>\d+(?:\.\d+)*)\.jar$"
 )
