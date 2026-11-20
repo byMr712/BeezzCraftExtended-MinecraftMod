@@ -75,7 +75,7 @@ public final class BeezzCraft {
         if (!(screen instanceof InventoryScreen) && !(screen instanceof CraftingScreen)
                 && !(screen instanceof CreativeModeInventoryScreen)) {
             // A recipe book or another screen opened on top: keep the open wheel visible above it.
-            if (wheel != null) wheel.render(g, screen.getFont(), mx, my);
+            if (wheel != null) wheel.render(g, Minecraft.getInstance().font, mx, my);
             return;
         }
         // 1.21.x batches the inventory items and flushes them after guiTextured; flush first so the wheel
