@@ -13,7 +13,7 @@ fetch(arguments[0], {credentials: 'include'}).then(r => r.text())
 driver = cf_console.connect()
 project = sys.argv[1] if len(sys.argv) > 1 else "1817202"
 path = ("/_api/project-files?filter=%7B%22projectId%22%3A%22" + project + "%22%7D"
-        "&range=%5B0%2C30%5D&sort=%5B%22DateCreated%22%2C%22DESC%22%5D")
+        "&range=%5B0%2C100%5D&sort=%5B%22DateCreated%22%2C%22DESC%22%5D")
 raw = driver.execute_async_script(JS, path)
 try:
     data = json.loads(raw)
