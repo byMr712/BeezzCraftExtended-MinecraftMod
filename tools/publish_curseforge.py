@@ -21,7 +21,7 @@ PROJECT_ID = "1817202"
 PROJECT_SLUG = "beezz-craft-extended"
 DISPLAY_NAME = "BeezzCraft"
 JAR_RE = re.compile(
-    r"^BeezzCraft-(?P<loader>Fabric|NeoForge)-(?P<mc>\d+\.\d+(?:\.\d+)?)-v(?P<version>\d+(?:\.\d+)*)\.jar$"
+    r"^(?:BeezzCraft|BeezzCraftExtended)-(?P<loader>Fabric|NeoForge)-(?P<mc>\d+\.\d+(?:\.\d+)?)-v(?P<version>\d+(?:\.\d+)*)\.jar$"
 )
 
 
