@@ -222,7 +222,10 @@ public final class BeezzCraft {
             int ix = x + 20 + i * 26;
             g.renderItem(j.result, ix, y + 3);
             String n = j.all ? "∞" : String.valueOf(j.left);
+            g.pose().pushPose();
+            g.pose().translate(0, 0, 200);
             g.drawString(font, n, ix + 17 - font.width(n), y + 12, 0xFFFFFFFF, true);
+            g.pose().popPose();
         }
         if (queued.size() > shown) g.drawString(font, "+" + (queued.size() - shown), x + w + 3, y + 7, Ui.MUTED, true);
         if (Config.get().showNeeds) Needs.render(g, font, Needs.of(mc.player, mc.player.inventoryMenu), x, y + 26, 0, false);
