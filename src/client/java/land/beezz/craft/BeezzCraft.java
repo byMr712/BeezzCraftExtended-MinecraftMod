@@ -180,6 +180,10 @@ public final class BeezzCraft {
     /** Draws the wheel once more at the end of the frame so no other screen or overlay can cover it. */
     public static void redrawWheel() {
         if (lastGraphics == null) return;
+        if (wheel != null) {
+            wheel.render(lastGraphics, Minecraft.getInstance().font, lastMouseX, lastMouseY);
+            return;
+        }
         Screen screen = screen(Minecraft.getInstance());
         if (screen instanceof InventoryScreen || screen instanceof CraftingScreen
                 || screen instanceof CreativeModeInventoryScreen) {
