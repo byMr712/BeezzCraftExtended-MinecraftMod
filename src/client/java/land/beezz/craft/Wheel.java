@@ -343,6 +343,10 @@ final class Wheel {
         boolean left = button == InputConstants.MOUSE_BUTTON_LEFT, right = button == InputConstants.MOUSE_BUTTON_RIGHT;
         if (left && clickPager(mx, my)) return true;
         int h = hit(mx, my);
+        if (button == InputConstants.MOUSE_BUTTON_MIDDLE && h >= 0) {
+            if (shown.get(h).members.size() > 1) shown.get(h).cycle(1);
+            return true;
+        }
         if (h == -2 || h == -1) return false; // the centre or outside: close
         Recipes.Option o = shown.get(h).current();
         if (right) return Crafter.unqueue(o);
