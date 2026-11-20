@@ -13,7 +13,8 @@
     "OptionsAccessor",
     "OptionsMixin",
     "MouseHandlerMixin",
-    "ScreenMixin"
+    "ScreenMixin",
+    "RecipeBookTooltipMixin"
   ],
   "injectors": { "defaultRequire": 1 }
 }
