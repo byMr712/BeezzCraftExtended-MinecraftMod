@@ -85,8 +85,7 @@ final class Crafter {
     }
 
     private static void creativeMessage() {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player != null) player.sendOverlayMessage(Tr.t("beezzcraft.creative"));
+        BeezzCraft.showNotice(Tr.t("beezzcraft.creative"));
     }
 
     static void craft(Recipes.Option o, int count, boolean all) {
