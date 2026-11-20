@@ -38,7 +38,7 @@ def request_json(url: str, token: str, method: str = "GET", data: bytes | None =
     headers = {
         "x-api-key": token,
         "Accept": "application/json",
-        "User-Agent": "BeezzCraft/1.1 (byMr712)",
+        "User-Agent": "BeezzCraft/1.1.1 (byMr712)",
     }
     if content_type:
         headers["Content-Type"] = content_type
