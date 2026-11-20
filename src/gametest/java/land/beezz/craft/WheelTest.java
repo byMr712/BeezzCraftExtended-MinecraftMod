@@ -369,6 +369,26 @@ public class WheelTest implements FabricClientGameTest {
             ctx.getInput().releaseControl();
             ctx.waitTicks(5);
             check("the wheel opens in the creative inventory", ctx.computeOnClient(mc -> BeezzCraft.wheel != null));
+
+            // the gear panel over the creative tabs: its top row must still be clickable
+            ctx.runOnClient(mc -> {
+                mc.options.guiScale().set(4);
+                resizeGui(mc);
+            });
+            ctx.setScreen(() -> new CreativeModeInventoryScreen(Minecraft.getInstance().player,
+                    Minecraft.getInstance().player.connection.enabledFeatures(), true));
+            ctx.waitForScreen(CreativeModeInventoryScreen.class);
+            ctx.waitTicks(3);
+            ctx.runOnClient(mc -> Config.get().queue = false);
+            click(16, 16, LEFT); // the gear
+            shot("craft_12_creative_settings");
+            click(164, 45, LEFT); // the queue row, over the first creative tab at this scale
+            check("the settings row over the creative tabs still toggles", ctx.computeOnClient(mc -> Config.get().queue));
+            click(16, 16, LEFT); // close the settings
+            ctx.runOnClient(mc -> {
+                mc.options.guiScale().set(3);
+                resizeGui(mc);
+            });
             ctx.setScreen(() -> null);
         }
         configScreenTest();
