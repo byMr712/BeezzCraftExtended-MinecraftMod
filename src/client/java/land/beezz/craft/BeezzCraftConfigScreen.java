@@ -138,8 +138,9 @@ public final class BeezzCraftConfigScreen extends Screen {
     private Component keyLabel() {
         Component key = pendingKey != null ? pendingKey.getDisplayName()
                 : BeezzCraftKeys.MODIFIER.getTranslatedKeyMessage();
+        Component value = listening ? Tr.t("beezzcraft.config.press") : key;
         return Tr.t("beezzcraft.config.key.short").copy().append(": ")
-                .append(listening ? Tr.t("beezzcraft.config.press") : key);
+                .append(value.copy().withStyle(ChatFormatting.YELLOW));
     }
 
     private static Component toggle(String key, boolean on) {
