@@ -188,7 +188,6 @@ public final class BeezzCraft {
         if (screen instanceof InventoryScreen || screen instanceof CraftingScreen
                 || screen instanceof CreativeModeInventoryScreen) {
             renderWheel(screen, lastGraphics, lastMouseX, lastMouseY);
-            lastGraphics.flush();
         }
     }
 
