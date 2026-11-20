@@ -37,7 +37,7 @@
   "beezzcraft.config.reset.tip": "Сбросить функциональную клавишу, режим «только клавиша», кнопку клика и настройки крафта.",
   "beezzcraft.config.click.off": "Доступно только когда «Использовать только функциональную клавишу» выключено.",
   "beezzcraft.creative": "В творческом инвентаре крафт недоступен",
-  "beezzcraft.config.title": "BeezzCraft (Extended)",
+  "beezzcraft.config.title": "Beezz Craft (Extended)",
   "beezzcraft.config.key": "Функциональная клавиша: %s",
   "beezzcraft.config.press": "Нажмите клавишу или кнопку мыши...",
   "beezzcraft.config.key_only": "Использовать только функциональную клавишу: %s",
