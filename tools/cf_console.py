@@ -15,9 +15,9 @@ with the AtlasMapExtended project when that profile already exists.
 
 Examples:
     py tools\\cf_console.py --list-versions
-    py tools\\cf_console.py --version v1.1.1 --dry-run
-    py tools\\cf_console.py --version v1.1.1 --only "Fabric-1.21-"
-    py tools\\cf_console.py --version v1.1.1
+    py tools\\cf_console.py --version v1.1.2 --dry-run
+    py tools\\cf_console.py --version v1.1.2 --only "Fabric-1.21-"
+    py tools\\cf_console.py --version v1.1.2
 """
 
 from __future__ import annotations
@@ -34,9 +34,9 @@ import publish_curseforge as cf
 PORT = 9222
 CHUNK = 5 * 1024 * 1024
 DEFAULT_DIR = Path.home() / "Documents" / "BeezzCraftExtended_all_builds"
-DEFAULT_VERSION = "v1.1.1"
+DEFAULT_VERSION = "v1.1.2"
 
-DEFAULT_CHANGELOG = """Beezz Craft (Extended) v1.1.1
+DEFAULT_CHANGELOG = """Beezz Craft (Extended) v1.1.2
 
 A client-side crafting wheel for the inventory, the crafting table and the creative inventory.
 
