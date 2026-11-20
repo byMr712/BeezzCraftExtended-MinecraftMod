@@ -74,6 +74,7 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
                 Tr.t(config.functionalClick == 0
                         ? "beezzcraft.config.left" : "beezzcraft.config.right")));
         clickButton.active = !config.keyOnly;
+        resetButton.setMessage(Tr.t("beezzcraft.config.reset"));
     }
 
     private List<FormattedCharSequence> clickTooltip() {
