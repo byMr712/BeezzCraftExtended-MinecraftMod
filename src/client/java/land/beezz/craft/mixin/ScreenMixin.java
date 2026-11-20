@@ -17,6 +17,7 @@ public abstract class ScreenMixin {
     @Inject(method = "extractRenderStateWithTooltipAndSubtitles",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;extractDeferredElements(IIF)V"))
     private void beezzcraft$wheel(GuiGraphicsExtractor g, int mx, int my, float delta, CallbackInfo ci) {
+        BeezzCraft.capture(g, mx, my);
         BeezzCraft.renderWheel((Screen) (Object) this, g, mx, my);
     }
 }
