@@ -88,7 +88,7 @@ _**If any issues arise, please write to me in the comments on CurseForge or open
 ### Functional Key & Mod Menu
 
 *   The wheel is opened by **Ctrl + right click** by default. The functional key can be changed to another key or mouse button.
-*   **Mod Menu:** if Mod Menu is installed, open **BeezzCraft (Extended)** → **Configure**. The screen contains the functional key, the key-only mode and the functional mouse button.
+*   **Mod Menu:** if Mod Menu is installed, open **BeezzCraft (Extended)** → **Configure**. The screen contains the functional key, the key-only mode and the functional mouse button. Below it, a separate **Crafting & hints** section has the craft queue, unavailable recipes, "resources to get" and the crafting sound.
 *   **Use only the functional key** — off by default. Hover an item and press the functional key to open the wheel without a mouse click.
 *   **Functional click** — the mouse button used together with the functional key: **Left button** or **Right button** (default: Right button).
 *   The same key bind is available in **Options → Controls → Key Binds → Beezz Craft Extended → Function key**.
