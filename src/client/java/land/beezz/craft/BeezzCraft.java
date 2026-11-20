@@ -164,27 +164,8 @@ public final class BeezzCraft {
         if (Config.get().showNeeds) Needs.render(g, font, Needs.of(mc.player, mc.player.inventoryMenu), x, y + 26, 0, false);
     }
 
-    private static java.lang.invoke.MethodHandle screenGetter;
-
-    /**
-     * The open screen. 26.2+ keeps it in Gui (mc.gui.screen()), 26.1 in the Minecraft.screen field; found once at run
-     * time so one jar source builds for every supported version.
-     */
+    /** The open screen. */
     public static Screen screen(Minecraft mc) {
-        try {
-            if (screenGetter == null) {
-                var lookup = java.lang.invoke.MethodHandles.publicLookup();
-                try {
-                    screenGetter = java.lang.invoke.MethodHandles.filterReturnValue(
-                            lookup.findGetter(Minecraft.class, "gui", net.minecraft.client.gui.Gui.class),
-                            lookup.findVirtual(net.minecraft.client.gui.Gui.class, "screen", java.lang.invoke.MethodType.methodType(Screen.class)));
-                } catch (NoSuchMethodException | NoSuchFieldException e) {
-                    screenGetter = lookup.findGetter(Minecraft.class, "screen", Screen.class);
-                }
-            }
-            return (Screen) screenGetter.invoke(mc);
-        } catch (Throwable t) {
-            throw new IllegalStateException("BeezzCraft: cannot read the open screen", t);
-        }
+        return mc.screen;
     }
 }
