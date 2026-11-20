@@ -51,7 +51,10 @@
   "beezzcraft.config.click.right.line2": "together with the functional key.",
   "key.beezzcraft.wheel": "Function key",
   "beezzcraft.config.reset": "Restore defaults",
-  "beezzcraft.config.reset.tip": "Restore the functional key, key-only mode and the click button.",
+  "beezzcraft.config.reset.tip": "Restore the functional key, key-only mode, click button and all crafting settings.",
   "beezzcraft.config.click.off": "Available only when \"Use only the functional key\" is off.",
-  "beezzcraft.creative": "Crafting is not available in the creative inventory"
+  "beezzcraft.creative": "Crafting is not available in the creative inventory",
+  "beezzcraft.config.toggle": "%s: %s",
+  "beezzcraft.config.toggle.tip": "Click to switch it on or off.",
+  "beezzcraft.config.section.crafting": "Crafting & hints"
 }

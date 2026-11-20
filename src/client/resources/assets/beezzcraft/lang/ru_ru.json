@@ -51,7 +51,10 @@
   "beezzcraft.config.click.right.line2": "вместе с функциональной клавишей.",
   "key.beezzcraft.wheel": "Функциональная клавиша",
   "beezzcraft.config.reset": "Вернуть настройки по умолчанию",
-  "beezzcraft.config.reset.tip": "Сбросить функциональную клавишу, режим «только клавиша» и кнопку клика.",
+  "beezzcraft.config.reset.tip": "Сбросить функциональную клавишу, режим «только клавиша», кнопку клика и настройки крафта.",
   "beezzcraft.config.click.off": "Доступно только когда «Использовать только функциональную клавишу» выключено.",
-  "beezzcraft.creative": "В творческом инвентаре крафт недоступен"
+  "beezzcraft.creative": "В творческом инвентаре крафт недоступен",
+  "beezzcraft.config.toggle": "%s: %s",
+  "beezzcraft.config.toggle.tip": "Нажмите, чтобы включить или выключить.",
+  "beezzcraft.config.section.crafting": "Крафт и подсказки"
 }
