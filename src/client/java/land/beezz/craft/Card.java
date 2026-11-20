@@ -80,9 +80,9 @@ final class Card {
             int ix = cx + i * CELL;
             g.renderItem(n.icon(), ix, cy);
             String c = String.valueOf(n.need());
-            g.drawString(font, c, ix + 1, cy + 17, 0xFFFFFFFF, true);
+            g.drawString(font, c, ix + 17 - font.width(c), cy + 9, 0xFFFFFFFF, true);
             String s = n.missing() ? "-" + (n.need() - n.have()) : "✔";
-            g.drawString(font, s, ix + 1, cy + 27, n.missing() ? Ui.RED : Ui.GREEN, false);
+            g.drawString(font, s, ix + 1, cy + 17, n.missing() ? Ui.RED : Ui.GREEN, false);
         }
         cy += 16 + 21 + 6;
 
