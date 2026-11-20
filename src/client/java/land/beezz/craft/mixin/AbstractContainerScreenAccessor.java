@@ -10,4 +10,13 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface AbstractContainerScreenAccessor {
     @Accessor("hoveredSlot")
     Slot beezzcraft$hoveredSlot();
+
+    @Accessor("leftPos")
+    int beezzcraft$leftPos();
+
+    @Accessor("topPos")
+    int beezzcraft$topPos();
+
+    @Accessor("imageWidth")
+    int beezzcraft$imageWidth();
 }
