@@ -170,6 +170,27 @@ public final class BeezzCraft {
         if (Config.get().showNeeds) Needs.render(g, font, Needs.of(mc.player, mc.player.inventoryMenu), x, y + 26, 0, false);
     }
 
+    private static GuiGraphics lastGraphics;
+    private static int lastMouseX, lastMouseY;
+
+    /** Remembers the GUI batch of the current screen for the frame-end redraw. */
+    public static void capture(GuiGraphics g, int mx, int my) {
+        lastGraphics = g;
+        lastMouseX = mx;
+        lastMouseY = my;
+    }
+
+    /** Draws the wheel once more at the end of the frame so no other screen or overlay can cover it. */
+    public static void redrawWheel() {
+        if (lastGraphics == null) return;
+        Screen screen = screen(Minecraft.getInstance());
+        if (screen instanceof InventoryScreen || screen instanceof CraftingScreen
+                || screen instanceof CreativeModeInventoryScreen) {
+            renderWheel(screen, lastGraphics, lastMouseX, lastMouseY);
+            lastGraphics.flush();
+        }
+    }
+
     /** The open screen. */
     public static Screen screen(Minecraft mc) {
         return mc.screen;
