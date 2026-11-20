@@ -19,6 +19,7 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
     private MultiLineButton keyButton;
     private MultiLineButton keyOnlyButton;
     private MultiLineButton clickButton;
+    private MultiLineButton resetButton;
     private boolean listening;
 
     public BeezzCraftConfigScreen(Screen lastScreen) {
@@ -33,9 +34,11 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
                 "beezzcraft.config.key_only.line2",
                 "beezzcraft.config.key_only.line3"));
         clickButton = new MultiLineButton(this::toggleClick, this::clickTooltip);
+        resetButton = new MultiLineButton(this::restoreDefaults, () -> lines("beezzcraft.config.reset.tip"));
         list.addSmall(List.of(keyButton));
         list.addSmall(List.of(keyOnlyButton));
         list.addSmall(List.of(clickButton));
+        list.addSmall(List.of(resetButton));
         updateLabels();
     }
 
@@ -53,6 +56,7 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
 
     private void toggleClick(Button button) {
         Config config = Config.get();
+        if (config.keyOnly) return;
         config.functionalClick = config.functionalClick == 0 ? 1 : 0;
         config.save();
         updateLabels();
@@ -67,9 +71,11 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
         clickButton.setMessage(Tr.t("beezzcraft.config.click",
                 Tr.t(config.functionalClick == 0
                         ? "beezzcraft.config.left" : "beezzcraft.config.right")));
+        clickButton.active = !config.keyOnly;
     }
 
     private List<FormattedCharSequence> clickTooltip() {
+        if (Config.get().keyOnly) return lines("beezzcraft.config.click.off");
         return Config.get().functionalClick == 0
                 ? lines("beezzcraft.config.click.left.line1", "beezzcraft.config.click.left.line2")
                 : lines("beezzcraft.config.click.right.line1", "beezzcraft.config.click.right.line2");
@@ -105,6 +111,15 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
             return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    private void restoreDefaults(Button button) {
+        Config.get().reset();
+        Config.get().save();
+        BeezzCraftKeys.MODIFIER.setKey(InputConstants.getKey("key.keyboard.left.control"));
+        Minecraft.getInstance().options.save();
+        listening = false;
+        updateLabels();
     }
 
     @Override
