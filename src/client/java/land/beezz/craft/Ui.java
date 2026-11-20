@@ -27,7 +27,7 @@ final class Ui {
     static void rect(GuiGraphics g, int x, int y, int w, int h, int color) {
         if (w <= 0 || h <= 0) return;
         ModResources.texture(WHITE);
-        g.blit(RenderType::guiTexturedOverlay, WHITE, x, y, 0, 0, w, h, 16, 16, 16, 16, color);
+        g.blit(RenderType::guiTextured, WHITE, x, y, 0, 0, w, h, 16, 16, 16, 16, color);
     }
 
     /** Rectangle with 2 px rounded corners. */
@@ -55,7 +55,7 @@ final class Ui {
 
     static void icon(GuiGraphics g, ResourceLocation tex, int x, int y, int size, int color) {
         ModResources.texture(tex);
-        g.blit(RenderType::guiTexturedOverlay, tex, x, y, 0, 0, size, size, 32, 32, 32, 32, color);
+        g.blit(RenderType::guiTextured, tex, x, y, 0, 0, size, size, 32, 32, 32, 32, color);
     }
 
     /** A keyboard key cap with its name, e.g. Ctrl. @return its width */
