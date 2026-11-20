@@ -46,8 +46,18 @@ public final class BeezzCraft {
 
     /** Called once per client tick. */
     public static void onTick(Minecraft mc) {
-        Config.get(); // first call on the client thread: config paths need Minecraft.getInstance()
+        Config config = Config.get(); // first call on the client thread: config paths need Minecraft.getInstance()
+        if (!config.enabled) return;
         Crafter.tick(mc);
+    }
+
+    /** Called after the Mod Menu applies its settings: the master switch can close the wheel and gear. */
+    public static void onConfigChanged() {
+        if (!Config.get().enabled) {
+            wheel = null;
+            notice = null;
+            Panel.close();
+        }
     }
 
     public static void onDisconnect() {
@@ -80,6 +90,7 @@ public final class BeezzCraft {
 
     /** Called by ScreenMixin after the screen and before its tooltips. */
     public static void renderWheel(Screen screen, GuiGraphicsExtractor g, int mx, int my) {
+        if (!Config.get().enabled) return;
         if (!(screen instanceof InventoryScreen) && !(screen instanceof CraftingScreen)
                 && !(screen instanceof CreativeModeInventoryScreen)) {
             // A recipe book or another screen opened on top: keep the open wheel visible above it.
@@ -133,6 +144,7 @@ public final class BeezzCraft {
 
     /** @return true to let the screen handle the click as usual */
     public static boolean mouse(AbstractContainerScreen<?> screen, double mx, double my, int button, boolean alt, boolean shift, boolean ctrl) {
+        if (!Config.get().enabled) return true;
         if (wheel != null) {
             if (!wheel.click(mx, my, button, shift, ctrl)) wheel = null;
             return false;
@@ -152,16 +164,18 @@ public final class BeezzCraft {
 
     /** The mouse wheel over the wheel: variants under the cursor, otherwise pages. */
     public static void scroll(double amount) {
+        if (!Config.get().enabled) return;
         if (wheel != null) wheel.scroll(amount);
     }
 
     /** A key while the wheel is open: Escape or the inventory key closes it, everything else is swallowed. */
     public static void key(Screen screen, int key, boolean inventoryKey) {
-        if (wheel == null) return;
+        if (!Config.get().enabled || wheel == null) return;
         if (key == InputConstants.KEY_ESCAPE || inventoryKey) wheel = null;
     }
 
     static void open(AbstractContainerScreen<?> screen, ItemStack stack, double mx, double my) {
+        if (!Config.get().enabled) return;
         Minecraft mc = Minecraft.getInstance();
         List<Recipes.Option> options = Recipes.uses(mc, stack, Recipes.gridSize(screen.getMenu()));
         if (Boolean.getBoolean("beezzcraft.debug")) {
@@ -178,6 +192,7 @@ public final class BeezzCraft {
 
     /** Opens the wheel on the item under the cursor, used by the "functional key only" mode. */
     public static boolean openHovered(AbstractContainerScreen<?> screen) {
+        if (!Config.get().enabled) return false;
         Slot slot = ((AbstractContainerScreenAccessor) screen).beezzcraft$hoveredSlot();
         if (slot == null || !slot.hasItem()) return false;
         open(screen, slot.getItem(), screen.width / 2f, screen.height / 2f);
@@ -187,6 +202,7 @@ public final class BeezzCraft {
 
     /** The craft queue on the HUD while playing: a small card with what waits for resources. */
     public static void hud(GuiGraphicsExtractor g) {
+        if (!Config.get().enabled) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || screen(mc) != null) return;
         List<Crafter.Job> queued = Crafter.jobs().stream().filter(j -> j.queued).toList();
