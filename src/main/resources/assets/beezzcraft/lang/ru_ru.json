@@ -86,5 +86,6 @@
   "beezzcraft.config.sound.tip2": "Выключите для тихого колеса.",
   "beezzcraft.config.reset.button": "Сброс",
   "beezzcraft.config.save": "Сохранить",
-  "beezzcraft.config.cancel": "Отмена"
+  "beezzcraft.config.cancel": "Отмена",
+  "beezzcraft.config.key.press.tip": "Esc — отмена."
 }
