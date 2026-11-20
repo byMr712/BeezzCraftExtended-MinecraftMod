@@ -9,6 +9,7 @@
     "HudMixin",
     "MinecraftMixin",
     "KeyMappingAccessor",
+    "KeyMappingMixin",
     "LanguageMixin",
     "OptionsAccessor",
     "OptionsMixin",
