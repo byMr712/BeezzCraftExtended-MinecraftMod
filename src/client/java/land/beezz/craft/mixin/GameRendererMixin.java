@@ -1,3 +1,5 @@
+package land.beezz.craft.mixin;
+
 import land.beezz.craft.BeezzCraft;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.GameRenderer;
