@@ -60,9 +60,9 @@ C:\Users\<вы>\Documents\BeezzCraftExtended_all_builds
 `BeezzCraftExtended-NeoForge-<MC>-v<версия>.jar` для NeoForge, например:
 
 ```
-BeezzCraft-Fabric-1.21-v1.1.jar
-BeezzCraft-Fabric-1.21.4-v1.1.jar
-BeezzCraftExtended-NeoForge-26.3-v1.1.jar
+BeezzCraft-Fabric-1.21-v1.1.1.jar
+BeezzCraft-Fabric-1.21.4-v1.1.1.jar
+BeezzCraftExtended-NeoForge-26.3-v1.1.1.jar
 ```
 
 По имени скрипт определяет загрузчик (`Fabric` / `NeoForge`), версию игры и
@@ -84,19 +84,19 @@ $env:JAVA_HOME = 'C:\Program Files\Java\jdk-25.0.2'
 Сначала «холостой» прогон — покажет, что и с какими метаданными уйдёт:
 
 ```powershell
-py tools\cf_console.py --version v1.1 --dry-run
+py tools\cf_console.py --version v1.1.1 --dry-run
 ```
 
 Только один файл (например, тест на 1.21 Fabric):
 
 ```powershell
-py tools\cf_console.py --version v1.1 --only "Fabric-1.21-"
+py tools\cf_console.py --version v1.1.1 --only "Fabric-1.21-"
 ```
 
 Всё:
 
 ```powershell
-py tools\cf_console.py --version v1.1
+py tools\cf_console.py --version v1.1.1
 ```
 
 Скрипт сам:
@@ -107,7 +107,7 @@ py tools\cf_console.py --version v1.1
 - печатает результат по каждому файлу.
 
 Метаданные: Environment = **Client**, Java = **21** для 1.21.x и **25** для 26.x,
-тип релиза `release` (по умолчанию), changelog — общий текст v1.1.
+тип релиза `release` (по умолчанию), changelog — общий текст v1.1.1.
 
 Версии игры берутся из той же формы, что открывает кнопка **Add File** в
 консоли (`create-project-file-form-data`). Поэтому скрипт работает и на новом
