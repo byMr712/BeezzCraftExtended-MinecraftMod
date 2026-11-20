@@ -82,8 +82,12 @@ public final class BeezzCraft {
         // (and its centre item) is drawn above the vanilla slots instead of under them.
         g.flush();
         Font font = screen.getFont();
+        // The recipe book draws itself at z = 100; above it so the wheel and card are never hidden behind it.
+        g.pose().pushPose();
+        g.pose().translate(0, 0, 200);
         if (wheel != null) wheel.render(g, font, mx, my);
         else Panel.render((AbstractContainerScreen<?>) screen, g, font, mx, my);
+        g.pose().popPose();
     }
 
     public static boolean wheelOpenOn(Object screen) {
