@@ -33,6 +33,19 @@ final class Config {
     boolean keyOnly = false;
     /** 0 = left mouse button, 1 = right mouse button. */
     int functionalClick = 1;
+    /** The settings gear corner: 0 left top, 1 left bottom, 2 right top, 3 right bottom. */
+    int gearPosition = GEAR_LEFT_TOP;
+
+    static final int GEAR_LEFT_TOP = 0, GEAR_LEFT_BOTTOM = 1, GEAR_RIGHT_TOP = 2, GEAR_RIGHT_BOTTOM = 3;
+
+    static String gearPositionKey(int position) {
+        return switch (position) {
+            case GEAR_LEFT_BOTTOM -> "beezzcraft.position.left_bottom";
+            case GEAR_RIGHT_TOP -> "beezzcraft.position.right_top";
+            case GEAR_RIGHT_BOTTOM -> "beezzcraft.position.right_bottom";
+            default -> "beezzcraft.position.left_top";
+        };
+    }
     /** Result item ids, the latest first: a button opens on the variant crafted last. */
     List<String> recent = new ArrayList<>();
     /** How many times each item was crafted: the often made ones come first. */
@@ -56,6 +69,7 @@ final class Config {
                     if (c.counts == null) c.counts = new java.util.HashMap<>();
                     if (c.ctrlCount < 2) c.ctrlCount = 10;
                     if (c.functionalClick < 0 || c.functionalClick > 1) c.functionalClick = 1;
+                    if (c.gearPosition < 0 || c.gearPosition > 3) c.gearPosition = GEAR_LEFT_TOP;
                     return c;
                 }
             }
@@ -74,6 +88,7 @@ final class Config {
         ctrlCount = 10;
         keyOnly = false;
         functionalClick = 1;
+        gearPosition = GEAR_LEFT_TOP;
     }
 
     void save() {
