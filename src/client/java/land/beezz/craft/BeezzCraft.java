@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -54,7 +55,8 @@ public final class BeezzCraft {
 
     /** Called when a container screen is initialised: a new screen never keeps the old wheel. */
     public static void onScreenInit(Screen screen) {
-        if (screen instanceof InventoryScreen || screen instanceof CraftingScreen) wheel = null;
+        if (screen instanceof InventoryScreen || screen instanceof CraftingScreen
+                || screen instanceof CreativeModeInventoryScreen) wheel = null;
     }
 
     public static void onScreenRemoved(Screen screen) {
@@ -69,7 +71,8 @@ public final class BeezzCraft {
 
     /** Called by ScreenMixin after the screen and before its tooltips. */
     public static void renderWheel(Screen screen, GuiGraphicsExtractor g, int mx, int my) {
-        if (!(screen instanceof InventoryScreen) && !(screen instanceof CraftingScreen)) return;
+        if (!(screen instanceof InventoryScreen) && !(screen instanceof CraftingScreen)
+                && !(screen instanceof CreativeModeInventoryScreen)) return;
         Font font = screen.getFont();
         if (wheel != null && wheel.screen == screen) wheel.render(g, font, mx, my);
         else Panel.render((AbstractContainerScreen<?>) screen, g, font, mx, my);
