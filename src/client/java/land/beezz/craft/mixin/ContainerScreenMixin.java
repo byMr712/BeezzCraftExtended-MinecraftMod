@@ -36,6 +36,10 @@ public abstract class ContainerScreenMixin {
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void beezzcraft$mouseClicked(double mx, double my, int button, CallbackInfoReturnable<Boolean> cir) {
+        if (BeezzCraft.captureMouse(button)) {
+            cir.setReturnValue(false);
+            return;
+        }
         if (!BeezzCraft.mouse((AbstractContainerScreen<?>) (Object) this, mx, my, button,
                 Screen.hasAltDown(), Screen.hasShiftDown(), Screen.hasControlDown())) {
             cir.setReturnValue(false);
@@ -54,6 +58,10 @@ public abstract class ContainerScreenMixin {
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void beezzcraft$keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
+        if (BeezzCraft.captureKey(com.mojang.blaze3d.platform.InputConstants.getKey(keyCode, scanCode))) {
+            cir.setReturnValue(true);
+            return;
+        }
         if (!BeezzCraft.wheelOpen() && BeezzCraft.keyOnly()
                 && BeezzCraftKeys.matchesKey(keyCode, scanCode)
                 && BeezzCraft.openHovered((AbstractContainerScreen<?>) (Object) this)) {
