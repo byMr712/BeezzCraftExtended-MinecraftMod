@@ -236,7 +236,7 @@ final class Panel {
             if (j.needsTable && !(screen.getMenu() instanceof CraftingMenu)) {
                 status = Tr.t("beezzcraft.queue.table");
                 color = Ui.MUTED;
-            } else if (screen.getMenu() instanceof RecipeBookMenu<?, ?> m && Crafter.canCraft(mc.player, m, j.option)) {
+            } else if (screen.getMenu() instanceof RecipeBookMenu m && Crafter.canCraft(mc.player, m, j.option)) {
                 status = Tr.t("beezzcraft.queue.ready");
                 color = Ui.GREEN;
             } else {
