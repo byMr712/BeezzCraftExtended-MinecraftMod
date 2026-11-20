@@ -32,5 +32,8 @@
   "beezzcraft.needs.title": "To get",
   "beezzcraft.needs.ok": "You have everything",
   "key.category.beezzcraft.beezz_craft_extended": "Beezz Craft Extended",
-  "key.beezzcraft.wheel": "Function key"
+  "key.beezzcraft.wheel": "Function key",
+  "beezzcraft.config.reset": "Restore defaults",
+  "beezzcraft.config.reset.tip": "Restore the functional key, key-only mode and the click button.",
+  "beezzcraft.config.click.off": "Available only when \"Use only the functional key\" is off."
 }
