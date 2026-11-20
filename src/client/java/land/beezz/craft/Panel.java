@@ -6,7 +6,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.inventory.RecipeBookMenu;
+import net.minecraft.world.inventory.AbstractCraftingMenu;
 import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -15,7 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Top left corner of the inventory and crafting table screens: the gear (settings) and, under it, the craft queue.
+ * The gear (settings) and, under it, the craft queue. The gear can sit in any corner; the queue stays in the
+ * top-left corner so it never jumps around while the gear is moved.
  */
 final class Panel {
     private static final int X = 6, Y = 6, GEAR = 20, W = 176, ROW = 18, QROW = 22;
@@ -31,25 +32,96 @@ final class Panel {
         settings = false;
     }
 
-    private record Toggle(ItemStack icon, Component label, boolean on, Runnable flip) {}
+    private interface Row {
+        void render(GuiGraphics g, Font font, int x, int y, boolean hover);
 
-    private static List<Toggle> toggles() {
+        void click();
+    }
+
+    private record Toggle(ItemStack icon, Component label, boolean on, Runnable flip) implements Row {
+        public void render(GuiGraphics g, Font font, int x, int y, boolean hover) {
+            if (hover) Ui.round(g, x + 2, y, W - 4, ROW, Ui.PANEL_HI);
+            g.renderItem(icon, x + 5, y + 1);
+            g.drawString(font, font.plainSubstrByWidth(label.getString(), W - 52), x + 24, y + 5, Ui.TEXT, false);
+            Ui.toggle(g, x + W - 22, y + 5, on);
+        }
+
+        public void click() {
+            flip.run();
+        }
+    }
+
+    private record Choice(ItemStack icon, Component label, Component value, Runnable next) implements Row {
+        public void render(GuiGraphics g, Font font, int x, int y, boolean hover) {
+            if (hover) Ui.round(g, x + 2, y, W - 4, ROW, Ui.PANEL_HI);
+            g.renderItem(icon, x + 5, y + 1);
+            g.drawString(font, font.plainSubstrByWidth(label.getString(), 72), x + 24, y + 5, Ui.TEXT, false);
+            String v = font.plainSubstrByWidth(value.getString(), 66);
+            g.drawString(font, v, x + W - 8 - font.width(v), y + 5, Ui.HONEY_SOFT, false);
+        }
+
+        public void click() {
+            next.run();
+        }
+    }
+
+    private static List<Row> rows() {
         Config c = Config.get();
-        List<Toggle> t = new ArrayList<>();
-        t.add(new Toggle(new ItemStack(Items.CLOCK), Tr.t("beezzcraft.set.queue"), c.queue, () -> {
+        List<Row> rows = new ArrayList<>();
+        rows.add(new Toggle(new ItemStack(Items.CLOCK), Tr.t("beezzcraft.set.queue"), c.queue, () -> {
             c.queue = !c.queue;
             if (!c.queue) Crafter.jobs().removeIf(j -> j.queued);
         }));
-        t.add(new Toggle(new ItemStack(Items.SPYGLASS), Tr.t("beezzcraft.set.missing"), c.showMissing, () -> {
+        rows.add(new Toggle(new ItemStack(Items.SPYGLASS), Tr.t("beezzcraft.set.missing"), c.showMissing, () -> {
             c.showMissing = !c.showMissing;
             if (BeezzCraft.wheel != null) BeezzCraft.wheel.refresh();
         }));
-        t.add(new Toggle(new ItemStack(Items.IRON_PICKAXE), Tr.t("beezzcraft.set.needs"), c.showNeeds, () -> c.showNeeds = !c.showNeeds));
-        t.add(new Toggle(new ItemStack(Items.NOTE_BLOCK), Tr.t("beezzcraft.set.sound"), c.sound, () -> c.sound = !c.sound));
-        return t;
+        rows.add(new Toggle(new ItemStack(Items.IRON_PICKAXE), Tr.t("beezzcraft.set.needs"), c.showNeeds,
+                () -> c.showNeeds = !c.showNeeds));
+        rows.add(new Toggle(new ItemStack(Items.NOTE_BLOCK), Tr.t("beezzcraft.set.sound"), c.sound,
+                () -> c.sound = !c.sound));
+        rows.add(new Toggle(new ItemStack(Items.NAME_TAG), Tr.t("beezzcraft.set.key_only"), c.keyOnly,
+                () -> c.keyOnly = !c.keyOnly));
+        rows.add(new Choice(new ItemStack(Items.STONE_BUTTON), Tr.t("beezzcraft.set.click"),
+                Tr.t(c.functionalClick == 0 ? "beezzcraft.set.click.left" : "beezzcraft.set.click.right"),
+                () -> c.functionalClick = c.functionalClick == 0 ? 1 : 0));
+        rows.add(new Choice(new ItemStack(Items.TRIPWIRE_HOOK), Tr.t("beezzcraft.set.key"),
+                BeezzCraftKeys.MODIFIER.getTranslatedKeyMessage(),
+                () -> Minecraft.getInstance().setScreen(new net.minecraft.client.gui.screens.options.controls.ControlsScreen(
+                        Minecraft.getInstance().screen, Minecraft.getInstance().options))));
+        rows.add(new Choice(new ItemStack(Items.COMPASS), Tr.t("beezzcraft.set.position"),
+                Tr.t(Config.gearPositionKey(c.gearPosition)),
+                () -> c.gearPosition = (c.gearPosition + 1) & 3));
+        return rows;
     }
 
     // ------------------------------------------------------------------ layout
+
+    private static boolean right() {
+        int p = Config.get().gearPosition;
+        return p == Config.GEAR_RIGHT_TOP || p == Config.GEAR_RIGHT_BOTTOM;
+    }
+
+    private static boolean bottom() {
+        int p = Config.get().gearPosition;
+        return p == Config.GEAR_LEFT_BOTTOM || p == Config.GEAR_RIGHT_BOTTOM;
+    }
+
+    private static int gearX(AbstractContainerScreen<?> screen) {
+        return right() ? screen.width - GEAR - 6 : 6;
+    }
+
+    private static int gearY(AbstractContainerScreen<?> screen) {
+        return bottom() ? screen.height - GEAR - 6 : 6;
+    }
+
+    private static int panelX(AbstractContainerScreen<?> screen) {
+        return right() ? screen.width - W - 6 : 6;
+    }
+
+    private static int panelY(AbstractContainerScreen<?> screen) {
+        return bottom() ? gearY(screen) - 6 - settingsH() : gearY(screen) + GEAR + 6;
+    }
 
     /** The queue switch's explanation, wrapped to the panel. */
     private static List<net.minecraft.util.FormattedCharSequence> note() {
@@ -64,11 +136,15 @@ final class Panel {
     }
 
     private static int settingsH() {
-        return 6 + toggles().size() * ROW + noteH() + 4;
+        return 6 + rows().size() * ROW + noteH() + 4;
     }
 
-    private static int queueY() {
-        return Y + GEAR + 6 + (settings ? settingsH() + 6 : 0);
+    /** The queue stays in the top-left corner; only the default top-left gear pushes it down when open. */
+    private static int queueY(AbstractContainerScreen<?> screen) {
+        if (Config.get().gearPosition == Config.GEAR_LEFT_TOP) {
+            return Y + GEAR + 6 + (settings ? settingsH() + 6 : 0);
+        }
+        return Y + GEAR + 6;
     }
 
     private static List<Crafter.Job> queued() {
@@ -89,42 +165,39 @@ final class Panel {
     // ------------------------------------------------------------------ drawing
 
     static void render(AbstractContainerScreen<?> screen, GuiGraphics g, Font font, int mx, int my) {
-        boolean gh = in(mx, my, X, Y, GEAR, GEAR);
-        Ui.panel(g, X, Y, GEAR, GEAR);
-        if (gh || settings) Ui.round(g, X, Y, GEAR, GEAR, 0xFF3A3214);
-        Ui.icon(g, Ui.GEAR, X + 3, Y + 3, 14, gh || settings ? Ui.HONEY_SOFT : Ui.HONEY);
+        int gx = gearX(screen), gy = gearY(screen);
+        boolean gh = in(mx, my, gx, gy, GEAR, GEAR);
+        Ui.panel(g, gx, gy, GEAR, GEAR);
+        if (gh || settings) Ui.round(g, gx, gy, GEAR, GEAR, 0xFF3A3214);
+        Ui.icon(g, Ui.GEAR, gx + 3, gy + 3, 14, gh || settings ? Ui.HONEY_SOFT : Ui.HONEY);
         int count = queued().size();
         if (count > 0) {
             String n = String.valueOf(count);
-            Ui.round(g, X + GEAR - 6, Y - 3, font.width(n) + 5, 10, 0xFF2563EB);
-            g.drawString(font, n, X + GEAR - 3, Y - 2, 0xFFFFFFFF, false);
+            Ui.round(g, gx + GEAR - 6, gy - 3, font.width(n) + 5, 10, 0xFF2563EB);
+            g.drawString(font, n, gx + GEAR - 3, gy - 2, 0xFFFFFFFF, false);
         }
 
-        if (settings) renderSettings(g, font, mx, my);
+        if (settings) renderSettings(screen, g, font, mx, my);
         if (showQueue()) renderQueue(screen, g, font, mx, my);
         if (showQueue() && Config.get().showNeeds && !queued().isEmpty()) {
-            Needs.render(g, font, Needs.of(Minecraft.getInstance().player, screen.getMenu()), X, queueY() + queueH() + 6, W, true);
+            Needs.render(g, font, Needs.of(Minecraft.getInstance().player, screen.getMenu()), X, queueY(screen) + queueH() + 6, W, true);
         }
         if (gh) Card.text(g, font, Tr.t("beezzcraft.gear"), mx, my, screen.width, screen.height);
     }
 
-    private static void renderSettings(GuiGraphics g, Font font, int mx, int my) {
-        int y = Y + GEAR + 6, h = settingsH();
-        Ui.panel(g, X, y, W, h);
-        List<Toggle> t = toggles();
+    private static void renderSettings(AbstractContainerScreen<?> screen, GuiGraphics g, Font font, int mx, int my) {
+        int x = panelX(screen), y = panelY(screen), h = settingsH();
+        Ui.panel(g, x, y, W, h);
+        List<Row> rows = rows();
         int ry = y + 4;
-        for (int i = 0; i < t.size(); i++) {
-            Toggle row = t.get(i);
-            boolean hover = in(mx, my, X, ry, W, ROW);
-            if (hover) Ui.round(g, X + 2, ry, W - 4, ROW, Ui.PANEL_HI);
-            g.renderItem(row.icon, X + 5, ry + 1);
-            g.drawString(font, font.plainSubstrByWidth(row.label.getString(), W - 52), X + 24, ry + 5, Ui.TEXT, false);
-            Ui.toggle(g, X + W - 22, ry + 5, row.on);
+        for (int i = 0; i < rows.size(); i++) {
+            boolean hover = in(mx, my, x, ry, W, ROW);
+            rows.get(i).render(g, font, x, ry, hover);
             ry += ROW;
             if (i == 0) {
                 // what the queue does, right under its switch
                 for (var line : note()) {
-                    g.drawString(font, line, X + 8, ry, Ui.DIM, false);
+                    g.drawString(font, line, x + 8, ry, Ui.DIM, false);
                     ry += 10;
                 }
                 ry += 4;
@@ -135,7 +208,7 @@ final class Panel {
     private static void renderQueue(AbstractContainerScreen<?> screen, GuiGraphics g, Font font, int mx, int my) {
         List<Crafter.Job> jobs = queued();
         int shown = Math.min(jobs.size(), 8);
-        int y = queueY(), h = queueH();
+        int y = queueY(screen), h = queueH();
         Ui.panel(g, X, y, W, h);
         Ui.icon(g, Ui.QUEUE, X + 6, y + 5, 11, Ui.BLUE);
         g.drawString(font, Tr.t("beezzcraft.hud"), X + 21, y + 7, Ui.BLUE, false);
@@ -163,7 +236,7 @@ final class Panel {
             if (j.needsTable && !(screen.getMenu() instanceof CraftingMenu)) {
                 status = Tr.t("beezzcraft.queue.table");
                 color = Ui.MUTED;
-            } else if (screen.getMenu() instanceof RecipeBookMenu<?, ?> m && Crafter.canCraft(mc.player, m, j.option)) {
+            } else if (screen.getMenu() instanceof AbstractCraftingMenu m && Crafter.canCraft(mc.player, m, j.option)) {
                 status = Tr.t("beezzcraft.queue.ready");
                 color = Ui.GREEN;
             } else {
@@ -182,22 +255,22 @@ final class Panel {
     // ------------------------------------------------------------------ input
 
     /** @return true when the click was on the panel */
-    static boolean click(double mx, double my, int button) {
+    static boolean click(AbstractContainerScreen<?> screen, double mx, double my, int button) {
+        int gx = gearX(screen), gy = gearY(screen), px = panelX(screen), py = panelY(screen);
         if (button != InputConstants.MOUSE_BUTTON_LEFT) {
-            return in(mx, my, X, Y, GEAR, GEAR) || settings && in(mx, my, X, Y + GEAR + 6, W, settingsH());
+            return in(mx, my, gx, gy, GEAR, GEAR) || settings && in(mx, my, px, py, W, settingsH());
         }
-        if (in(mx, my, X, Y, GEAR, GEAR)) {
+        if (in(mx, my, gx, gy, GEAR, GEAR)) {
             settings = !settings;
             return true;
         }
         if (settings) {
-            int y = Y + GEAR + 6;
-            if (in(mx, my, X, y, W, settingsH())) {
-                List<Toggle> t = toggles();
-                int ry = y + 4;
-                for (int i = 0; i < t.size(); i++) {
-                    if (in(mx, my, X, ry, W, ROW)) {
-                        t.get(i).flip.run();
+            if (in(mx, my, px, py, W, settingsH())) {
+                List<Row> rows = rows();
+                int ry = py + 4;
+                for (int i = 0; i < rows.size(); i++) {
+                    if (in(mx, my, px, ry, W, ROW)) {
+                        rows.get(i).click();
                         Config.get().save();
                         return true;
                     }
@@ -208,7 +281,7 @@ final class Panel {
         }
         if (showQueue()) {
             List<Crafter.Job> jobs = queued();
-            int y = queueY(), shown = Math.min(jobs.size(), 8);
+            int y = queueY(screen), shown = Math.min(jobs.size(), 8);
             if (in(mx, my, X, y, W, queueH())) {
                 int ry = y + 21;
                 for (int i = 0; i < shown; i++) {
