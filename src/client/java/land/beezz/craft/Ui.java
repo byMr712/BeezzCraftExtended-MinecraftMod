@@ -41,9 +41,9 @@ final class Ui {
         rect(g, x + w - 2, y + h - 2, 1, 1, color);
     }
 
-    /** Sends the current GUI batch to the screen; the 1.21.x renderer needs it before a card. */
-    static void flush(GuiGraphics g) {
-        g.flush();
+    /** An opaque frame behind a card: covers the wheel's item models that render in front of the GUI. */
+    static void backdrop(GuiGraphics g, int x, int y, int w, int h) {
+        round(g, x, y, w, h, 0xFF0B0D12);
     }
 
     /** A soft panel: rounded, with a 1 px border and a faint shadow. */
