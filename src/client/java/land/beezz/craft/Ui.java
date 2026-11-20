@@ -27,7 +27,7 @@ final class Ui {
     static void rect(GuiGraphics g, int x, int y, int w, int h, int color) {
         if (w <= 0 || h <= 0) return;
         ModResources.texture(WHITE);
-        g.blit(RenderType::guiTexturedOverlay, WHITE, x, y, 0, 0, w, h, 16, 16, 16, 16, color);
+        g.blit(RenderType::guiTextured, WHITE, x, y, 0, 0, w, h, 16, 16, 16, 16, color);
     }
 
     /** Rectangle with 2 px rounded corners. */
@@ -41,11 +41,6 @@ final class Ui {
         rect(g, x + w - 2, y + h - 2, 1, 1, color);
     }
 
-    /** Sends the current GUI batch to the screen before the card is drawn. */
-    static void flush(GuiGraphics g) {
-        g.flush();
-    }
-
     /** A soft panel: rounded, with a 1 px border and a faint shadow. */
     static void panel(GuiGraphics g, int x, int y, int w, int h) {
         round(g, x + 1, y + 2, w, h, 0x50000000);
@@ -55,7 +50,7 @@ final class Ui {
 
     static void icon(GuiGraphics g, ResourceLocation tex, int x, int y, int size, int color) {
         ModResources.texture(tex);
-        g.blit(RenderType::guiTexturedOverlay, tex, x, y, 0, 0, size, size, 32, 32, 32, 32, color);
+        g.blit(RenderType::guiTextured, tex, x, y, 0, 0, size, size, 32, 32, 32, 32, color);
     }
 
     /** A keyboard key cap with its name, e.g. Ctrl. @return its width */
