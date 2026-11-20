@@ -88,7 +88,7 @@ _**If any issues arise, please write to me in the comments on CurseForge or open
 ### Functional Key & Mod Menu
 
 *   The wheel is opened by **Ctrl + right click** by default. The functional key can be changed to another key or mouse button.
-*   **Mod Menu:** if Mod Menu is installed, open **BeezzCraft (Extended)** → **Configure**. The screen contains the functional key, the key-only mode and the functional mouse button. Below it, a separate **Crafting & hints** section has the craft queue, unavailable recipes, "resources to get" and the crafting sound.
+*   **Mod Menu:** if Mod Menu is installed, open **Beezz Craft (Extended)** → **Configure**. At the top, the **Use the mod** switch turns the wheel, gear menu and craft queue off completely. Below it are the functional key, key-only mode, click button and gear position. Then a **Crafting & hints** section with the craft queue, unavailable recipes, "resources to get" and the crafting sound. The bottom row is **Reset**, **Save** and **Cancel**.
 *   **Use only the functional key** — off by default. Hover an item and press the functional key to open the wheel without a mouse click.
 *   **Functional click** — the mouse button used together with the functional key: **Left button** or **Right button** (default: Right button).
 *   The same key bind is available in **Options → Controls → Key Binds → Beezz Craft Extended → Function key**.
@@ -101,6 +101,7 @@ The gear button opens a small panel:
 *   **Recipes you can't make** — show or hide grey sectors.
 *   **Resources to get** — show or hide the queue's shopping list.
 *   **Sound when crafting** — click sound on a craft.
+*   **Key only**, **Click**, **Key** (opens Controls) and **Button** (gear position).
 
 The **Ctrl count** is set in the config file (default 10). The mod remembers recently crafted items and craft counts; they are used for sorting and variant selection.
 
