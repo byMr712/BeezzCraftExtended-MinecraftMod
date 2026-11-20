@@ -32,6 +32,9 @@ public final class BeezzCraft {
     public static final Logger LOG = LoggerFactory.getLogger("BeezzCraft");
     /** The wheel that is open right now (one at a time), or null. */
     static Wheel wheel;
+    /** The "nothing can be crafted" notice above the inventory panel, or null. */
+    private static Component notice;
+    private static long noticeUntil;
 
     private BeezzCraft() {}
 
@@ -51,18 +54,23 @@ public final class BeezzCraft {
         Crafter.clear();
         Recipes.forget();
         wheel = null;
+        notice = null;
     }
 
     /** Called when a container screen is initialised: a new screen never keeps the old wheel. */
     public static void onScreenInit(Screen screen) {
         if (screen instanceof InventoryScreen || screen instanceof CraftingScreen
-                || screen instanceof CreativeModeInventoryScreen) wheel = null;
+                || screen instanceof CreativeModeInventoryScreen) {
+            wheel = null;
+            notice = null;
+        }
     }
 
     public static void onScreenRemoved(Screen screen) {
         // Keep the wheel when another screen (a recipe book overlay) opens on top of it;
         // a new inventory/crafting screen resets it in onScreenInit.
         Panel.close();
+        notice = null;
     }
 
     /** Called from the screen's own tick. */
@@ -81,6 +89,26 @@ public final class BeezzCraft {
         Font font = screen.getFont();
         if (wheel != null && wheel.screen == screen) wheel.render(g, font, mx, my);
         else Panel.render((AbstractContainerScreen<?>) screen, g, font, mx, my);
+        drawNotice((AbstractContainerScreen<?>) screen, g, font);
+    }
+
+    /** Shows the "nothing can be crafted" notice above the inventory panel for three seconds. */
+    static void showNotice(Component text) {
+        notice = text;
+        noticeUntil = System.currentTimeMillis() + 3000;
+    }
+
+    private static void drawNotice(AbstractContainerScreen<?> screen, GuiGraphicsExtractor g, Font font) {
+        if (notice == null) return;
+        if (System.currentTimeMillis() >= noticeUntil) {
+            notice = null;
+            return;
+        }
+        AbstractContainerScreenAccessor a = (AbstractContainerScreenAccessor) screen;
+        int x = a.beezzcraft$leftPos() + (a.beezzcraft$imageWidth() - font.width(notice)) / 2;
+        x = Math.max(2, Math.min(screen.width - font.width(notice) - 2, x));
+        int y = Math.max(2, a.beezzcraft$topPos() - 12);
+        g.text(font, notice, x, y, 0xFFFFFFFF, true);
     }
 
     public static boolean wheelOpenOn(Object screen) {
@@ -139,10 +167,11 @@ public final class BeezzCraft {
             LOG.info("open {}: {} options, {} recipe collections", stack, options.size(), mc.player.getRecipeBook().getCollections().size());
         }
         if (options.isEmpty()) {
-            mc.player.sendOverlayMessage(Tr.t(Recipes.gridSize(screen.getMenu()) >= 3 ? "beezzcraft.nothing" : "beezzcraft.nothing.inv",
-                    stack.getHoverName()).withStyle(ChatFormatting.GRAY));
+            showNotice(Tr.t(Recipes.gridSize(screen.getMenu()) >= 3 ? "beezzcraft.nothing" : "beezzcraft.nothing.inv",
+                    stack.getHoverName()));
             return;
         }
+        notice = null;
         wheel = new Wheel(screen, stack, options, mx, my);
     }
 
