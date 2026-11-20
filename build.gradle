@@ -99,7 +99,7 @@ tasks.matching { it.name == 'sourcesJar' || it.name == 'remapSourcesJar' || it.n
 
 task jarNeoForge(type: Jar) {
     dependsOn compileNeoforgeJava, processNeoforgeResources, clientClasses, classes
-    archiveFileName = "${project.archives_base_name.replace('-Fabric-', '-NeoForge-')}-${artifactVersion}.jar"
+    archiveFileName = "${project.archives_base_name.replace('-Fabric-', '-NeoForge-').replace('BeezzCraft-NeoForge-', 'BeezzCraftExtended-NeoForge-')}-${artifactVersion}.jar"
     destinationDirectory = layout.buildDirectory.dir("libs")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
