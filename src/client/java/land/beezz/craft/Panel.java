@@ -21,6 +21,7 @@ import java.util.List;
 final class Panel {
     private static final int X = 6, Y = 6, GEAR = 20, W = 176, ROW = 18, QROW = 22;
     private static boolean settings;
+    private static boolean listeningKey;
 
     private Panel() {}
 
@@ -30,15 +31,40 @@ final class Panel {
 
     static void close() {
         settings = false;
+        listeningKey = false;
+    }
+
+    static boolean captureKey(InputConstants.Key key) {
+        if (!listeningKey) return false;
+        if (key.getValue() != InputConstants.KEY_ESCAPE) {
+            BeezzCraftKeys.MODIFIER.setKey(key);
+            Minecraft.getInstance().options.save();
+        }
+        listeningKey = false;
+        return true;
+    }
+
+    static boolean captureMouse(int button) {
+        if (!listeningKey) return false;
+        BeezzCraftKeys.MODIFIER.setKey(InputConstants.Type.MOUSE.getOrCreate(button));
+        Minecraft.getInstance().options.save();
+        listeningKey = false;
+        return true;
+    }
+
+    private static String[] tips(String... keys) {
+        return keys;
     }
 
     private interface Row {
         void render(GuiGraphics g, Font font, int x, int y, boolean hover);
 
         void click();
+
+        String[] tips();
     }
 
-    private record Toggle(ItemStack icon, Component label, boolean on, Runnable flip) implements Row {
+    private record Toggle(ItemStack icon, Component label, boolean on, Runnable flip, String[] tips) implements Row {
         public void render(GuiGraphics g, Font font, int x, int y, boolean hover) {
             if (hover) Ui.round(g, x + 2, y, W - 4, ROW, Ui.PANEL_HI);
             g.renderItem(icon, x + 5, y + 1);
@@ -51,7 +77,7 @@ final class Panel {
         }
     }
 
-    private record Choice(ItemStack icon, Component label, Component value, Runnable next) implements Row {
+    private record Choice(ItemStack icon, Component label, Component value, Runnable next, String[] tips) implements Row {
         public void render(GuiGraphics g, Font font, int x, int y, boolean hover) {
             if (hover) Ui.round(g, x + 2, y, W - 4, ROW, Ui.PANEL_HI);
             g.renderItem(icon, x + 5, y + 1);
@@ -71,27 +97,36 @@ final class Panel {
         rows.add(new Toggle(new ItemStack(Items.CLOCK), Tr.t("beezzcraft.set.queue"), c.queue, () -> {
             c.queue = !c.queue;
             if (!c.queue) Crafter.jobs().removeIf(j -> j.queued);
-        }));
+        }, tips("beezzcraft.set.queue.note1", "beezzcraft.set.queue.note2")));
         rows.add(new Toggle(new ItemStack(Items.SPYGLASS), Tr.t("beezzcraft.set.missing"), c.showMissing, () -> {
             c.showMissing = !c.showMissing;
             if (BeezzCraft.wheel != null) BeezzCraft.wheel.refresh();
-        }));
+        }, tips("beezzcraft.config.missing.tip1", "beezzcraft.config.missing.tip2", "beezzcraft.config.missing.tip3")));
         rows.add(new Toggle(new ItemStack(Items.IRON_PICKAXE), Tr.t("beezzcraft.set.needs"), c.showNeeds,
-                () -> c.showNeeds = !c.showNeeds));
+                () -> c.showNeeds = !c.showNeeds,
+                tips("beezzcraft.config.needs.tip1", "beezzcraft.config.needs.tip2", "beezzcraft.config.needs.tip3")));
         rows.add(new Toggle(new ItemStack(Items.NOTE_BLOCK), Tr.t("beezzcraft.set.sound"), c.sound,
-                () -> c.sound = !c.sound));
+                () -> c.sound = !c.sound,
+                tips("beezzcraft.config.sound.tip1", "beezzcraft.config.sound.tip2")));
         rows.add(new Toggle(new ItemStack(Items.NAME_TAG), Tr.t("beezzcraft.set.key_only"), c.keyOnly,
-                () -> c.keyOnly = !c.keyOnly));
+                () -> c.keyOnly = !c.keyOnly,
+                tips("beezzcraft.config.key_only.line1", "beezzcraft.config.key_only.line2",
+                        "beezzcraft.config.key_only.line3")));
+        String[] clickTips = c.keyOnly ? tips("beezzcraft.config.click.off")
+                : c.functionalClick == 0
+                ? tips("beezzcraft.config.click.left.line1", "beezzcraft.config.click.left.line2")
+                : tips("beezzcraft.config.click.right.line1", "beezzcraft.config.click.right.line2");
         rows.add(new Choice(new ItemStack(Items.STONE_BUTTON), Tr.t("beezzcraft.set.click"),
                 Tr.t(c.functionalClick == 0 ? "beezzcraft.set.click.left" : "beezzcraft.set.click.right"),
-                () -> c.functionalClick = c.functionalClick == 0 ? 1 : 0));
+                () -> c.functionalClick = c.functionalClick == 0 ? 1 : 0, clickTips));
         rows.add(new Choice(new ItemStack(Items.TRIPWIRE_HOOK), Tr.t("beezzcraft.set.key"),
-                BeezzCraftKeys.MODIFIER.getTranslatedKeyMessage(),
-                () -> Minecraft.getInstance().setScreen(new net.minecraft.client.gui.screens.options.controls.ControlsScreen(
-                        Minecraft.getInstance().screen, Minecraft.getInstance().options))));
+                listeningKey ? Tr.t("beezzcraft.config.press") : BeezzCraftKeys.MODIFIER.getTranslatedKeyMessage(),
+                () -> listeningKey = true,
+                listeningKey ? tips("beezzcraft.config.key.press.tip") : tips("beezzcraft.config.key.tip")));
         rows.add(new Choice(new ItemStack(Items.COMPASS), Tr.t("beezzcraft.set.position"),
                 Tr.t(Config.gearPositionKey(c.gearPosition)),
-                () -> c.gearPosition = (c.gearPosition + 1) & 3));
+                () -> c.gearPosition = (c.gearPosition + 1) & 3,
+                tips("beezzcraft.config.position.tip")));
         return rows;
     }
 
@@ -189,10 +224,12 @@ final class Panel {
         int x = panelX(screen), y = panelY(screen), h = settingsH();
         Ui.panel(g, x, y, W, h);
         List<Row> rows = rows();
+        Row hovered = null;
         int ry = y + 4;
         for (int i = 0; i < rows.size(); i++) {
             boolean hover = in(mx, my, x, ry, W, ROW);
             rows.get(i).render(g, font, x, ry, hover);
+            if (hover) hovered = rows.get(i);
             ry += ROW;
             if (i == 0) {
                 // what the queue does, right under its switch
@@ -203,6 +240,14 @@ final class Panel {
                 ry += 4;
             }
         }
+        if (hovered != null) drawTooltip(g, font, hovered.tips(), mx, my);
+    }
+
+    private static void drawTooltip(GuiGraphics g, Font font, String[] keys, int mx, int my) {
+        if (keys.length == 0) return;
+        List<net.minecraft.util.FormattedCharSequence> lines = new ArrayList<>(keys.length);
+        for (String key : keys) lines.add(Tr.t(key).getVisualOrderText());
+        g.renderTooltip(font, lines, mx, my);
     }
 
     private static void renderQueue(AbstractContainerScreen<?> screen, GuiGraphics g, Font font, int mx, int my) {

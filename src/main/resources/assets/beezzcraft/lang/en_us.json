@@ -86,5 +86,6 @@
   "beezzcraft.config.cancel": "Cancel",
   "beezzcraft.config.missing.tip3": "Only what you can make right now stays.",
   "beezzcraft.config.needs.tip3": "what you already have.",
-  "beezzcraft.config.reset.button": "Reset"
+  "beezzcraft.config.reset.button": "Reset",
+  "beezzcraft.config.key.press.tip": "Esc cancels."
 }

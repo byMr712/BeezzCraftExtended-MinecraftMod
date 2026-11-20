@@ -175,6 +175,16 @@ public final class BeezzCraft {
         if (wheel != null) wheel.scroll(amount);
     }
 
+    /** The gear panel's key row is waiting for a key; returns true when the event was consumed. */
+    public static boolean captureKey(InputConstants.Key key) {
+        return Panel.captureKey(key);
+    }
+
+    /** The gear panel's key row is waiting for a mouse button. */
+    public static boolean captureMouse(int button) {
+        return Panel.captureMouse(button);
+    }
+
     /** A key while the wheel is open: Escape or the inventory key closes it, everything else is swallowed. */
     public static void key(Screen screen, int key, boolean inventoryKey) {
         if (!Config.get().enabled || wheel == null) return;
