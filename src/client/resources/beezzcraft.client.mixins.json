@@ -10,6 +10,7 @@
     "MinecraftMixin",
     "LanguageMixin",
     "KeyMappingAccessor",
+    "KeyMappingMixin",
     "OptionsAccessor",
     "OptionsMixin",
     "ScreenMixin",

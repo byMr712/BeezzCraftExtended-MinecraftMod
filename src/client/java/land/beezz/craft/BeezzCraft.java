@@ -105,8 +105,8 @@ public final class BeezzCraft {
             return;
         }
         AbstractContainerScreenAccessor a = (AbstractContainerScreenAccessor) screen;
-        int x = a.beezzcraft$leftPos() + (a.beezzcraft$imageWidth() - font.width(notice)) / 2;
-        x = Math.max(2, Math.min(screen.width - font.width(notice) - 2, x));
+        int w = font.width(notice);
+        int x = Math.max(2, Math.min(screen.width - w - 2, (screen.width - w) / 2));
         int y = Math.max(2, a.beezzcraft$topPos() - 12);
         g.drawString(font, notice, x, y, 0xFFFFFFFF, true);
     }
