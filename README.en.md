@@ -33,15 +33,15 @@ _**If any issues arise, please write to me in the comments on CurseForge or open
 
 | The wheel | Variants: mouse wheel or middle click |
 | :---: | :---: |
-| ![The wheel](docs/wheel.webp) | ![Variants](docs/variants.webp) |
+| ![The wheel](docs/en/wheel.webp) | ![Variants](docs/en/variants.webp) |
 
 | Crafting table: iron pickaxe | Craft queue and "resources to get" |
 | :---: | :---: |
-| ![Crafting table](docs/table-iron.webp) | ![Queue](docs/queue-needs.webp) |
+| ![Crafting table](docs/en/table-iron.webp) | ![Queue](docs/en/queue-needs.webp) |
 
 | Settings |
 | :---: |
-| ![Settings](docs/settings.webp) |
+| ![Settings](docs/en/settings.webp) |
 
 ## What can this mod do?
 
