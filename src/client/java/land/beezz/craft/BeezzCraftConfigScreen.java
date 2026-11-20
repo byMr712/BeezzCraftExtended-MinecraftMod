@@ -1,13 +1,12 @@
 package land.beezz.craft;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 
@@ -15,140 +14,142 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-/** Mod Menu config screen: key selection, key-only mode and the functional mouse button. */
-public final class BeezzCraftConfigScreen extends OptionsSubScreen {
-    private MultiLineButton keyButton;
-    private MultiLineButton keyOnlyButton;
-    private MultiLineButton clickButton;
-    private MultiLineButton gearPositionButton;
-    private MultiLineButton queueButton;
-    private MultiLineButton missingButton;
-    private MultiLineButton needsButton;
-    private MultiLineButton soundButton;
-    private MultiLineButton resetButton;
+/**
+ * Mod Menu config screen, laid out like the other Mr712 mods: a full-width master switch at the top, two
+ * columns of toggle buttons, and Reset / Save / Cancel at the bottom.
+ */
+public final class BeezzCraftConfigScreen extends Screen {
+    private final Screen parent;
+    private final Config temp;
+    private ConfigButton clickButton;
     private boolean listening;
+    private InputConstants.Key pendingKey;
 
     public BeezzCraftConfigScreen(Screen lastScreen) {
-        super(lastScreen, Minecraft.getInstance().options, Tr.t("beezzcraft.config.title"));
+        super(Tr.t("beezzcraft.config.title"));
+        this.parent = lastScreen;
+        this.temp = Config.get().copySettings();
+        // The Mod Menu is not a container screen: do not keep the inventory wheel above it.
+        BeezzCraft.wheel = null;
+        Panel.close();
     }
 
     @Override
-    protected void addOptions() {
-        keyButton = new MultiLineButton(this::pressKey, () -> lines("beezzcraft.config.key.tip"));
-        keyOnlyButton = new MultiLineButton(this::toggleKeyOnly, () -> lines(
-                "beezzcraft.config.key_only.line1",
-                "beezzcraft.config.key_only.line2",
-                "beezzcraft.config.key_only.line3"));
-        clickButton = new MultiLineButton(this::toggleClick, this::clickTooltip);
-        gearPositionButton = new MultiLineButton(this::cycleGearPosition,
-                () -> lines("beezzcraft.config.position.tip"));
-        queueButton = new MultiLineButton(this::toggleQueue,
-                () -> lines("beezzcraft.set.queue.note1", "beezzcraft.set.queue.note2"));
-        missingButton = new MultiLineButton(this::toggleMissing, () -> lines("beezzcraft.config.toggle.tip"));
-        needsButton = new MultiLineButton(this::toggleNeeds, () -> lines("beezzcraft.config.toggle.tip"));
-        soundButton = new MultiLineButton(this::toggleSound, () -> lines("beezzcraft.config.toggle.tip"));
-        resetButton = new MultiLineButton(this::restoreDefaults, () -> lines("beezzcraft.config.reset.tip"));
-        StringWidget section = new StringWidget(200, 20, Tr.t("beezzcraft.config.section.crafting"),
-                Minecraft.getInstance().font).alignLeft();
-        list.addSmall(List.of(keyButton));
-        list.addSmall(List.of(keyOnlyButton));
-        list.addSmall(List.of(clickButton));
-        list.addSmall(List.of(gearPositionButton));
-        list.addSmall(List.of(section));
-        list.addSmall(List.of(queueButton));
-        list.addSmall(List.of(missingButton));
-        list.addSmall(List.of(needsButton));
-        list.addSmall(List.of(soundButton));
-        list.addSmall(List.of(resetButton));
-        updateLabels();
+    protected void init() {
+        int centerX = this.width / 2;
+        int x = centerX - 160;
+        int y = 34;
+        int row = 24;
+        int half = 156;
+        int col2 = x + half + 8;
+
+        // Master switch across the whole width.
+        addRenderableWidget(new ConfigButton(x, y, 320, 20,
+                toggle("beezzcraft.config.enabled", temp.enabled),
+                () -> {
+                    temp.enabled = !temp.enabled;
+                    rebuildWidgets();
+                },
+                () -> lines("beezzcraft.config.enabled.tip1", "beezzcraft.config.enabled.tip2")));
+
+        addRenderableWidget(new ConfigButton(x, y + row, half, 20,
+                toggle("beezzcraft.config.key_only.short", temp.keyOnly),
+                () -> {
+                    temp.keyOnly = !temp.keyOnly;
+                    rebuildWidgets();
+                },
+                () -> lines("beezzcraft.config.key_only.line1", "beezzcraft.config.key_only.line2",
+                        "beezzcraft.config.key_only.line3")));
+        clickButton = new ConfigButton(col2, y + row, half, 20,
+                choice("beezzcraft.config.click.short",
+                        temp.functionalClick == 0 ? "beezzcraft.set.click.left" : "beezzcraft.set.click.right"),
+                () -> {
+                    if (temp.keyOnly) return;
+                    temp.functionalClick = temp.functionalClick == 0 ? 1 : 0;
+                    rebuildWidgets();
+                },
+                () -> temp.keyOnly ? lines("beezzcraft.config.click.off")
+                        : temp.functionalClick == 0
+                        ? lines("beezzcraft.config.click.left.line1", "beezzcraft.config.click.left.line2")
+                        : lines("beezzcraft.config.click.right.line1", "beezzcraft.config.click.right.line2"));
+        clickButton.active = !temp.keyOnly;
+        addRenderableWidget(clickButton);
+
+        addRenderableWidget(new ConfigButton(x, y + row * 2, half, 20,
+                choice("beezzcraft.config.position.short", Config.gearPositionKey(temp.gearPosition)),
+                () -> {
+                    temp.gearPosition = (temp.gearPosition + 1) & 3;
+                    rebuildWidgets();
+                },
+                () -> lines("beezzcraft.config.position.tip")));
+        addRenderableWidget(new ConfigButton(col2, y + row * 2, half, 20,
+                keyLabel(),
+                () -> {
+                    listening = true;
+                    rebuildWidgets();
+                },
+                () -> lines("beezzcraft.config.key.tip")));
+
+        addRenderableWidget(new ConfigButton(x, y + row * 3, half, 20,
+                toggle("beezzcraft.set.queue", temp.queue),
+                () -> {
+                    temp.queue = !temp.queue;
+                    rebuildWidgets();
+                },
+                () -> lines("beezzcraft.set.queue.note1", "beezzcraft.set.queue.note2")));
+        addRenderableWidget(new ConfigButton(col2, y + row * 3, half, 20,
+                toggle("beezzcraft.set.missing", temp.showMissing),
+                () -> {
+                    temp.showMissing = !temp.showMissing;
+                    rebuildWidgets();
+                },
+                () -> lines("beezzcraft.config.missing.tip1", "beezzcraft.config.missing.tip2",
+                        "beezzcraft.config.missing.tip3")));
+
+        addRenderableWidget(new ConfigButton(x, y + row * 4, half, 20,
+                toggle("beezzcraft.set.needs", temp.showNeeds),
+                () -> {
+                    temp.showNeeds = !temp.showNeeds;
+                    rebuildWidgets();
+                },
+                () -> lines("beezzcraft.config.needs.tip1", "beezzcraft.config.needs.tip2",
+                        "beezzcraft.config.needs.tip3")));
+        addRenderableWidget(new ConfigButton(col2, y + row * 4, half, 20,
+                toggle("beezzcraft.set.sound", temp.sound),
+                () -> {
+                    temp.sound = !temp.sound;
+                    rebuildWidgets();
+                },
+                () -> lines("beezzcraft.config.sound.tip1", "beezzcraft.config.sound.tip2")));
+
+        int bottom = this.height - 28;
+        addRenderableWidget(new ConfigButton(centerX - 155, bottom, 100, 20,
+                Tr.t("beezzcraft.config.reset.button"),
+                this::restoreDefaults,
+                () -> lines("beezzcraft.config.reset.tip")));
+        addRenderableWidget(Button.builder(Tr.t("beezzcraft.config.save"), b -> {
+            this.save();
+            this.onClose();
+        }).bounds(centerX - 50, bottom, 100, 20).build());
+        addRenderableWidget(Button.builder(Tr.t("beezzcraft.config.cancel"), b -> this.onClose())
+                .bounds(centerX + 55, bottom, 100, 20).build());
     }
 
-    private void pressKey(Button button) {
-        listening = true;
-        button.setMessage(Tr.t("beezzcraft.config.press"));
-    }
-
-    private void toggleKeyOnly(Button button) {
-        Config config = Config.get();
-        config.keyOnly = !config.keyOnly;
-        config.save();
-        updateLabels();
-    }
-
-    private void toggleClick(Button button) {
-        Config config = Config.get();
-        if (config.keyOnly) return;
-        config.functionalClick = config.functionalClick == 0 ? 1 : 0;
-        config.save();
-        updateLabels();
-    }
-
-    private void cycleGearPosition(Button button) {
-        Config config = Config.get();
-        config.gearPosition = (config.gearPosition + 1) & 3;
-        config.save();
-        updateLabels();
-    }
-
-    private void toggleQueue(Button button) {
-        Config config = Config.get();
-        config.queue = !config.queue;
-        if (!config.queue) Crafter.jobs().removeIf(j -> j.queued);
-        config.save();
-        updateLabels();
-    }
-
-    private void toggleMissing(Button button) {
-        Config config = Config.get();
-        config.showMissing = !config.showMissing;
-        if (BeezzCraft.wheel != null) BeezzCraft.wheel.refresh();
-        config.save();
-        updateLabels();
-    }
-
-    private void toggleNeeds(Button button) {
-        Config config = Config.get();
-        config.showNeeds = !config.showNeeds;
-        config.save();
-        updateLabels();
-    }
-
-    private void toggleSound(Button button) {
-        Config config = Config.get();
-        config.sound = !config.sound;
-        config.save();
-        updateLabels();
-    }
-
-    private void updateLabels() {
-        Config config = Config.get();
-        keyButton.setMessage(Tr.t("beezzcraft.config.key",
-                BeezzCraftKeys.MODIFIER.getTranslatedKeyMessage().getString()));
-        keyOnlyButton.setMessage(Tr.t("beezzcraft.config.key_only",
-                Tr.t(config.keyOnly ? "beezzcraft.config.on" : "beezzcraft.config.off")));
-        clickButton.setMessage(Tr.t("beezzcraft.config.click",
-                Tr.t(config.functionalClick == 0
-                        ? "beezzcraft.config.left" : "beezzcraft.config.right")));
-        clickButton.active = !config.keyOnly;
-        gearPositionButton.setMessage(Tr.t("beezzcraft.config.position",
-                Tr.t(Config.gearPositionKey(config.gearPosition))));
-        queueButton.setMessage(toggle("beezzcraft.set.queue", config.queue));
-        missingButton.setMessage(toggle("beezzcraft.set.missing", config.showMissing));
-        needsButton.setMessage(toggle("beezzcraft.set.needs", config.showNeeds));
-        soundButton.setMessage(toggle("beezzcraft.set.sound", config.sound));
-        resetButton.setMessage(Tr.t("beezzcraft.config.reset"));
+    private Component keyLabel() {
+        Component key = pendingKey != null ? pendingKey.getDisplayName()
+                : BeezzCraftKeys.MODIFIER.getTranslatedKeyMessage();
+        return Tr.t("beezzcraft.config.key.short").copy().append(": ")
+                .append(listening ? Tr.t("beezzcraft.config.press") : key);
     }
 
     private static Component toggle(String key, boolean on) {
-        return Tr.t("beezzcraft.config.toggle", Tr.t(key),
-                Tr.t(on ? "beezzcraft.config.on" : "beezzcraft.config.off"));
+        return Tr.t(key).copy().append(": ")
+                .append(Tr.t(on ? "beezzcraft.config.on" : "beezzcraft.config.off")
+                        .withStyle(on ? ChatFormatting.GREEN : ChatFormatting.RED, ChatFormatting.BOLD));
     }
 
-    private List<FormattedCharSequence> clickTooltip() {
-        if (Config.get().keyOnly) return lines("beezzcraft.config.click.off");
-        return Config.get().functionalClick == 0
-                ? lines("beezzcraft.config.click.left.line1", "beezzcraft.config.click.left.line2")
-                : lines("beezzcraft.config.click.right.line1", "beezzcraft.config.click.right.line2");
+    private static Component choice(String key, String valueKey) {
+        return Tr.t(key).copy().append(": ").append(Tr.t(valueKey).withStyle(ChatFormatting.YELLOW));
     }
 
     private static List<FormattedCharSequence> lines(String... keys) {
@@ -161,11 +162,10 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (listening) {
             if (keyCode != InputConstants.KEY_ESCAPE) {
-                BeezzCraftKeys.MODIFIER.setKey(InputConstants.getKey(keyCode, scanCode));
-                Minecraft.getInstance().options.save();
+                pendingKey = InputConstants.getKey(keyCode, scanCode);
             }
             listening = false;
-            updateLabels();
+            rebuildWidgets();
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -174,45 +174,58 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (listening) {
-            BeezzCraftKeys.MODIFIER.setKey(InputConstants.Type.MOUSE.getOrCreate(button));
-            Minecraft.getInstance().options.save();
+            pendingKey = InputConstants.Type.MOUSE.getOrCreate(button);
             listening = false;
-            updateLabels();
+            rebuildWidgets();
             return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    private void restoreDefaults(Button button) {
-        Config.get().reset();
-        Config.get().save();
-        BeezzCraftKeys.MODIFIER.setKey(InputConstants.getKey("key.keyboard.left.control"));
-        Minecraft.getInstance().options.save();
+    private void restoreDefaults() {
+        temp.reset();
+        pendingKey = BeezzCraftKeys.MODIFIER.getDefaultKey();
         listening = false;
-        updateLabels();
+        rebuildWidgets();
+    }
+
+    private void save() {
+        Config live = Config.get();
+        live.copySettingsFrom(temp);
+        live.save();
+        if (pendingKey != null) {
+            BeezzCraftKeys.MODIFIER.setKey(pendingKey);
+            Minecraft.getInstance().options.save();
+        }
+        BeezzCraft.onConfigChanged();
     }
 
     @Override
-    public void removed() {
-        Config.get().save();
-        Minecraft.getInstance().options.save();
-        super.removed();
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        graphics.drawCenteredString(this.font, this.title, this.width / 2, 14, 0xFFFFFF);
     }
 
-    private static final class MultiLineButton extends Button {
+    @Override
+    public void onClose() {
+        if (this.minecraft != null) this.minecraft.setScreen(this.parent);
+    }
+
+    private static final class ConfigButton extends Button {
         private final Supplier<List<FormattedCharSequence>> tooltip;
 
-        private MultiLineButton(OnPress onPress, Supplier<List<FormattedCharSequence>> tooltip) {
-            super(0, 0, 200, 20, Component.empty(), onPress, DEFAULT_NARRATION);
+        private ConfigButton(int x, int y, int width, int height, Component label, Runnable onPress,
+                             Supplier<List<FormattedCharSequence>> tooltip) {
+            super(x, y, width, height, label, b -> onPress.run(), DEFAULT_NARRATION);
             this.tooltip = tooltip;
         }
 
         @Override
         protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
             super.renderWidget(graphics, mouseX, mouseY, partialTick);
-            if (isHovered()) {
-                Font font = Minecraft.getInstance().font;
-                graphics.setTooltipForNextFrame(font, tooltip.get(), mouseX, mouseY);
+            List<FormattedCharSequence> lines = tooltip.get();
+            if (isHovered() && !lines.isEmpty()) {
+                graphics.setTooltipForNextFrame(Minecraft.getInstance().font, lines, mouseX, mouseY);
             }
         }
     }
