@@ -6,7 +6,6 @@
     "AbstractContainerScreenAccessor",
     "AbstractContainerScreenMixin",
     "ContainerScreenMixin",
-    "GameRendererMixin",
     "GuiMixin",
     "MinecraftMixin",
     "LanguageMixin",
