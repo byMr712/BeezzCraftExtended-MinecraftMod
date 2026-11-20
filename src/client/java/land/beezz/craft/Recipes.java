@@ -11,7 +11,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.repository.ServerPacksSource;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -121,28 +120,9 @@ final class Recipes {
     private static List<Option> catalog;
     private static Object catalogFor;
 
-    /**
-     * The game's own data pack. 26.3 wraps it (createVanillaPackSource().fullResources()), 26.1–26.2 return it directly;
-     * picked at run time so one source builds for every supported version.
-     */
-    private static PackResources vanillaPack() throws Exception {
-        Object source = ServerPacksSource.createVanillaPackSource();
-        if (source instanceof PackResources pack) return pack;
-        return (PackResources) source.getClass().getMethod("fullResources").invoke(source);
-    }
 
-    /** The plain recipe codec: Recipe.DIRECT_CODEC since 26.3, Recipe.CODEC before (in 26.3 CODEC means holders). */
-    @SuppressWarnings("unchecked")
-    private static Codec<Recipe<?>> recipeCodec() throws Exception {
-        for (String name : new String[] {"DIRECT_CODEC", "CODEC"}) {
-            try {
-                return (Codec<Recipe<?>>) Recipe.class.getField(name).get(null);
-            } catch (NoSuchFieldException ignored) {
-                // older name below
-            }
-        }
-        throw new NoSuchFieldException("Recipe codec");
-    }
+
+
 
     /** Every crafting recipe the client can read, loaded once per world. */
     static List<Option> catalog(Minecraft mc) {
@@ -156,7 +136,7 @@ final class Recipes {
                 for (RecipeHolder<?> h : server.getRecipeManager().getRecipes()) add(out, h.value(), ctx);
             } else {
                 RegistryOps<com.google.gson.JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, mc.level.registryAccess());
-                Codec<Recipe<?>> codec = recipeCodec();
+                Codec<Recipe<?>> codec = Recipe.DIRECT_CODEC;
                 var seen = new java.util.HashSet<>();
                 for (PackResources pack : mc.getResourcePackRepository().openAllSelected()) {
                     try (pack) {
