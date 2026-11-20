@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.network.chat.Component;
@@ -19,6 +20,10 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
     private MultiLineButton keyButton;
     private MultiLineButton keyOnlyButton;
     private MultiLineButton clickButton;
+    private MultiLineButton queueButton;
+    private MultiLineButton missingButton;
+    private MultiLineButton needsButton;
+    private MultiLineButton soundButton;
     private MultiLineButton resetButton;
     private boolean listening;
 
@@ -34,10 +39,22 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
                 "beezzcraft.config.key_only.line2",
                 "beezzcraft.config.key_only.line3"));
         clickButton = new MultiLineButton(this::toggleClick, this::clickTooltip);
+        queueButton = new MultiLineButton(this::toggleQueue,
+                () -> lines("beezzcraft.set.queue.note1", "beezzcraft.set.queue.note2"));
+        missingButton = new MultiLineButton(this::toggleMissing, () -> lines("beezzcraft.config.toggle.tip"));
+        needsButton = new MultiLineButton(this::toggleNeeds, () -> lines("beezzcraft.config.toggle.tip"));
+        soundButton = new MultiLineButton(this::toggleSound, () -> lines("beezzcraft.config.toggle.tip"));
         resetButton = new MultiLineButton(this::restoreDefaults, () -> lines("beezzcraft.config.reset.tip"));
+        StringWidget section = new StringWidget(200, 20, Tr.t("beezzcraft.config.section.crafting"),
+                Minecraft.getInstance().font).alignLeft();
         list.addSmall(List.of(keyButton));
         list.addSmall(List.of(keyOnlyButton));
         list.addSmall(List.of(clickButton));
+        list.addSmall(List.of(section));
+        list.addSmall(List.of(queueButton));
+        list.addSmall(List.of(missingButton));
+        list.addSmall(List.of(needsButton));
+        list.addSmall(List.of(soundButton));
         list.addSmall(List.of(resetButton));
         updateLabels();
     }
@@ -62,6 +79,36 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
         updateLabels();
     }
 
+    private void toggleQueue(Button button) {
+        Config config = Config.get();
+        config.queue = !config.queue;
+        if (!config.queue) Crafter.jobs().removeIf(j -> j.queued);
+        config.save();
+        updateLabels();
+    }
+
+    private void toggleMissing(Button button) {
+        Config config = Config.get();
+        config.showMissing = !config.showMissing;
+        if (BeezzCraft.wheel != null) BeezzCraft.wheel.refresh();
+        config.save();
+        updateLabels();
+    }
+
+    private void toggleNeeds(Button button) {
+        Config config = Config.get();
+        config.showNeeds = !config.showNeeds;
+        config.save();
+        updateLabels();
+    }
+
+    private void toggleSound(Button button) {
+        Config config = Config.get();
+        config.sound = !config.sound;
+        config.save();
+        updateLabels();
+    }
+
     private void updateLabels() {
         Config config = Config.get();
         keyButton.setMessage(Tr.t("beezzcraft.config.key",
@@ -72,7 +119,16 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
                 Tr.t(config.functionalClick == 0
                         ? "beezzcraft.config.left" : "beezzcraft.config.right")));
         clickButton.active = !config.keyOnly;
+        queueButton.setMessage(toggle("beezzcraft.set.queue", config.queue));
+        missingButton.setMessage(toggle("beezzcraft.set.missing", config.showMissing));
+        needsButton.setMessage(toggle("beezzcraft.set.needs", config.showNeeds));
+        soundButton.setMessage(toggle("beezzcraft.set.sound", config.sound));
         resetButton.setMessage(Tr.t("beezzcraft.config.reset"));
+    }
+
+    private static Component toggle(String key, boolean on) {
+        return Tr.t("beezzcraft.config.toggle", Tr.t(key),
+                Tr.t(on ? "beezzcraft.config.on" : "beezzcraft.config.off"));
     }
 
     private List<FormattedCharSequence> clickTooltip() {
