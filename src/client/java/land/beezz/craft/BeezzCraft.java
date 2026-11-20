@@ -95,6 +95,10 @@ public final class BeezzCraft {
         g.pose().translate(0, 0, 400);
         if (wheel != null && wheel.screen == screen) wheel.render(g, font, mx, my);
         else Panel.render((AbstractContainerScreen<?>) screen, g, font, mx, my);
+        g.pose().popPose();
+        // The notice is feedback about the click: keep it above the wheel and its card.
+        g.pose().pushPose();
+        g.pose().translate(0, 0, 900);
         drawNotice((AbstractContainerScreen<?>) screen, g, font);
         g.pose().popPose();
     }
