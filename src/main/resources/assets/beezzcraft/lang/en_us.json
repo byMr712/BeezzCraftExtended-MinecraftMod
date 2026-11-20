@@ -86,5 +86,6 @@
   "beezzcraft.config.sound.tip2": "Turn it off for a silent wheel.",
   "beezzcraft.config.reset.button": "Reset",
   "beezzcraft.config.save": "Save",
-  "beezzcraft.config.cancel": "Cancel"
+  "beezzcraft.config.cancel": "Cancel",
+  "beezzcraft.config.key.press.tip": "Esc cancels."
 }
