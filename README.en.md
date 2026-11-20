@@ -168,8 +168,8 @@ No additional libraries are required. Client-side only: install it on your clien
 
 1. Install [Fabric Loader](https://fabricmc.net/use/) or [NeoForge](https://neoforged.net/) for your Minecraft version.
 2. Put the matching JAR into the `mods` folder:
-   - `BeezzCraft-Fabric-<version>-v1.1.jar` — for Fabric;
-   - `BeezzCraftExtended-NeoForge-<version>-v1.1.jar` — for NeoForge.
+   - `BeezzCraft-Fabric-<version>-v1.1.1.jar` — for Fabric;
+   - `BeezzCraftExtended-NeoForge-<version>-v1.1.1.jar` — for NeoForge.
 3. Start the game.
 
 Mod Menu is optional; install it to get the in-game config screen.
@@ -184,8 +184,8 @@ JDK 25 or newer is required.
 
 The command builds both files into `build/libs/`:
 
-- `BeezzCraft-Fabric-1.21.4-v1.1.jar`
-- `BeezzCraftExtended-NeoForge-1.21.4-v1.1.jar`
+- `BeezzCraft-Fabric-1.21.4-v1.1.1.jar`
+- `BeezzCraftExtended-NeoForge-1.21.4-v1.1.1.jar`
 
 Client game tests with screenshots are available on 1.21.4 – 1.21.11 and 26.1 – 26.3; Fabric API has no client-gametest module for 1.21 – 1.21.3.
 
