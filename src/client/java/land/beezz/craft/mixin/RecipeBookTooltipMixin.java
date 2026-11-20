@@ -1,0 +1,19 @@
+package land.beezz.craft.mixin;
+
+import land.beezz.craft.BeezzCraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
+import net.minecraft.world.inventory.Slot;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+/** No recipe-book tooltip while the wheel is open: the wheel's own card is the tooltip. */
+@Mixin(RecipeBookComponent.class)
+abstract class RecipeBookTooltipMixin {
+    @Inject(method = "extractTooltip", at = @At("HEAD"), cancellable = true)
+    private void beezzcraft$noRecipeBookTooltip(GuiGraphicsExtractor g, int mx, int my, Slot slot, CallbackInfo ci) {
+        if (BeezzCraft.wheelOpen()) ci.cancel();
+    }
+}

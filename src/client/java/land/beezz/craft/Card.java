@@ -42,6 +42,7 @@ final class Card {
         if (x + w > sw - 4) x = mx - 14 - w;
         y = Math.max(4, Math.min(sh - h - 4, y));
         g.nextStratum();
+        Ui.backdrop(g, x - 6, y - 6, w + 12, h + 12);
         Ui.panel(g, x, y, w, h);
         if (o.craftable) Ui.rect(g, x, y, w, 1, 0x90FACC15);
 
@@ -79,9 +80,9 @@ final class Card {
             int ix = cx + i * CELL;
             g.item(n.icon(), ix, cy);
             String c = String.valueOf(n.need());
-            g.text(font, c, ix + 1, cy + 17, 0xFFFFFFFF, true);
+            g.text(font, c, ix + 17 - font.width(c), cy + 9, 0xFFFFFFFF, true);
             String s = n.missing() ? "-" + (n.need() - n.have()) : "✔";
-            g.text(font, s, ix + 1, cy + 27, n.missing() ? Ui.RED : Ui.GREEN, false);
+            g.text(font, s, ix + 1, cy + 17, n.missing() ? Ui.RED : Ui.GREEN, false);
         }
         cy += 16 + 21 + 6;
 
@@ -125,6 +126,7 @@ final class Card {
         int w = font.width(text) + 10, h = 14;
         int x = Math.min(sw - w - 4, mx + 12), y = Math.max(4, Math.min(sh - h - 4, my - 7));
         g.nextStratum();
+        Ui.backdrop(g, x - 6, y - 6, w + 12, h + 12);
         Ui.panel(g, x, y, w, h);
         g.text(font, text, x + 5, y + 3, Ui.TEXT, false);
     }
