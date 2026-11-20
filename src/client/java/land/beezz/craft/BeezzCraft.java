@@ -89,6 +89,7 @@ public final class BeezzCraft {
         Font font = screen.getFont();
         if (wheel != null && wheel.screen == screen) wheel.render(g, font, mx, my);
         else Panel.render((AbstractContainerScreen<?>) screen, g, font, mx, my);
+        g.nextStratum();
         drawNotice((AbstractContainerScreen<?>) screen, g, font);
     }
 
