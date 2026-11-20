@@ -41,11 +41,6 @@ final class Ui {
         rect(g, x + w - 2, y + h - 2, 1, 1, color);
     }
 
-    /** Sends the current GUI batch to the screen before the card is drawn. */
-    static void flush(GuiGraphics g) {
-
-    }
-
     /** A soft panel: rounded, with a 1 px border and a faint shadow. */
     static void panel(GuiGraphics g, int x, int y, int w, int h) {
         round(g, x + 1, y + 2, w, h, 0x50000000);
