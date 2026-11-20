@@ -32,5 +32,8 @@
   "beezzcraft.needs.title": "Нужно добыть",
   "beezzcraft.needs.ok": "Всё есть — можно крафтить",
   "key.category.beezzcraft.beezz_craft_extended": "Beezz Craft Extended",
-  "key.beezzcraft.wheel": "Функциональная клавиша"
+  "key.beezzcraft.wheel": "Функциональная клавиша",
+  "beezzcraft.config.reset": "Вернуть настройки по умолчанию",
+  "beezzcraft.config.reset.tip": "Сбросить функциональную клавишу, режим «только клавиша» и кнопку клика.",
+  "beezzcraft.config.click.off": "Доступно только когда «Использовать только функциональную клавишу» выключено."
 }
