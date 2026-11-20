@@ -1,3 +1,5 @@
+package land.beezz.craft.mixin;
+
 import land.beezz.craft.BeezzCraft;
 import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
