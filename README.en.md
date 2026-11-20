@@ -101,7 +101,7 @@ The gear button opens a small panel:
 *   **Recipes you can't make** — show or hide grey sectors.
 *   **Resources to get** — show or hide the queue's shopping list.
 *   **Sound when crafting** — click sound on a craft.
-*   **Key only**, **Click**, **Key** (opens Controls) and **Button** (gear position).
+*   **Key only**, **Click**, **Key** (click, then press a new key or mouse button) and **Button** (gear position). Every row has a hover tooltip.
 
 The **Ctrl count** is set in the config file (default 10). The mod remembers recently crafted items and craft counts; they are used for sorting and variant selection.
 
