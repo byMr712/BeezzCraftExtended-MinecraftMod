@@ -82,9 +82,9 @@ public final class BeezzCraft {
         // (and its centre item) is drawn above the vanilla slots instead of under them.
         g.flush();
         Font font = Minecraft.getInstance().font;
-        // The recipe book draws itself at z = 100; above it so the wheel and card are never hidden behind it.
+        // The book panel is at z = 100 and its item models at z = 250; stay above both.
         g.pose().pushPose();
-        g.pose().translate(0, 0, 200);
+        g.pose().translate(0, 0, 400);
         if (wheel != null && wheel.screen == screen) wheel.render(g, font, mx, my);
         else Panel.render((AbstractContainerScreen<?>) screen, g, font, mx, my);
         g.pose().popPose();
