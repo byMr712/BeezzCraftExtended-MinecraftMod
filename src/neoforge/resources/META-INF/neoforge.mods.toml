@@ -6,7 +6,7 @@ issueTrackerURL="https://github.com/byMr712/BeezzCraftExtended-MinecraftMod/issu
 [[mods]]
 modId="beezzcraft"
 version="${version}"
-displayName="BeezzCraft (Extended)"
+displayName="Beezz Craft (Extended)"
 logoFile="icon.png"
 displayURL="https://github.com/byMr712/BeezzCraftExtended-MinecraftMod"
 authors="BeezzLand & Mr712"
