@@ -4,6 +4,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -79,12 +80,29 @@ final class Crafter {
         return n;
     }
 
+    private static boolean creative() {
+        return BeezzCraft.screen(Minecraft.getInstance()) instanceof CreativeModeInventoryScreen;
+    }
+
+    private static void creativeMessage() {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null) player.sendOverlayMessage(Tr.t("beezzcraft.creative"));
+    }
+
     static void craft(Recipes.Option o, int count, boolean all) {
+        if (creative()) {
+            creativeMessage();
+            return;
+        }
         jobs.add(new Job(o, count, all, false));
     }
 
     /** Queues a recipe; the same recipe already waiting just gets more (one line «×3», not three «×1»). */
     static void enqueue(Recipes.Option o, int count, boolean all) {
+        if (creative()) {
+            creativeMessage();
+            return;
+        }
         for (Job j : jobs) {
             if (j.queued && j != current && j.same(o)) {
                 j.left += count;
