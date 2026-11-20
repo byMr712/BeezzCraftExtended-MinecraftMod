@@ -41,6 +41,9 @@ final class Card {
         int x = mx + 14, y = my - 8;
         if (x + w > sw - 4) x = mx - 14 - w;
         y = Math.max(4, Math.min(sh - h - 4, y));
+        g.pose().pushPose();
+        g.pose().translate(0, 0, 300); // wheel items render at +150 in z; keep the whole card above them
+        Ui.backdrop(g, x - 6, y - 6, w + 12, h + 12);
         Ui.panel(g, x, y, w, h);
         if (o.craftable) Ui.rect(g, x, y, w, 1, 0x90FACC15);
 
@@ -114,6 +117,7 @@ final class Card {
             Ui.icon(g, Ui.MOUSE_RIGHT, rx, cy - 1, 12, 0xFFFFFFFF);
             g.drawString(font, remove, rx + 12, cy + 1, Ui.TEXT, false);
         }
+        g.pose().popPose();
     }
 
     private static int keyW(Font font, String name) {
@@ -123,8 +127,12 @@ final class Card {
     static void text(GuiGraphics g, Font font, Component text, int mx, int my, int sw, int sh) {
         int w = font.width(text) + 10, h = 14;
         int x = Math.min(sw - w - 4, mx + 12), y = Math.max(4, Math.min(sh - h - 4, my - 7));
+        g.pose().pushPose();
+        g.pose().translate(0, 0, 300);
+        Ui.backdrop(g, x - 6, y - 6, w + 12, h + 12);
         Ui.panel(g, x, y, w, h);
         g.drawString(font, text, x + 5, y + 3, Ui.TEXT, false);
+        g.pose().popPose();
     }
 
     static void item(GuiGraphics g, ItemStack s, int x, int y) {
