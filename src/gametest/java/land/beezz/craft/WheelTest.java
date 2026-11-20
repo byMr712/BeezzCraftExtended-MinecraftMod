@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.context.ContextMap;
@@ -70,6 +71,18 @@ public class WheelTest implements FabricClientGameTest {
                 if (slot.container instanceof Inventory && slot.getItem().is(item)) return new double[] {left + slot.x + 8, top + slot.y + 8};
             }
             throw new IllegalStateException("no slot with " + item);
+        });
+    }
+
+    /** Screen point of any slot that has an item (the creative picker has no player Inventory slots). */
+    private double[] anySlot() {
+        return ctx.computeOnClient(mc -> {
+            AbstractContainerScreen<?> s = (AbstractContainerScreen<?>) BeezzCraft.screen(mc);
+            int left = (int) field(AbstractContainerScreen.class, s, "leftPos"), top = (int) field(AbstractContainerScreen.class, s, "topPos");
+            for (Slot slot : s.getMenu().slots) {
+                if (slot.hasItem()) return new double[] {left + slot.x + 8, top + slot.y + 8};
+            }
+            throw new IllegalStateException("no slot with an item");
         });
     }
 
@@ -335,6 +348,21 @@ public class WheelTest implements FabricClientGameTest {
             ctx.getInput().scroll(-1);
             ctx.waitTicks(5);
             shot("craft_11_table_sticks_page2");
+            ctx.setScreen(() -> null);
+
+            // creative inventory: the gear and the wheel must show there too
+            server.runCommand("gamemode creative @a");
+            ctx.waitTicks(5);
+            ctx.setScreen(() -> new CreativeModeInventoryScreen(Minecraft.getInstance().player,
+                    Minecraft.getInstance().player.connection.enabledFeatures(), true));
+            ctx.waitForScreen(CreativeModeInventoryScreen.class);
+            double[] creativeSlot = anySlot();
+            cursor(creativeSlot[0], creativeSlot[1]);
+            ctx.getInput().holdControl();
+            ctx.getInput().pressMouse(RIGHT);
+            ctx.getInput().releaseControl();
+            ctx.waitTicks(5);
+            check("the wheel opens in the creative inventory", ctx.computeOnClient(mc -> BeezzCraft.wheel != null));
             ctx.setScreen(() -> null);
         }
         configScreenTest();
