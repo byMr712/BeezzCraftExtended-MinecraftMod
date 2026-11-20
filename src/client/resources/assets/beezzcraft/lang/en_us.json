@@ -56,5 +56,17 @@
   "beezzcraft.creative": "Crafting is not available in the creative inventory",
   "beezzcraft.config.toggle": "%s: %s",
   "beezzcraft.config.toggle.tip": "Click to switch it on or off.",
-  "beezzcraft.config.section.crafting": "Crafting & hints"
+  "beezzcraft.config.section.crafting": "Crafting & hints",
+  "beezzcraft.set.key_only": "Key only",
+  "beezzcraft.set.click": "Click",
+  "beezzcraft.set.click.left": "Left",
+  "beezzcraft.set.click.right": "Right",
+  "beezzcraft.set.key": "Key",
+  "beezzcraft.set.position": "Button",
+  "beezzcraft.position.left_top": "Top left",
+  "beezzcraft.position.left_bottom": "Bottom left",
+  "beezzcraft.position.right_top": "Top right",
+  "beezzcraft.position.right_bottom": "Bottom right",
+  "beezzcraft.config.position": "Settings button: %s",
+  "beezzcraft.config.position.tip": "Where the gear button sits in the inventory and crafting table."
 }

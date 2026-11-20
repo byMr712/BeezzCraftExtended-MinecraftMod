@@ -137,7 +137,7 @@ public final class BeezzCraft {
             if (!wheel.click(mx, my, button, shift, ctrl)) wheel = null;
             return false;
         }
-        boolean panel = Panel.click(mx, my, button); // the gear, its settings and the queue (top left)
+        boolean panel = Panel.click(screen, mx, my, button); // the gear, its settings and the queue (top left)
         if (Boolean.getBoolean("beezzcraft.debug")) LOG.info("click button={} alt={} slot={}", button, alt, ((AbstractContainerScreenAccessor) screen).beezzcraft$hoveredSlot());
         if (BeezzCraftKeys.modifierDown()
                 && button == (Config.get().functionalClick == 0 ? InputConstants.MOUSE_BUTTON_LEFT : InputConstants.MOUSE_BUTTON_RIGHT)) {

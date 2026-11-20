@@ -56,5 +56,17 @@
   "beezzcraft.creative": "В творческом инвентаре крафт недоступен",
   "beezzcraft.config.toggle": "%s: %s",
   "beezzcraft.config.toggle.tip": "Нажмите, чтобы включить или выключить.",
-  "beezzcraft.config.section.crafting": "Крафт и подсказки"
+  "beezzcraft.config.section.crafting": "Крафт и подсказки",
+  "beezzcraft.set.key_only": "Только клавиша",
+  "beezzcraft.set.click": "Клик",
+  "beezzcraft.set.click.left": "Левая",
+  "beezzcraft.set.click.right": "Правая",
+  "beezzcraft.set.key": "Клавиша",
+  "beezzcraft.set.position": "Кнопка",
+  "beezzcraft.position.left_top": "Слева сверху",
+  "beezzcraft.position.left_bottom": "Слева снизу",
+  "beezzcraft.position.right_top": "Справа сверху",
+  "beezzcraft.position.right_bottom": "Справа снизу",
+  "beezzcraft.config.position": "Кнопка настроек: %s",
+  "beezzcraft.config.position.tip": "Где находится кнопка-шестерёнка в инвентаре и на верстаке."
 }
