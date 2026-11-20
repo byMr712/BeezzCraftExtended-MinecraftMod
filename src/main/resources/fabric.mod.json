@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "beezzcraft",
   "version": "${version}",
-  "name": "BeezzCraft (Extended)",
+  "name": "Beezz Craft (Extended)",
   "description": "Ctrl + right click on an item: an octagon wheel of everything you can craft from it. Grey means missing resources; hover for the recipe, click to craft.",
   "icon": "assets/beezzcraft/icon.png",
   "authors": [
