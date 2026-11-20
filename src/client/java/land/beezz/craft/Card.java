@@ -43,6 +43,7 @@ final class Card {
         y = Math.max(4, Math.min(sh - h - 4, y));
         g.nextStratum();
         Ui.panel(g, x, y, w, h);
+        Ui.flush(g);
         if (o.craftable) Ui.rect(g, x, y, w, 1, 0x90FACC15);
 
         // result
