@@ -56,12 +56,13 @@ JAR'ы должны лежать в
 C:\Users\<вы>\Documents\BeezzCraftExtended_all_builds
 ```
 
-Имя файла — строго `BeezzCraft-<Loader>-<MC>-v<версия>.jar`, например:
+Имя файла — `BeezzCraft-Fabric-<MC>-v<версия>.jar` для Fabric и
+`BeezzCraftExtended-NeoForge-<MC>-v<версия>.jar` для NeoForge, например:
 
 ```
 BeezzCraft-Fabric-1.21-v1.1.jar
 BeezzCraft-Fabric-1.21.4-v1.1.jar
-BeezzCraft-NeoForge-26.3-v1.1.jar
+BeezzCraftExtended-NeoForge-26.3-v1.1.jar
 ```
 
 По имени скрипт определяет загрузчик (`Fabric` / `NeoForge`), версию игры и

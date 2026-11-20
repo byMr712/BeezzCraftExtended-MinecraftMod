@@ -169,7 +169,7 @@ _**Если возникнут проблемы, напишите мне в ко
 1. Установите [Fabric Loader](https://fabricmc.net/use/) или [NeoForge](https://neoforged.net/) для своей версии Minecraft.
 2. Положите подходящий JAR в папку `mods`:
    - `BeezzCraft-Fabric-<version>-v1.1.jar` — для Fabric;
-   - `BeezzCraft-NeoForge-<version>-v1.1.jar` — для NeoForge.
+   - `BeezzCraftExtended-NeoForge-<version>-v1.1.jar` — для NeoForge.
 3. Запустите игру.
 
 Mod Menu необязателен; установите его, чтобы получить экран настроек в игре.
@@ -185,7 +185,7 @@ Mod Menu необязателен; установите его, чтобы по�
 Команда собирает оба файла в `build/libs/`:
 
 - `BeezzCraft-Fabric-26.3-v1.1.jar`
-- `BeezzCraft-NeoForge-26.3-v1.1.jar`
+- `BeezzCraftExtended-NeoForge-26.3-v1.1.jar`
 
 Игровые тесты со скриншотами доступны в ветках 1.21.4 – 1.21.11 и 26.1 – 26.3; в Fabric API для 1.21 – 1.21.3 нет client-gametest модуля.
 
