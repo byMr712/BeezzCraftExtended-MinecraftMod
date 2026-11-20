@@ -42,6 +42,7 @@ final class Card {
         if (x + w > sw - 4) x = mx - 14 - w;
         y = Math.max(4, Math.min(sh - h - 4, y));
         Ui.panel(g, x, y, w, h);
+        Ui.flush(g);
         if (o.craftable) Ui.rect(g, x, y, w, 1, 0x90FACC15);
 
         // result
@@ -124,6 +125,7 @@ final class Card {
         int w = font.width(text) + 10, h = 14;
         int x = Math.min(sw - w - 4, mx + 12), y = Math.max(4, Math.min(sh - h - 4, my - 7));
         Ui.panel(g, x, y, w, h);
+        Ui.flush(g);
         g.drawString(font, text, x + 5, y + 3, Ui.TEXT, false);
     }
 
