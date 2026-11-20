@@ -17,7 +17,6 @@ public abstract class ScreenMixin {
     @Inject(method = "renderWithTooltip",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;renderDeferredTooltip()V"))
     private void beezzcraft$wheel(GuiGraphics g, int mx, int my, float delta, CallbackInfo ci) {
-        BeezzCraft.capture(g, mx, my);
         BeezzCraft.renderWheel((Screen) (Object) this, g, mx, my);
     }
 }
