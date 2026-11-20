@@ -37,7 +37,7 @@
   "beezzcraft.config.reset.tip": "Restore the functional key, key-only mode, click button and all crafting settings.",
   "beezzcraft.config.click.off": "Available only when \"Use only the functional key\" is off.",
   "beezzcraft.creative": "Crafting is not available in the creative inventory",
-  "beezzcraft.config.title": "BeezzCraft (Extended)",
+  "beezzcraft.config.title": "Beezz Craft (Extended)",
   "beezzcraft.config.key": "Functional key: %s",
   "beezzcraft.config.press": "Press a key or mouse button...",
   "beezzcraft.config.key_only": "Use only the functional key: %s",
