@@ -12,7 +12,8 @@
     "LanguageMixin",
     "OptionsAccessor",
     "OptionsMixin",
-    "ScreenMixin"
+    "ScreenMixin",
+    "RecipeBookTooltipMixin"
   ],
   "injectors": { "defaultRequire": 1 }
 }
