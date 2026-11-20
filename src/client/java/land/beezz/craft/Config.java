@@ -65,6 +65,17 @@ final class Config {
         return new Config();
     }
 
+    /** Restores every setting to the defaults of a fresh install. */
+    void reset() {
+        queue = false;
+        showMissing = true;
+        sound = true;
+        showNeeds = true;
+        ctrlCount = 10;
+        keyOnly = false;
+        functionalClick = 1;
+    }
+
     void save() {
         try {
             Files.writeString(file(), GSON.toJson(this), StandardCharsets.UTF_8);

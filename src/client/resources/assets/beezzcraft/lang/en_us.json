@@ -49,5 +49,8 @@
   "beezzcraft.config.click.left.line2": "together with the functional key.",
   "beezzcraft.config.click.right.line1": "Opens the wheel with the right mouse button",
   "beezzcraft.config.click.right.line2": "together with the functional key.",
-  "key.beezzcraft.wheel": "Function key"
+  "key.beezzcraft.wheel": "Function key",
+  "beezzcraft.config.reset": "Restore defaults",
+  "beezzcraft.config.reset.tip": "Restore the functional key, key-only mode and the click button.",
+  "beezzcraft.config.click.off": "Available only when \"Use only the functional key\" is off."
 }
