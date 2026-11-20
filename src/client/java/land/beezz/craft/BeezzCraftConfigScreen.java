@@ -21,6 +21,7 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
     private MultiLineButton keyButton;
     private MultiLineButton keyOnlyButton;
     private MultiLineButton clickButton;
+    private MultiLineButton gearPositionButton;
     private MultiLineButton queueButton;
     private MultiLineButton missingButton;
     private MultiLineButton needsButton;
@@ -40,6 +41,8 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
                 "beezzcraft.config.key_only.line2",
                 "beezzcraft.config.key_only.line3"));
         clickButton = new MultiLineButton(this::toggleClick, this::clickTooltip);
+        gearPositionButton = new MultiLineButton(this::cycleGearPosition,
+                () -> lines("beezzcraft.config.position.tip"));
         queueButton = new MultiLineButton(this::toggleQueue,
                 () -> lines("beezzcraft.set.queue.note1", "beezzcraft.set.queue.note2"));
         missingButton = new MultiLineButton(this::toggleMissing, () -> lines("beezzcraft.config.toggle.tip"));
@@ -49,6 +52,7 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
         list.addSmall(List.of(keyButton));
         list.addSmall(List.of(keyOnlyButton));
         list.addSmall(List.of(clickButton));
+        list.addSmall(List.of(gearPositionButton));
         list.addHeader(Tr.t("beezzcraft.config.section.crafting"));
         list.addSmall(List.of(queueButton));
         list.addSmall(List.of(missingButton));
@@ -74,6 +78,13 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
         Config config = Config.get();
         if (config.keyOnly) return;
         config.functionalClick = config.functionalClick == 0 ? 1 : 0;
+        config.save();
+        updateLabels();
+    }
+
+    private void cycleGearPosition(Button button) {
+        Config config = Config.get();
+        config.gearPosition = (config.gearPosition + 1) & 3;
         config.save();
         updateLabels();
     }
@@ -118,6 +129,8 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
                 Tr.t(config.functionalClick == 0
                         ? "beezzcraft.config.left" : "beezzcraft.config.right")));
         clickButton.active = !config.keyOnly;
+        gearPositionButton.setMessage(Tr.t("beezzcraft.config.position",
+                Tr.t(Config.gearPositionKey(config.gearPosition))));
         queueButton.setMessage(toggle("beezzcraft.set.queue", config.queue));
         missingButton.setMessage(toggle("beezzcraft.set.missing", config.showMissing));
         needsButton.setMessage(toggle("beezzcraft.set.needs", config.showNeeds));
