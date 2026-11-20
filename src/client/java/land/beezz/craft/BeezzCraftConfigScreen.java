@@ -154,7 +154,11 @@ public final class BeezzCraftConfigScreen extends Screen {
 
     private static List<FormattedCharSequence> lines(String... keys) {
         List<FormattedCharSequence> lines = new ArrayList<>(keys.length);
-        for (String key : keys) lines.add(Tr.t(key).getVisualOrderText());
+        for (String key : keys) {
+            Component line = Tr.t(key);
+            if (key.equals("beezzcraft.set.queue.note2")) line = line.copy().withStyle(ChatFormatting.RED);
+            lines.add(line.getVisualOrderText());
+        }
         return lines;
     }
 
