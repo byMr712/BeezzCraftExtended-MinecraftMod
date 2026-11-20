@@ -31,7 +31,7 @@ _**If any issues arise, please write to me in the comments on CurseForge or open
 
 ## Gallery
 
-| The wheel | Variants on the mouse wheel |
+| The wheel | Variants: mouse wheel or middle click |
 | :---: | :---: |
 | ![The wheel](docs/wheel.webp) | ![Variants](docs/variants.webp) |
 
@@ -54,6 +54,7 @@ _**If any issues arise, please write to me in the comments on CurseForge or open
 *   **Hover a sector** for a card with the result, the ingredients as icons (green tick = enough, red = how many are missing) and the click controls drawn as mouse/key pictures.
 *   The wheel opens around the mouse and shrinks automatically to fit small windows.
 *   Close it with **Esc**, the inventory key, a click on the centre, or a click outside the wheel.
+*   If there is nothing to craft from an item, the wheel does not open: a white hint appears above the inventory panel for 3 seconds.
 
 ### Recipes & Variants
 
@@ -61,7 +62,7 @@ _**If any issues arise, please write to me in the comments on CurseForge or open
 *   Recipes the recipe book knows are crafted through it; the others are laid out with ordinary clicks. Both work on vanilla servers.
 *   In singleplayer the recipes come from the integrated server; in multiplayer from the game's own data.
 *   **Variants are grouped into one button:** fences of every wood, torch / soul torch / copper torch, tool tiers, and so on.
-*   **Mouse wheel over a button with variants** cycles through them. The mod remembers the variant you crafted last.
+*   **Mouse wheel or middle click over a button with variants** cycles through them; middle click always moves to the next variant. The mod remembers the variant you crafted last.
 *   If you have not crafted that item before, the wheel shows the variant you can craft, then the one from the wood further up-left in your inventory, then the one you lack the least for.
 *   Craftable recipes come first; recipes you craft often and popular recipes are sorted higher.
 *   Grey recipes can be hidden in the settings.
@@ -118,6 +119,7 @@ English and Russian. Textures and translations are loaded from the mod's own JAR
 | Craft as many as possible | <code>Shift + left click</code> |
 | Remove a queued recipe | <code>Right click</code> a sector |
 | Switch variants | <code>Mouse wheel</code> over a sector |
+| Next variant | <code>Middle click</code> a sector |
 | Switch pages | <code>Mouse wheel</code> or the page switcher |
 | Open settings | Gear button in the top-left corner |
 | Open the mod config | <code>Mod Menu → BeezzCraft (Extended) → Configure</code> |
