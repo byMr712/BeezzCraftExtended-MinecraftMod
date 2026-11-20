@@ -234,16 +234,12 @@ final class Wheel {
         }
         Ui.item(g, font, source, cx, cy, zoom() * (hover == -2 ? 1.1f : 1f), false);
 
-        // grey items get a veil, queued ones a little hourglass
+        // queued ones get a little hourglass
         g.nextStratum();
         for (int i = start; i < end; i++) {
             int slot = i - start;
             Recipes.Option o = shown.get(i).current();
             float[] p = point(slot, lift[slot] * 2);
-            if (!o.craftable) {
-                int half = Math.round(8 * zoom() * (1 + 0.25f * lift[slot]));
-                Ui.rect(g, Math.round(p[0]) - half, Math.round(p[1]) - half, half * 2, half * 2, 0x8C14161C);
-            }
             if (Crafter.queued(o) > 0) Ui.icon(g, Ui.QUEUE, Math.round(p[0]) + 4, Math.round(p[1]) - 12, 9, Ui.BLUE);
             if (shown.get(i).members.size() > 1) {
                 // three little dots: there are more variants inside (mouse wheel)
