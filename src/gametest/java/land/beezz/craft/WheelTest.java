@@ -388,38 +388,30 @@ public class WheelTest implements FabricClientGameTest {
         ctx.runOnClient(mc -> {
             BeezzCraftConfigScreen screen = (BeezzCraftConfigScreen) BeezzCraft.screen(mc);
             try {
-                Field tempField = BeezzCraftConfigScreen.class.getDeclaredField("temp");
-                tempField.setAccessible(true);
-                Config temp = (Config) tempField.get(screen);
                 Field clickField = BeezzCraftConfigScreen.class.getDeclaredField("clickButton");
                 clickField.setAccessible(true);
-                Method rebuild = Screen.class.getDeclaredMethod("rebuildWidgets");
-                rebuild.setAccessible(true);
-                Method restore = BeezzCraftConfigScreen.class.getDeclaredMethod("restoreDefaults");
-                restore.setAccessible(true);
-                Method save = BeezzCraftConfigScreen.class.getDeclaredMethod("save");
-                save.setAccessible(true);
-
-                temp.keyOnly = true;
-                rebuild.invoke(screen);
                 Button click = (Button) clickField.get(screen);
+                Method update = BeezzCraftConfigScreen.class.getDeclaredMethod("updateLabels");
+                update.setAccessible(true);
+                Method restore = BeezzCraftConfigScreen.class.getDeclaredMethod("restoreDefaults", Button.class);
+                restore.setAccessible(true);
+
+                Config config = Config.get();
+                config.keyOnly = true;
+                update.invoke(screen);
                 check("functional click is disabled in key-only mode", !click.active);
 
-                temp.functionalClick = 0;
-                temp.queue = true;
-                temp.showMissing = false;
-                temp.showNeeds = false;
-                temp.sound = false;
-                temp.ctrlCount = 3;
-                restore.invoke(screen);
-                check("restore defaults resets key-only mode", !temp.keyOnly);
-                check("restore defaults resets the functional click", temp.functionalClick == 1);
-                check("restore defaults resets the other settings", !temp.queue && temp.showMissing
-                        && temp.showNeeds && temp.sound && temp.ctrlCount == 10);
-                save.invoke(screen);
-                Config live = Config.get();
-                check("save applies the reset settings", !live.queue && live.showMissing && live.showNeeds
-                        && live.sound && live.ctrlCount == 10 && !live.keyOnly && live.functionalClick == 1);
+                config.functionalClick = 0;
+                config.queue = true;
+                config.showMissing = false;
+                config.showNeeds = false;
+                config.sound = false;
+                config.ctrlCount = 3;
+                restore.invoke(screen, click);
+                check("restore defaults resets key-only mode", !config.keyOnly);
+                check("restore defaults resets the functional click", config.functionalClick == 1);
+                check("restore defaults resets the other settings", !config.queue && config.showMissing
+                        && config.showNeeds && config.sound && config.ctrlCount == 10);
                 check("restore defaults resets the functional key",
                         BeezzCraftKeys.MODIFIER.saveString().equals("key.keyboard.left.control"));
             } catch (ReflectiveOperationException e) {
