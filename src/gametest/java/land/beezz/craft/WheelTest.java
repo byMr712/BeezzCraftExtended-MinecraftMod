@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -336,12 +337,53 @@ public class WheelTest implements FabricClientGameTest {
             shot("craft_11_table_sticks_page2");
             ctx.setScreen(() -> null);
         }
+        configScreenTest();
         ctx.runOnClient(mc -> {
             Config.get().queue = false;
             Config.get().recent.clear();
             Config.get().save();
         });
         BeezzCraft.LOG.info("BeezzCraft test: all steps done");
+    }
+
+    /** Mod Menu screen: key-only mode disables the click button, and the reset button restores defaults. */
+    private void configScreenTest() {
+        ctx.setScreen(() -> new BeezzCraftConfigScreen(BeezzCraft.screen(Minecraft.getInstance())));
+        ctx.waitForScreen(BeezzCraftConfigScreen.class);
+        ctx.runOnClient(mc -> {
+            BeezzCraftConfigScreen screen = (BeezzCraftConfigScreen) BeezzCraft.screen(mc);
+            try {
+                Field clickField = BeezzCraftConfigScreen.class.getDeclaredField("clickButton");
+                clickField.setAccessible(true);
+                Button click = (Button) clickField.get(screen);
+                Method update = BeezzCraftConfigScreen.class.getDeclaredMethod("updateLabels");
+                update.setAccessible(true);
+                Method restore = BeezzCraftConfigScreen.class.getDeclaredMethod("restoreDefaults", Button.class);
+                restore.setAccessible(true);
+
+                Config config = Config.get();
+                config.keyOnly = true;
+                update.invoke(screen);
+                check("functional click is disabled in key-only mode", !click.active);
+
+                config.functionalClick = 0;
+                config.queue = true;
+                config.showMissing = false;
+                config.showNeeds = false;
+                config.sound = false;
+                config.ctrlCount = 3;
+                restore.invoke(screen, click);
+                check("restore defaults resets key-only mode", !config.keyOnly);
+                check("restore defaults resets the functional click", config.functionalClick == 1);
+                check("restore defaults resets the other settings", !config.queue && config.showMissing
+                        && config.showNeeds && config.sound && config.ctrlCount == 10);
+                check("restore defaults resets the functional key",
+                        BeezzCraftKeys.MODIFIER.saveString().equals("key.keyboard.left.control"));
+            } catch (ReflectiveOperationException e) {
+                throw new IllegalStateException(e);
+            }
+        });
+        ctx.setScreen(() -> null);
     }
 
     /** A custom CraftingRecipe (not Shaped/Shapeless) must still be read by the generic branch. */
