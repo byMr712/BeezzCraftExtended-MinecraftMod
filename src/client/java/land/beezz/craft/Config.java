@@ -16,6 +16,8 @@ final class Config {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static Config instance;
 
+    /** Use the mod at all. */
+    boolean enabled = true;
     /**
      * The craft queue: a grey recipe clicked now is crafted by itself as soon as the items are in the inventory.
      * Off by default: some servers treat automatic crafting as a cheat.
@@ -81,6 +83,7 @@ final class Config {
 
     /** Restores every setting to the defaults of a fresh install. */
     void reset() {
+        enabled = true;
         queue = false;
         showMissing = true;
         sound = true;
@@ -89,6 +92,24 @@ final class Config {
         keyOnly = false;
         functionalClick = 1;
         gearPosition = GEAR_LEFT_TOP;
+    }
+
+    Config copySettings() {
+        Config c = new Config();
+        c.copySettingsFrom(this);
+        return c;
+    }
+
+    void copySettingsFrom(Config o) {
+        enabled = o.enabled;
+        queue = o.queue;
+        showMissing = o.showMissing;
+        sound = o.sound;
+        showNeeds = o.showNeeds;
+        ctrlCount = o.ctrlCount;
+        keyOnly = o.keyOnly;
+        functionalClick = o.functionalClick;
+        gearPosition = o.gearPosition;
     }
 
     void save() {
