@@ -30,10 +30,9 @@ final class Ui {
         return ResourceLocation.fromNamespaceAndPath("beezzcraft", "textures/gui/" + name + ".png");
     }
 
-    /** A filled rectangle. */
+    /** A filled rectangle, drawn at once so it keeps its call order with the tinted quads and item models. */
     static void rect(GuiGraphics g, int x, int y, int w, int h, int color) {
-        if (w <= 0 || h <= 0) return;
-        g.fill(x, y, x + w, y + h, color);
+        quad(g, WHITE, x, y, w, h, 16, 16, color);
     }
 
     /**
