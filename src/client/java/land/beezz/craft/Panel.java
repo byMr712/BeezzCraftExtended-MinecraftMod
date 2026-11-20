@@ -87,8 +87,8 @@ final class Panel {
                 () -> c.functionalClick = c.functionalClick == 0 ? 1 : 0));
         rows.add(new Choice(new ItemStack(Items.TRIPWIRE_HOOK), Tr.t("beezzcraft.set.key"),
                 BeezzCraftKeys.MODIFIER.getTranslatedKeyMessage(),
-                () -> Minecraft.getInstance().setScreen(new net.minecraft.client.gui.screens.options.controls.ControlsScreen(
-                        Minecraft.getInstance().screen, Minecraft.getInstance().options))));
+                () -> Minecraft.getInstance().gui.setScreen(new net.minecraft.client.gui.screens.options.controls.ControlsScreen(
+                        Minecraft.getInstance().gui.screen(), Minecraft.getInstance().options))));
         rows.add(new Choice(new ItemStack(Items.COMPASS), Tr.t("beezzcraft.set.position"),
                 Tr.t(Config.gearPositionKey(c.gearPosition)),
                 () -> c.gearPosition = (c.gearPosition + 1) & 3));
