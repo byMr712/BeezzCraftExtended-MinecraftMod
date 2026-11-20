@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.client.input.KeyEvent;
@@ -49,7 +50,9 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
         list.addSmall(List.of(keyButton));
         list.addSmall(List.of(keyOnlyButton));
         list.addSmall(List.of(clickButton));
-        list.addHeader(Tr.t("beezzcraft.config.section.crafting"));
+        StringWidget section = new StringWidget(200, 20, Tr.t("beezzcraft.config.section.crafting"),
+                Minecraft.getInstance().font).alignLeft();
+        list.addSmall(List.of(section));
         list.addSmall(List.of(queueButton));
         list.addSmall(List.of(missingButton));
         list.addSmall(List.of(needsButton));
