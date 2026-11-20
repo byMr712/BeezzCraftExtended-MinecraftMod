@@ -51,7 +51,7 @@ public final class BeezzCraftConfigScreen extends OptionsSubScreen {
         list.addSmall(List.of(keyOnlyButton));
         list.addSmall(List.of(clickButton));
         StringWidget section = new StringWidget(200, 20, Tr.t("beezzcraft.config.section.crafting"),
-                Minecraft.getInstance().font).alignLeft();
+                Minecraft.getInstance().font);
         list.addSmall(List.of(section));
         list.addSmall(List.of(queueButton));
         list.addSmall(List.of(missingButton));
