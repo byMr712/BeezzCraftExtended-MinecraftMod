@@ -33,15 +33,15 @@ _**Если возникнут проблемы, напишите мне в ко
 
 | Колесо | Варианты: колёсико или средний клик |
 | :---: | :---: |
-| ![Колесо](docs/wheel.webp) | ![Варианты](docs/variants.webp) |
+| ![Колесо](docs/ru/wheel.webp) | ![Варианты](docs/ru/variants.webp) |
 
 | Верстак: железная кирка | Очередь крафта и «Что добыть» |
 | :---: | :---: |
-| ![Верстак](docs/table-iron.webp) | ![Очередь](docs/queue-needs.webp) |
+| ![Верстак](docs/ru/table-iron.webp) | ![Очередь](docs/ru/queue-needs.webp) |
 
 | Настройки |
 | :---: |
-| ![Настройки](docs/settings.webp) |
+| ![Настройки](docs/ru/settings.webp) |
 
 ## Что умеет мод?
 
