@@ -21,7 +21,7 @@ PROJECT_ID = "1817202"
 PROJECT_SLUG = "beezz-craft-extended"
 DISPLAY_NAME = "BeezzCraft"
 JAR_RE = re.compile(
-    r"^(?:BeezzCraft|BeezzCraftExtended)-(?P<loader>Fabric|NeoForge)-(?P<mc>\d+\.\d+(?:\.\d+)?)-v(?P<version>\d+(?:\.\d+)*)\.jar$"
+    r"^BeezzCraftExtended-(?P<loader>Fabric|NeoForge)-(?P<mc>\d+\.\d+(?:\.\d+)?)-v(?P<version>\d+(?:\.\d+)*)\.jar$"
 )
 
 
@@ -38,7 +38,7 @@ def request_json(url: str, token: str, method: str = "GET", data: bytes | None =
     headers = {
         "x-api-key": token,
         "Accept": "application/json",
-        "User-Agent": "BeezzCraft/1.1.1 (byMr712)",
+        "User-Agent": "BeezzCraftExtended/1.1.2 (byMr712)",
     }
     if content_type:
         headers["Content-Type"] = content_type
