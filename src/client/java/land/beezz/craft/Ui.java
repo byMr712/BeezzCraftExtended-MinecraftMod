@@ -41,6 +41,11 @@ final class Ui {
         rect(g, x + w - 2, y + h - 2, 1, 1, color);
     }
 
+    /** An opaque frame behind a card: covers the wheel's item models that render in front of the GUI. */
+    static void backdrop(GuiGraphics g, int x, int y, int w, int h) {
+        round(g, x, y, w, h, 0xFF0B0D12);
+    }
+
     /** A soft panel: rounded, with a 1 px border and a faint shadow. */
     static void panel(GuiGraphics g, int x, int y, int w, int h) {
         round(g, x + 1, y + 2, w, h, 0x50000000);
