@@ -60,7 +60,8 @@ public final class BeezzCraft {
     }
 
     public static void onScreenRemoved(Screen screen) {
-        if (wheel != null && wheel.screen == screen) wheel = null;
+        // Keep the wheel when another screen (a recipe book overlay) opens on top of it;
+        // a new inventory/crafting screen resets it in onScreenInit.
         Panel.close();
     }
 
@@ -72,7 +73,11 @@ public final class BeezzCraft {
     /** Called by ScreenMixin after the screen and before its tooltips. */
     public static void renderWheel(Screen screen, GuiGraphics g, int mx, int my) {
         if (!(screen instanceof InventoryScreen) && !(screen instanceof CraftingScreen)
-                && !(screen instanceof CreativeModeInventoryScreen)) return;
+                && !(screen instanceof CreativeModeInventoryScreen)) {
+            // A recipe book or another screen opened on top: keep the open wheel visible above it.
+            if (wheel != null) wheel.render(g, screen.getFont(), mx, my);
+            return;
+        }
         // 1.21.x batches the inventory items and flushes them after guiTextured; flush first so the wheel
         // (and its centre item) is drawn above the vanilla slots instead of under them.
         g.flush();

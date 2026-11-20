@@ -5,10 +5,12 @@ import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
@@ -326,6 +328,10 @@ public class WheelTest implements FabricClientGameTest {
             ctx.getInput().scroll(-1);
             ctx.waitTicks(5);
             shot("craft_11_table_sticks_page2");
+            ctx.setScreen(() -> new Screen(Component.literal("overlay")) {});
+            ctx.waitTicks(5);
+            check("the wheel stays open over another screen", ctx.computeOnClient(mc -> BeezzCraft.wheel != null));
+            shot("craft_overlay_wheel");
             ctx.setScreen(() -> null);
         }
         Config.get().queue = false;
