@@ -2,8 +2,8 @@
 
 <div align="center">
 
-  <img width="150" alt="BeezzCraft (Extended) logo" src="images/icon.png">
-  <h3>BeezzCraft (Extended)</h3>
+  <img width="150" alt="Beezz Craft (Extended) logo" src="images/icon.png">
+  <h3>Beezz Craft (Extended)</h3>
 
 </div>
 
@@ -17,17 +17,15 @@
 
 </div>
 
-## _**Support only English and Russian language!**_
+A client-side crafting wheel for Minecraft: **Ctrl + Right-Click** an item in your inventory or at a crafting table to see everything you can craft from it, with variants, a craft queue and a "what to get" list.
 
-**BeezzCraft (Extended)** is a client-side crafting wheel for Minecraft with a compact octagon interface. **Ctrl + right click** an item in your inventory or at a crafting table and the wheel opens with everything you can craft from it. No need to remember recipes or page through the recipe book.
+> Created by BeezzLand with AI and ported to Fabric and NeoForge by Mr712.
 
-_**A video showing this mod and its features is available on [YouTube](https://youtu.be/uBgZQ2bAXQo?si=n4Jig1-TJIscap2_).**_
+<div align="center">
 
-_**This mod was created by BeezzLand with the help of AI, and ported to Fabric and NeoForge by Mr712. I do not monetize on CurseForge — just enjoy the game!**_
+  [<img width="900" alt="Download on CurseForge" src="images/curseforge_banner_en.png">](https://www.curseforge.com/minecraft/mc-mods/beezz-craft-extended)
 
-_**If any issues arise, please write to me in the comments on CurseForge or open an issue on [GitHub](https://github.com/byMr712/BeezzCraftExtended-MinecraftMod/issues)!**_
-
-*   [Telegram group for discussing this mod](https://t.me/BeezzCraftExtended/1)
+</div>
 
 ## Gallery
 
@@ -188,6 +186,12 @@ The command builds both files into `build/libs/`:
 - `BeezzCraftExtended-NeoForge-1.21.2-v1.1.2.jar`
 
 Client game tests with screenshots are available on 1.21.4 – 1.21.11 and 26.1 – 26.3; Fabric API has no client-gametest module for 1.21 – 1.21.3.
+
+## Links
+
+*   [Video about the mod on YouTube](https://youtu.be/uBgZQ2bAXQo?si=n4Jig1-TJIscap2_)
+*   [Telegram group](https://t.me/BeezzCraftExtended/1)
+*   [Report an issue](https://github.com/byMr712/BeezzCraftExtended-MinecraftMod/issues)
 
 ## Credits & License
 
