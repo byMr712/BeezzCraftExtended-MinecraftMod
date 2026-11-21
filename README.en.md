@@ -19,7 +19,7 @@
 
 A client-side crafting wheel for Minecraft: **Ctrl + Right-Click** an item in your inventory or at a crafting table to see everything you can craft from it, with variants, a craft queue and a "what to get" list.
 
-> Created by BeezzLand with AI and ported to Fabric and NeoForge by Mr712.
+> This mod was created and ported with the help of AI based on the ideas of the author and viewers.
 
 <div align="center">
 
