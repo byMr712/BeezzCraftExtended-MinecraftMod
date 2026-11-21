@@ -1,9 +1,9 @@
-> **Язык:** Русский · [English](README.en.md)
+> **Language:** Русский · [English](README.en.md)
 
 <div align="center">
 
-  <img width="150" alt="BeezzCraft (Extended)" src="images/icon.png">
-  <h3>BeezzCraft (Extended)</h3>
+  <img width="150" alt="Beezz Craft (Extended)" src="images/icon.png">
+  <h3>Beezz Craft (Extended)</h3>
 
 </div>
 
@@ -17,17 +17,15 @@
 
 </div>
 
-## _**Поддерживаются только английский и русский языки!**_
+Клиентское колесо крафта для Minecraft: **Ctrl + ПКМ** по предмету в инвентаре или на верстаке — и перед тобой всё, что из него можно скрафтить, с вариантами, очередью крафта и подсказкой «Что добыть».
 
-**BeezzCraft (Extended)** — клиентское колесо крафта для Minecraft с компактным восьмиугольным интерфейсом. **Ctrl + ПКМ** по предмету в инвентаре или на верстаке — и открывается колесо со всем, что из него можно скрафтить. Больше не нужно помнить рецепты и листать книгу рецептов.
+> Мод создан BeezzLand с помощью AI и портирован на Fabric и NeoForge автором Mr712.
 
-_**Видео о моде и его возможностях доступно на [YouTube](https://youtu.be/uBgZQ2bAXQo?si=n4Jig1-TJIscap2_).**_
+<div align="center">
 
-_**Мод создан BeezzLand с помощью AI и портирован на Fabric и NeoForge автором Mr712. Я не монетизирую CurseForge — просто играйте в своё удовольствие!**_
+  [<img width="900" alt="Скачать на CurseForge" src="images/curseforge_banner.png">](https://www.curseforge.com/minecraft/mc-mods/beezz-craft-extended)
 
-_**Если возникнут проблемы, напишите мне в комментариях на CurseForge или создайте issue на [GitHub](https://github.com/byMr712/BeezzCraftExtended-MinecraftMod/issues)!**_
-
-*   [Telegram-группа для обсуждения мода](https://t.me/BeezzCraftExtended/1)
+</div>
 
 ## Галерея
 
@@ -188,6 +186,12 @@ Mod Menu необязателен; установите его, чтобы по�
 - `BeezzCraftExtended-NeoForge-26.1.2-v1.1.2.jar`
 
 Игровые тесты со скриншотами доступны в ветках 1.21.4 – 1.21.11 и 26.1 – 26.3; в Fabric API для 1.21 – 1.21.3 нет client-gametest модуля.
+
+## Ссылки
+
+*   [Видео о моде на YouTube](https://youtu.be/uBgZQ2bAXQo?si=n4Jig1-TJIscap2_)
+*   [Telegram-группа для обсуждения мода](https://t.me/BeezzCraftExtended/1)
+*   [Сообщить о проблеме](https://github.com/byMr712/BeezzCraftExtended-MinecraftMod/issues)
 
 ## Авторы и лицензии
 
